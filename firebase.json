@@ -1,0 +1,11 @@
+{
+  "hosting": {
+    "site": "el-grimorio-de-mephistopheles",
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
