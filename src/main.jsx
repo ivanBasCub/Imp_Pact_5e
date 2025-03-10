@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import App from './componentes/App.jsx'
-import { SRD, SpellList, Spell } from './componentes/SRD.jsx'
+import { SRD, SpellList, Spell } from './componentes/SRDSpells.jsx'
 
 
 createRoot(document.getElementById('root')).render(

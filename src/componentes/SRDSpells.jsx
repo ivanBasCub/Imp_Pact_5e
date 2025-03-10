@@ -41,15 +41,28 @@ function Spell() {
     fetchSpell()
   }, [id])
 
+  // Comprobamos que se haya recogido la información del Spell antes de mostrar nada
+  if(Object.keys(spell).length === 0){
+    return <div>Loading...</div>
+
+  }
+
+  // Imprimimos la información por pantalla
   return (
     <div key={id}>
       <h2>{spell.name}</h2>
+      <p>{spell.level === 0 ? `${spell.school.name} Cantrip` : spell.ritual ? `${spell.school.name} Level ${spell.level} (Ritual)` : `${spell.school.name} Level ${spell.level}`}</p>
       <p><b>Casting Time: </b> {spell.casting_time}</p>
       <p><b>Range: </b>{spell.range}</p>
       <p><b>Duration: </b>{spell.concentration ? 'Concentration,' : spell.duration}</p>
-      <p><b>Components: </b>{spell.material} </p>
+      <p><b>Components: </b>{spell.components.join(', ')} {spell.material ? `(${spell.material})` : ""}</p>
+      <p>{spell.desc.join(<br/>)}</p>
+      {spell.higher_level.map(pf => {
+        if(pf){
+          return <p><b>At higher Levels.</b> {pf}</p>
+        }
+      })}
     </div>
-
   )
 }
 
