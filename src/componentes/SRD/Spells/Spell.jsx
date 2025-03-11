@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { useParams, Link, useLocation } from "react-router-dom"
 
+const URL = "https://www.dnd5eapi.co";
+
 {/*
     Esta funcion devuelve un formulario dependiendo de 
 */}
@@ -114,27 +116,72 @@ function SpellList() {
     const fullCasters = ["bard", "cleric", "druid", "sorcerer", "warlock", "wizard"];
     // Constantes generales
     const { clase } = useParams()
+    const [list, setList] = useState([])
 
-    const [ infoForm , setInfoForm ] = useState({
-        level : "0",
+    // Constante para recoger la información del formulario
+    const [infoForm, setInfoForm] = useState({
+        level: "0",
         school: "all",
         class: clase || 'all'
     })
-
+    // Evento para recoger la información del formulario
     const handleChange = (event) => {
         const { name, value } = event.target;
         setInfoForm((info) => ({
-          ...info,
-          [name]: value
+            ...info,
+            [name]: value
         }));
     };
-      
+
+    // Actualizamos los datos recogidos por la API
+    useEffect(() => {
+        // Funcion principal donde se hara el filtrado de nivel
+        async function fetchList() {
+            const res = await fetch(`${URL}/api/2014/spells`);
+            const data = await res.json();
+            const listArray = data.results;
+            const filterArray = listArray.filter(spell => spell.level === parseInt(infoForm.level));
+            
+            const spellPromises = filterArray.map(spell => fetch(`${URL}${spell.url}`).then(res => res.json()));
+            const spellsData = await Promise.all(spellPromises);
+            console.log(spellsData)
+            setList(spellsData);
+        }
+        fetchList();
+        
+    }, [infoForm.level]);
+    
+
     return (
         <div>
             {formulario(infoForm, clase, fullCasters, handleChange)}
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>School</th>
+                        <th>Casting Time</th>
+                        <th>Range</th>
+                        <th>Duration</th>
+                        <th>Components</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {list.map(spell => (
+                        <tr key={spell.index}>
+                            <td><Link to={`/SRD/Spell/${spell.index}`}>{spell.name}</Link></td>
+                            <td>{spell.school.name}</td>
+                            <td>{spell.casting_time} {spell.ritual ? "R" : ""}</td>
+                            <td>{spell.range}</td>
+                            <td>{spell.duration}</td>
+                            <td>{spell.components.join(', ')}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     )
-
 }
 
 {/*
@@ -146,7 +193,7 @@ function Spell() {
 
     useEffect(() => {
         async function fetchSpell() {
-            const res = await fetch(`https://www.dnd5eapi.co/api/2014/spells/${id}`)
+            const res = await fetch(`${URL}/api/2014/spells/${id}`)
             const data = await res.json()
             setSpell(data)
         }
@@ -156,7 +203,6 @@ function Spell() {
     // Comprobamos que se haya recogido la información del Spell antes de mostrar nada
     if (Object.keys(spell).length === 0) {
         return <div>Loading...</div>
-
     }
 
     // Imprimimos la información por pantalla
