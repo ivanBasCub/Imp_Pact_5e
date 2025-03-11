@@ -17,7 +17,7 @@ createRoot(document.getElementById('root')).render(
         {/* Rutas para el elementos del SRD */}
         <Route path='/SRD' element={<SRD />} />
         <Route path='/SRD/SpellList/' element={<SpellList />} />
-        <Route path='/SRD/SpellLists/:clase' element={<SpellList />} />
+        <Route path='/SRD/SpellList/:clase' element={<SpellList />} />
         <Route path='/SRD/Spell/:id' element={<Spell />} />
       </Routes>  
     </BrowserRouter>
