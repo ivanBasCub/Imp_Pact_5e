@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
-import { useParams, Link, useLocation } from "react-router-dom"
+import { useParams, Link } from "react-router-dom"
 
+{/*
+    Constantes Generales del componente    
+*/}
 const URL = "https://www.dnd5eapi.co";
 
 {/*
@@ -124,12 +127,16 @@ function SpellList() {
         school: "all",
         class: clase || 'all'
     })
+    if(fullCasters.includes(clase) === false){
+        infoForm.level = 1
+    }
+
     // Evento para recoger la información del formulario
     const handleChange = (event) => {
         const { name, value } = event.target;
         setInfoForm((info) => ({
             ...info,
-            [name]: value
+            [name]: value.toLowerCase()
         }));
     };
 
@@ -137,25 +144,46 @@ function SpellList() {
     useEffect(() => {
         // Funcion principal donde se hara el filtrado de nivel
         async function fetchList() {
+            // Hacemos la llamada general a la api
             const res = await fetch(`${URL}/api/2014/spells`);
             const data = await res.json();
+            // Recogemos la información completa de la API
             const listArray = data.results;
-            const filterArray = listArray.filter(spell => spell.level === parseInt(infoForm.level));
-            
-            const spellPromises = filterArray.map(spell => fetch(`${URL}${spell.url}`).then(res => res.json()));
-            const spellsData = await Promise.all(spellPromises);
-            console.log(spellsData)
-            setList(spellsData);
-        }
-        fetchList();
-        
-    }, [infoForm.level]);
-    
 
+            // Filtramos la información de la API segun el nivel indicado en el formulario y hacemos llamadas a la API de nuevo para conseguir la información que necesitamos para mostrar en la tabla
+            const filterArray = listArray.filter(spell => spell.level === parseInt(infoForm.level));
+            const listSpellPromises = filterArray.map(spell => fetch(`${URL}${spell.url}`).then(res => res.json()));
+            const listSpell = await Promise.all(listSpellPromises);
+            
+            // En el caso de que sea el base
+            if(infoForm.class === "all" && infoForm.school === "all"){
+                setList(listSpell)
+            }
+ 
+            // Filtrado segun clase y escuela si se cumplen las condiciones
+            if (infoForm.class != "all"){
+
+                var listSpellClass = listSpell.filter(spell => spell.classes.some(pj => pj.index === infoForm.class))
+                setList(listSpellClass)
+                // En el caso de que tambien estemos filtrando por la escuela y actualizamos la constante list
+                if(infoForm.school != "all"){
+                    var result = listSpellClass.filter(spell => spell.school.index === infoForm.school)
+                    setList(result)
+                }
+            }
+
+            // En el caso de que solamente estemos filtrando por la escuela
+            if(infoForm.school != "all"){
+                var listSpellSchool = listSpell.filter(spell => spell.school.index === infoForm.school)
+                setList(listSpellSchool)
+            }
+        }
+        fetchList();    
+    }, [infoForm]);
+    
     return (
         <div>
             {formulario(infoForm, clase, fullCasters, handleChange)}
-
             <table>
                 <thead>
                     <tr>
