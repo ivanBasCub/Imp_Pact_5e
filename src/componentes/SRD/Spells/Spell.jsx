@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
-import { useParams, Link, useLocation } from "react-router-dom"
+import { useParams, Link } from "react-router-dom"
 
+{/*
+    Constantes Generales del componente    
+*/}
 const URL = "https://www.dnd5eapi.co";
 
 {/*
