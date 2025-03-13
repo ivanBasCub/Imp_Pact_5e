@@ -1,115 +1,18 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
+<<<<<<< HEAD
 
 {/*
     Constantes Generales del componente    
 */}
 const URL = "https://www.dnd5eapi.co";
+=======
+>>>>>>> 8c991a598e6cb8f9b4d3145d18788b0fae70f484
 
 {/*
-    Esta funcion devuelve un formulario dependiendo de 
+    Constantes Generales del componente    
 */}
-function formulario(info, clase, full, handleChange) {
-    if (clase === undefined) {
-        return (
-            <div>
-                <h1>Spell List</h1>
-                <form method="post">
-                    <div>
-                        <label>Spell Level</label>
-                        <select name="level" id="level" onChange={handleChange} value={info.level}>
-                            <option value="0">Cantrips</option>
-                            <option value="1">Level 1</option>
-                            <option value="2">Level 2</option>
-                            <option value="3">Level 3</option>
-                            <option value="4">Level 4</option>
-                            <option value="5">Level 5</option>
-                            <option value="6">Level 6</option>
-                            <option value="7">Level 7</option>
-                            <option value="8">Level 8</option>
-                            <option value="9">Level 9</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Spell School</label>
-                        <select id="school" name="school" onChange={handleChange} value={info.school}>
-                            <option value="all">All Schools</option>
-                            <option value="Abjuration">Abjuration</option>
-                            <option value="Conjuration">Conjuration</option>
-                            <option value="Divination">Divination</option>
-                            <option value="Enchantment">Enchantment</option>
-                            <option value="Evocation">Evocation</option>
-                            <option value="Illusion">Illusion</option>
-                            <option value="Necromancy">Necromancy</option>
-                            <option value="Transmutation">Transmutation</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Class Spell List</label>
-                        <select name="class" id="class" onChange={handleChange} value={info.class}>
-                            <option value="all">All Classes</option>
-                            <option value="Bard">Bard</option>
-                            <option value="Cleric">Cleric</option>
-                            <option value="Druid">Druid</option>
-                            <option value="Paladin">Paladin</option>
-                            <option value="Ranger">Ranger</option>
-                            <option value="Sorcerer">Sorcerer</option>
-                            <option value="Warlock">Warlock</option>
-                            <option value="Wizard">Wizard</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-        )
-    } else {
-        return (
-            <div>
-                <h2>{clase} Spell List</h2>
-                <form method="post">
-                    <div>
-                        <label>Spell Level</label>
-                        <select name="level" onChange={handleChange} value={info.level}>
-                            {full.includes(clase) ? (
-                                <>
-                                    <option value="0">Cantrips</option>
-                                    <option value="1">Level 1</option>
-                                </>
-                            ) : (
-                                <option value="1">Level 1</option>
-                            )}
-                            <option value="2">Level 2</option>
-                            <option value="3">Level 3</option>
-                            <option value="4">Level 4</option>
-                            <option value="5">Level 5</option>
-                            {full.includes(clase) ? (
-                                <>
-                                    <option value="6">Level 6</option>
-                                    <option value="7">Level 7</option>
-                                    <option value="8">Level 8</option>
-                                    <option value="9">Level 9</option>
-                                </>
-                            ) : ""}
-                        </select>
-                    </div>
-                    <div>
-                        <label >Spell School</label>
-                        <select name="school" onChange={handleChange} value={info.school}>
-                            <option value="all">All Schools</option>
-                            <option value="Abjuration">Abjuration</option>
-                            <option value="Conjuration">Conjuration</option>
-                            <option value="Divination">Divination</option>
-                            <option value="Enchantment">Enchantment</option>
-                            <option value="Evocation">Evocation</option>
-                            <option value="Illusion">Illusion</option>
-                            <option value="Necromancy">Necromancy</option>
-                            <option value="Transmutation">Transmutation</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-        )
-    }
-}
+const URL = "https://www.dnd5eapi.co";
 
 {/*
   Este componente se encarga de mostrar la lista de hechizos especifico de una clase
@@ -123,12 +26,13 @@ function SpellList() {
 
     // Constante para recoger la información del formulario
     const [infoForm, setInfoForm] = useState({
-        level: "0",
+        level: 1,
         school: "all",
         class: clase || 'all'
     })
+
     // Evento para recoger la información del formulario
-    const handleChange = (event) => {
+    const formEvent = (event) => {
         const { name, value } = event.target;
         setInfoForm((info) => ({
             ...info,
@@ -138,6 +42,7 @@ function SpellList() {
 
     // Actualizamos los datos recogidos por la API
     useEffect(() => {
+        { console.log(infoForm) }
         // Funcion principal donde se hara el filtrado de nivel
         async function fetchList() {
             // Hacemos la llamada general a la api
@@ -145,6 +50,40 @@ function SpellList() {
             const data = await res.json();
             // Recogemos la información completa de la API
             const listArray = data.results;
+<<<<<<< HEAD
+=======
+
+            // Filtramos la información de la API segun el nivel indicado en el formulario y hacemos llamadas a la API de nuevo para conseguir la información que necesitamos para mostrar en la tabla
+            const filterArray = listArray.filter(spell => spell.level === parseInt(infoForm.level));
+            const listSpellPromises = filterArray.map(spell => fetch(`${URL}${spell.url}`).then(res => res.json()));
+            const listSpell = await Promise.all(listSpellPromises);
+
+            // En el caso de que sea el base
+            if (infoForm.class === "all" && infoForm.school === "all") {
+                setList(listSpell)
+            }
+
+            // Filtrado segun clase y escuela si se cumplen las condiciones
+            if (infoForm.class != "all") {
+
+                var listSpellClass = listSpell.filter(spell => spell.classes.some(pj => pj.index === infoForm.class))
+                setList(listSpellClass)
+                // En el caso de que tambien estemos filtrando por la escuela y actualizamos la constante list
+                if (infoForm.school != "all") {
+                    var result = listSpellClass.filter(spell => spell.school.index === infoForm.school)
+                    setList(result)
+                }
+            }
+
+            // En el caso de que solamente estemos filtrando por la escuela
+            if (infoForm.school != "all") {
+                var listSpellSchool = listSpell.filter(spell => spell.school.index === infoForm.school)
+                setList(listSpellSchool)
+            }
+        }
+        fetchList();
+    }, [infoForm]);
+>>>>>>> 8c991a598e6cb8f9b4d3145d18788b0fae70f484
 
             // Filtramos la información de la API segun el nivel indicado en el formulario y hacemos llamadas a la API de nuevo para conseguir la información que necesitamos para mostrar en la tabla
             const filterArray = listArray.filter(spell => spell.level === parseInt(infoForm.level));
@@ -175,8 +114,82 @@ function SpellList() {
     
     return (
         <div>
-            {formulario(infoForm, clase, fullCasters, handleChange)}
+            <form method="post">
+                <h2>{clase === undefined ? "Spell List" : `${clase} Spell List`}</h2>
+                <div>
+                    <label>Spell Level</label>
+                    <select name="level" onChange={formEvent} value={infoForm.level}>
+                        {infoForm.class === "all" ? (
+                            <>
+                                <option value="0">Cantrips</option>
+                                <option value="1">Level 1</option>
+                                <option value="2">Level 2</option>
+                                <option value="3">Level 3</option>
+                                <option value="4">Level 4</option>
+                                <option value="5">Level 5</option>
+                                <option value="6">Level 6</option>
+                                <option value="7">Level 7</option>
+                                <option value="8">Level 8</option>
+                                <option value="9">Level 9</option>
+                            </>
+                        ) : (
+                            <>
+                                {fullCasters.includes(infoForm.class) ? (
+                                    <>
+                                        <option value="0">Cantrips</option>
+                                        <option value="1">Level 1</option>
+                                    </>
+                                ) : (
+                                    <option value="1">Level 1</option>
+                                )}
+                                <option value="2">Level 2</option>
+                                <option value="3">Level 3</option>
+                                <option value="4">Level 4</option>
+                                <option value="5">Level 5</option>
+                                {fullCasters.includes(infoForm.class) ? (
+                                    <>
+                                        <option value="6">Level 6</option>
+                                        <option value="7">Level 7</option>
+                                        <option value="8">Level 8</option>
+                                        <option value="9">Level 9</option>
+                                    </>
+                                ) : ""}
+                            </>
+                        )}
+                    </select>
+                </div>
+                <div>
+                    <label >Spell School</label>
+                    <select name="school" onChange={formEvent} value={infoForm.school}>
+                        <option value="all">All Schools</option>
+                        <option value="abjuration">Abjuration</option>
+                        <option value="conjuration">Conjuration</option>
+                        <option value="divination">Divination</option>
+                        <option value="enchantment">Enchantment</option>
+                        <option value="evocation">Evocation</option>
+                        <option value="illusion">Illusion</option>
+                        <option value="necromancy">Necromancy</option>
+                        <option value="transmutation">Transmutation</option>
+                    </select>
+                </div>
+                {clase === undefined ? (
+                    <div>
+                        <label>Class Spell List</label>
+                        <select name="class" id="class" onChange={formEvent} value={infoForm.class}>
+                            <option value="all">All Classes</option>
+                            <option value="bard">Bard</option>
+                            <option value="cleric">Cleric</option>
+                            <option value="druid">Druid</option>
+                            <option value="paladin">Paladin</option>
+                            <option value="ranger">Ranger</option>
+                            <option value="sorcerer">Sorcerer</option>
+                            <option value="warlock">Warlock</option>
+                            <option value="wizard">Wizard</option>
+                        </select>
+                    </div>
+                ) : ""}
 
+            </form>
             <table>
                 <thead>
                     <tr>
