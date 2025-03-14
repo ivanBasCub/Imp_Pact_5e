@@ -9,10 +9,6 @@ const URL = "https://www.dnd5eapi.co";
 {/*
     Funcion que muestra toda la lista con la información de todos los mounstros    
 */}
-<<<<<<< HEAD
-function MonsterList(){
-
-=======
 function MonsterList() {
     // Constantes Necesarias para la lista
     const [list, setList] = useState([]);
@@ -149,7 +145,7 @@ function MonsterList() {
                 <tbody>
                         {list.map(monster => (
                             <tr key={monster.index}>
-                                <td>{monster.name}</td>
+                                <td><Link to={`/SRD/Monster${monster.index}`}>{monster.name}</Link></td>
                                 <td>{monster.challenge_rating}</td>
                                 <td>{monster.type}</td>
                                 <td>{monster.size}</td>
@@ -160,20 +156,39 @@ function MonsterList() {
             </table>
         </div>
     )
->>>>>>> 8c991a598e6cb8f9b4d3145d18788b0fae70f484
 }
 
 
 {/*
     Función que muestra toda la información necesaria que se recolecta de la API
 */}
-<<<<<<< HEAD
-function Monster(){
-=======
+
 function Monster() {
->>>>>>> 8c991a598e6cb8f9b4d3145d18788b0fae70f484
+    // Constantes que vamos a necesitar
+    const id = useParams();
+    const [ monster, setMonster ] = useState({});
 
+    useEffect(() => {
+        async function fecthMonster() {
+            const res = await fetch(`${URL}/api/2014/monsters/${id}`);
+            const data = await res.json();
+            setMonster(data);
+        }
+        fecthMonster();
+    }, [])
 
+    // Comprobación que se haya recogido la información de la API. Para que no nos de errores las comprobaciones en el return y no carge el componente
+    if(Object.keys(monster).length === 0){
+        return <div>Loading...</div>
+    }
+
+    // Imprimimos la infomración por pantalla
+    return (
+        <div key={monster.index}>
+            <h2>{monster.name}</h2>
+
+        </div>
+    )
 }
 
 export { MonsterList, Monster }

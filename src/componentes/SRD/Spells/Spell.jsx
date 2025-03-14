@@ -1,13 +1,5 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
-<<<<<<< HEAD
-
-{/*
-    Constantes Generales del componente    
-*/}
-const URL = "https://www.dnd5eapi.co";
-=======
->>>>>>> 8c991a598e6cb8f9b4d3145d18788b0fae70f484
 
 {/*
     Constantes Generales del componente    
@@ -50,40 +42,6 @@ function SpellList() {
             const data = await res.json();
             // Recogemos la información completa de la API
             const listArray = data.results;
-<<<<<<< HEAD
-=======
-
-            // Filtramos la información de la API segun el nivel indicado en el formulario y hacemos llamadas a la API de nuevo para conseguir la información que necesitamos para mostrar en la tabla
-            const filterArray = listArray.filter(spell => spell.level === parseInt(infoForm.level));
-            const listSpellPromises = filterArray.map(spell => fetch(`${URL}${spell.url}`).then(res => res.json()));
-            const listSpell = await Promise.all(listSpellPromises);
-
-            // En el caso de que sea el base
-            if (infoForm.class === "all" && infoForm.school === "all") {
-                setList(listSpell)
-            }
-
-            // Filtrado segun clase y escuela si se cumplen las condiciones
-            if (infoForm.class != "all") {
-
-                var listSpellClass = listSpell.filter(spell => spell.classes.some(pj => pj.index === infoForm.class))
-                setList(listSpellClass)
-                // En el caso de que tambien estemos filtrando por la escuela y actualizamos la constante list
-                if (infoForm.school != "all") {
-                    var result = listSpellClass.filter(spell => spell.school.index === infoForm.school)
-                    setList(result)
-                }
-            }
-
-            // En el caso de que solamente estemos filtrando por la escuela
-            if (infoForm.school != "all") {
-                var listSpellSchool = listSpell.filter(spell => spell.school.index === infoForm.school)
-                setList(listSpellSchool)
-            }
-        }
-        fetchList();
-    }, [infoForm]);
->>>>>>> 8c991a598e6cb8f9b4d3145d18788b0fae70f484
 
             // Filtramos la información de la API segun el nivel indicado en el formulario y hacemos llamadas a la API de nuevo para conseguir la información que necesitamos para mostrar en la tabla
             const filterArray = listArray.filter(spell => spell.level === parseInt(infoForm.level));
@@ -232,7 +190,7 @@ function Spell() {
             setSpell(data)
         }
         fetchSpell()
-    }, [id])
+    }, [])
 
     // Comprobamos que se haya recogido la información del Spell antes de mostrar nada
     if (Object.keys(spell).length === 0) {
