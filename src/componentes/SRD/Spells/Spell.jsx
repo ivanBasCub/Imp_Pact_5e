@@ -18,7 +18,7 @@ function SpellList() {
 
     // Constante para recoger la información del formulario
     const [infoForm, setInfoForm] = useState({
-        level: 1,
+        level: 0 || 1,
         school: "all",
         class: clase || 'all'
     })
@@ -34,7 +34,6 @@ function SpellList() {
 
     // Actualizamos los datos recogidos por la API
     useEffect(() => {
-        { console.log(infoForm) }
         // Funcion principal donde se hara el filtrado de nivel
         async function fetchList() {
             // Hacemos la llamada general a la api
@@ -48,15 +47,22 @@ function SpellList() {
             const listSpellPromises = filterArray.map(spell => fetch(`${URL}${spell.url}`).then(res => res.json()));
             const listSpell = await Promise.all(listSpellPromises);
             
-            // Probar los filtrado que hecho en casa 
+            // En el caso de que no se filte ni por clase ni escuela
+            if(infoForm.class == "all" && infoForm.school == "all"){
+                setList(listSpell);
+            }
             
+            {console.log(infoForm)}
+
             // Filtrado segun clase y escuela si se cumplen las condiciones
             if (infoForm.class != "all"){
-                var listSpellClass = listSpell.filter(spell => spell.classes.filter(pj => pj.index === infoForm.class))
+                {console.log("entro")}
+                var listSpellClass = listSpell.filter(spell =>spell.classes.some(pj => pj.index === infoForm.class));
+                {console.log(listSpellClass)}
                 setList(listSpellClass)
                 // En el caso de que tambien estemos filtrando por la escuela y actualizamos la constante list
                 if(infoForm.school != "all"){
-                    var result = listSpellClass.filter(spell => spell.school.index === infoForm.school)
+                    var result = listSpellClass.some(spell => spell.school.index === infoForm.school)
                     setList(result)
                 }
             }
@@ -66,13 +72,15 @@ function SpellList() {
                 var listSpellSchool = listSpell.filter(spell => spell.school.index === infoForm.school)
                 setList(listSpellSchool)
             }
+            
         }
-        fetchList();    
+        fetchList();
     }, [infoForm]);
     
     return (
         <div>
             <form method="post">
+                
                 <h2>{clase === undefined ? "Spell List" : `${clase} Spell List`}</h2>
                 <div>
                     <label>Spell Level</label>

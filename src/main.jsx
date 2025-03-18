@@ -5,7 +5,7 @@ import App from './componentes/App.jsx'
 import SRD from './componentes/SRD/SRD.jsx'
 import { SpellList, Spell } from './componentes/SRD/Spells/Spell.jsx'
 import { MonsterList, Monster } from './componentes/SRD/Monsters/Monster.jsx'
-
+import { RaceList, Race } from './componentes/SRD/Races/Race.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -17,6 +17,10 @@ createRoot(document.getElementById('root')).render(
 
         {/* Rutas para el elementos del SRD */}
         <Route path='/SRD' element={<SRD />} />
+        
+        {/* Rutas para el apartado relacionado a las razas */}
+        <Route path='/SRD/Race' element={<RaceList/>}/>
+        <Route path='/SRD/Race/:id' element={<Race/>}/>
         
         {/* Rutas para el apartado que esta relacionado a los mounstros */}
         <Route path='/SRD/MonsterList' element={<MonsterList />} />
