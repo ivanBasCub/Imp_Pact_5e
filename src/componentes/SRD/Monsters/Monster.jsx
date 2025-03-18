@@ -145,7 +145,7 @@ function MonsterList() {
                 <tbody>
                         {list.map(monster => (
                             <tr key={monster.index}>
-                                <td><Link to={`/SRD/Monster${monster.index}`}>{monster.name}</Link></td>
+                                <td><Link to={`/SRD/Monster/${monster.index}`}>{monster.name}</Link></td>
                                 <td>{monster.challenge_rating}</td>
                                 <td>{monster.type}</td>
                                 <td>{monster.size}</td>
@@ -165,7 +165,7 @@ function MonsterList() {
 
 function Monster() {
     // Constantes que vamos a necesitar
-    const id = useParams();
+    const { id } = useParams();
     const [ monster, setMonster ] = useState({});
 
     useEffect(() => {
@@ -185,8 +185,19 @@ function Monster() {
     // Imprimimos la infomración por pantalla
     return (
         <div key={monster.index}>
+            {console.log(monster)}
             <h2>{monster.name}</h2>
-
+            <div>
+                <p>AC {monster.armor_class[0].value} ({monster.armor_class[0].type} armor)  </p>
+                <p>HP {monster.hit_points} ({monster.hit_points_roll})</p>
+                <p>Speed: {Object.entries(monster.speed).map(([type, value]) =>(
+                    <>{type} {value}</>
+                ))}</p>
+                <p>Initiative {(monster.dexterity / 2) - 5 > 0 ? `+${parseInt(monster.dexterity / 2) - 5}` : `${parseInt(monster.dexterity / 2) - 10}` }</p>
+            </div>
+            <div>
+                
+            </div>
         </div>
     )
 }

@@ -1,7 +1,12 @@
 {
   "hosting": {
-    "site": "el-grimorio-de-mephistopheles",
-    "public": "public",
+    "public": "src",
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
     "ignore": [
       "firebase.json",
       "**/.*",
