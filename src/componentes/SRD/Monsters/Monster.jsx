@@ -14,9 +14,9 @@ function MonsterList() {
     const [list, setList] = useState([]);
     const [difCR, setDifCR] = useState([]);
     const [infoForm, setInfoForm] = useState({
-        cr : 0,
-        type : "all",
-        size : "all"
+        cr: 0,
+        type: "all",
+        size: "all"
     })
 
     // Evento para recoger la información del formulario
@@ -34,7 +34,7 @@ function MonsterList() {
             const res = await fetch(`${URL}/api/2014/monsters`)
             const data = await res.json();
             // Recogemos la información que ha recogido la consulta fetch
-            
+
             const listArray = data.results;
             // Filtramos la información de la API segun el CR del bicho
             const filterArray = listArray.map(monster => fetch(`${URL}${monster.url}`).then(res => res.json()));
@@ -45,28 +45,28 @@ function MonsterList() {
             if (infoForm.size === "all" && infoForm.type === "all") {
                 setList(listMonsterCR)
             }
-            
+
             // En el caso de que se este filtrado el tipo de criatura
-            if (infoForm.type != "all"){
+            if (infoForm.type != "all") {
                 var listMonsterType = listMonsterCR.filter(monster => monster.type === infoForm.type);
                 setList(listMonsterType);
 
-                if(infoForm.size != "all"){
+                if (infoForm.size != "all") {
                     var listMonsterTypeSize = listMonsterType.filter(monster => monster.size === infoForm.size);
                     setList(listMonsterTypeSize)
-                    
+
                 }
 
             }
 
             // En el caso de que esta solamente filtrando por el tamaño
-            if(infoForm.size != "all" && infoForm.type == "all"){
+            if (infoForm.size != "all" && infoForm.type == "all") {
                 var listMonsterSize = listMonsterCR.filter(monster => monster.size === infoForm.size)
                 setList(listMonsterSize)
             }
         }
         fecthList();
-    },[infoForm])
+    }, [infoForm])
 
     // UseEffect para generar el apartado del Challenge Rating o CR
     useEffect(() => {
@@ -143,15 +143,15 @@ function MonsterList() {
                     </tr>
                 </thead>
                 <tbody>
-                        {list.map(monster => (
-                            <tr key={monster.index}>
-                                <td><Link to={`/SRD/Monster/${monster.index}`}>{monster.name}</Link></td>
-                                <td>{monster.challenge_rating}</td>
-                                <td>{monster.type}</td>
-                                <td>{monster.size}</td>
-                                <td>{monster.alignment}</td>
-                            </tr>
-                        ))}
+                    {list.map(monster => (
+                        <tr key={monster.index}>
+                            <td><Link to={`/SRD/Monster/${monster.index}`}>{monster.name}</Link></td>
+                            <td>{monster.challenge_rating}</td>
+                            <td>{monster.type}</td>
+                            <td>{monster.size}</td>
+                            <td>{monster.alignment}</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>
@@ -166,7 +166,7 @@ function MonsterList() {
 function Monster() {
     // Constantes que vamos a necesitar
     const { id } = useParams();
-    const [ monster, setMonster ] = useState({});
+    const [monster, setMonster] = useState({});
 
     useEffect(() => {
         async function fecthMonster() {
@@ -178,28 +178,82 @@ function Monster() {
     }, [])
 
     // Comprobación que se haya recogido la información de la API. Para que no nos de errores las comprobaciones en el return y no carge el componente
-    if(Object.keys(monster).length === 0){
+    if (Object.keys(monster).length === 0) {
         return <div>Loading...</div>
     }
 
     // Imprimimos la infomración por pantalla
     return (
         <div key={monster.index}>
-            {console.log(monster)}
             <h2>{monster.name}</h2>
             <div>
+                {monster.image ? (<img src={`${URL}${monster.image}`} />) : ""}
                 <p>AC {monster.armor_class[0].value} ({monster.armor_class[0].type} armor)  </p>
                 <p>HP {monster.hit_points} ({monster.hit_points_roll})</p>
-                <p>Speed: {Object.entries(monster.speed).map(([type, value]) =>(
-                    <>{type} {value}</>
+                <p>Speed: {Object.entries(monster.speed).map(([type, value]) => (
+                    <>{type} {value} </>
                 ))}</p>
-                <p>Initiative {(monster.dexterity / 2) - 5 > 0 ? `+${parseInt(monster.dexterity / 2) - 5}` : `${parseInt(monster.dexterity / 2) - 10}` }</p>
+                <p>Initiative {(monster.dexterity / 2) - 5 > 0 ? `+${parseInt(monster.dexterity / 2) - 5}` : `${parseInt(monster.dexterity / 2) - 5}`}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Stat</th>
+                            <th>Mod</th>
+                            <th>Save</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {tableStats("Str", monster.strength, monster)}
+                        {tableStats("Dex", monster.dexterity, monster)}
+                        {tableStats("Con", monster.constitution, monster)}
+                        {tableStats("Int", monster.intelligence, monster)}
+                        {tableStats("Wis", monster.wisdom, monster)}
+                        {tableStats("Cha", monster.charisma, monster)}
+                    </tbody>
+                </table>
+                <p>Skills: </p>
+                <p>Languages: {monster.languages}</p>
+                <p>CR {monster.challenge_rating} (XP {monster.xp}; PB +{monster.proficiency_bonus})</p>
             </div>
+            {monster.special_abilities.length != 0 ? (
+                <div>
+                    <h3>Traits</h3>
+                    {monster.special_abilities.map(trait => (
+                        <p><b>{trait.name}.</b> {trait.desc}</p>
+                    ))}
+                </div>
+            ) : ""}
             <div>
-                
+                <h3>Actions</h3>
+                {monster.actions.map(action => (
+                    <p><b>{action.name}.</b> {action.desc}</p>
+                ))}
             </div>
+
+            { monster.legendary_actions.length != 0 ? (
+                <div>
+                    <h3>Legendary Actions</h3>
+                    {monster.legendary_actions.map(la => (
+                        <p><b>{la.name}.</b> {la.desc}</p>
+                    ))}
+                </div>
+            ) : ""}
         </div>
     )
 }
+{/* 
+    Función para imprimir     
+*/}
+function tableStats(name, stat, monster) {
+
+    return (
+        <tr>
+            <td>{name} {stat}</td>
+            <td>{(stat / 2) - 5 >= 0 ? `+${parseInt(stat / 2) - 5}` : `${parseInt(stat / 2) - 5}`}</td>
+            <td>{(stat / 2) - 5 >= 0 ? `+${parseInt(stat / 2) - 5}` : `${parseInt(stat / 2) - 5}`}</td>
+        </tr>
+    )
+}
+
 
 export { MonsterList, Monster }
