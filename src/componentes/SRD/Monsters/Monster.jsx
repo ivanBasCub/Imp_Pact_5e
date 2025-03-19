@@ -211,7 +211,15 @@ function Monster() {
                         {tableStats("Cha", monster.charisma, monster)}
                     </tbody>
                 </table>
-                <p>Skills: </p>
+                <p>Skills: {monster.proficiencies.map(pf => {
+                    if(pf.proficiency.index){
+                        var aux = pf.proficiency.index.split("-");
+                        if(aux[0] === "skill"){
+                            return <>{aux[1]} +{pf.value}, </>
+                        }
+                    }
+                    return null
+                })}</p>
                 <p>Languages: {monster.languages}</p>
                 <p>CR {monster.challenge_rating} (XP {monster.xp}; PB +{monster.proficiency_bonus})</p>
             </div>
@@ -230,7 +238,7 @@ function Monster() {
                 ))}
             </div>
 
-            { monster.legendary_actions.length != 0 ? (
+            {monster.legendary_actions.length != 0 ? (
                 <div>
                     <h3>Legendary Actions</h3>
                     {monster.legendary_actions.map(la => (
@@ -250,7 +258,24 @@ function tableStats(name, stat, monster) {
         <tr>
             <td>{name} {stat}</td>
             <td>{(stat / 2) - 5 >= 0 ? `+${parseInt(stat / 2) - 5}` : `${parseInt(stat / 2) - 5}`}</td>
-            <td>{(stat / 2) - 5 >= 0 ? `+${parseInt(stat / 2) - 5}` : `${parseInt(stat / 2) - 5}`}</td>
+            <td>
+                {monster.proficiencies?.map(pf => {
+                    if (pf?.proficiency?.index) {
+                        var aux = pf.proficiency.index.split("-");
+                        return aux[aux.length - 1] === name.toLowerCase() ? `+${pf.value}` : null;
+                    }
+                    return null;
+                }).filter(Boolean).length > 0
+                    ? monster.proficiencies.map(pf => {
+                        if (pf?.proficiency?.index) {
+                            var aux = pf.proficiency.index.split("-");
+                            return aux[aux.length - 1] === name.toLowerCase() ? `+${pf.value}` : null;
+                        }
+                        return null;
+                    }).filter(Boolean) :
+                    ((stat / 2) - 5 >= 0 ? `+${parseInt(stat / 2) - 5}` : `${parseInt(stat / 2) - 5}`)
+                }
+            </td>
         </tr>
     )
 }

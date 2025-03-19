@@ -1,3 +1,5 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
@@ -6,6 +8,20 @@ import SRD from './componentes/SRD/SRD.jsx'
 import { SpellList, Spell } from './componentes/SRD/Spells/Spell.jsx'
 import { MonsterList, Monster } from './componentes/SRD/Monsters/Monster.jsx'
 import { RaceList, Race } from './componentes/SRD/Races/Race.jsx'
+
+{/* Información del servidor de firebase */}
+const firebaseConfig = {
+  apiKey: "AIzaSyCzATxbnBbZT6Zqnod3IZwMlsuLii_RWaE",
+  authDomain: "el-grimorio-de-mephistopheles.firebaseapp.com",
+  databaseURL: "https://el-grimorio-de-mephistopheles-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "el-grimorio-de-mephistopheles",
+  storageBucket: "el-grimorio-de-mephistopheles.firebasestorage.app",
+  messagingSenderId: "439495597087",
+  appId: "1:439495597087:web:385a65fe1dde36f68e092a",
+  measurementId: "G-SX0F28WBP1"
+};
+
+const app = initializeApp(firebaseConfig);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
