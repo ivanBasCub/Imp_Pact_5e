@@ -6,10 +6,14 @@ import "../../assets/css/modal.css";
 
 export default function PersonajesNuevo() {
   const [showModal, setShowModal] = useState(false);
+  const [showRaceModal, setShowRaceModal] = useState(false);
   const [classes, setClasses] = useState([]);
+  const [races, setRaces] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
+  const [selectedRace, setSelectedRace] = useState(null);
   const [level, setLevel] = useState(1);
   const [features, setFeatures] = useState([]);
+  const [raceFeatures, setRaceFeatures] = useState([]);
   const [subclass, setSubclass] = useState(null);
   const [subclassFeatures, setSubclassFeatures] = useState([]);
   const [stats, setStats] = useState([10, 10, 10, 10, 10, 10]);
@@ -81,6 +85,32 @@ export default function PersonajesNuevo() {
     }
   }, [subclass, level]);
 
+  useEffect(() => {
+    fetch("https://www.dnd5eapi.co/api/2014/races/")
+      .then((response) => response.json())
+      .then((data) => setRaces(data.results))
+      .catch((error) => console.error("Error fetching races:", error));
+  }, []);
+
+  useEffect(() => {
+    if (selectedRace) {
+      fetch(`https://www.dnd5eapi.co/api/races/${selectedRace}`)
+        .then((response) => response.json())
+        .then(async (data) => {
+          const traitsWithDesc = await Promise.all(
+            data.traits.map(async (trait) => {
+              const res = await fetch(`https://www.dnd5eapi.co/api/traits/${trait.index}`);
+              const traitData = await res.json();
+              return { ...trait, desc: traitData.desc };
+            })
+          );
+  
+          setRaceFeatures(traitsWithDesc);
+        })
+        .catch((error) => console.error("Error fetching race features:", error));
+    }
+  }, [selectedRace]);
+
   const handleToggleFeature = (featureIndex) => {
     setExpandedFeatures((prev) => ({
       ...prev,
@@ -110,6 +140,10 @@ export default function PersonajesNuevo() {
     setStats(newStats);
   };
 
+  function calcularProficiencyBonus(n) {
+    return Math.floor((n - 1) / 4) + 2;
+  }
+
   return (
     <>
       <Header />
@@ -134,7 +168,9 @@ export default function PersonajesNuevo() {
         </div>
 
         <button onClick={() => setShowModal(true)}>Clase</button>
+        <button onClick={() => setShowRaceModal(true)}>Raza</button>
         {selectedClass && <p>Clase seleccionada: {selectedClass}</p>}
+        {selectedRace && <p>Raza seleccionada: {selectedRace}</p>}
 
         {selectedClass && (
           <div>
@@ -147,6 +183,7 @@ export default function PersonajesNuevo() {
               value={level}
               onChange={(e) => setLevel(Number(e.target.value))}
             />
+            <p>PB = {calcularProficiencyBonus(level)}</p>
           </div>
         )}
 
@@ -183,6 +220,22 @@ export default function PersonajesNuevo() {
             </ul>
           </div>
         )}
+
+        {raceFeatures.length > 0 && (
+          <div>
+            <h2>Características de la Raza</h2>
+            <ul>
+              {raceFeatures.map((feature) => (
+                <li key={feature.index}>
+                  <button onClick={() => handleToggleFeature(feature.index)}>
+                    <strong>{feature.name}</strong>
+                  </button>
+                  {expandedFeatures[feature.index] && <p>{feature.desc.join(" ")}</p>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </main>
       <Footer />
 
@@ -206,6 +259,29 @@ export default function PersonajesNuevo() {
               ))}
             </ul>
             <button onClick={() => setShowModal(false)}>Cerrar</button>
+          </div>
+        </div>
+      )}
+
+      {showRaceModal && (
+        <div className="modal-overlay" onClick={() => setShowRaceModal(false)}>
+          <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Selecciona una raza</h2>
+            <ul>
+              {races.map((race) => (
+                <li
+                  key={race.index}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setSelectedRace(race.index);
+                    setShowRaceModal(false);
+                  }}
+                >
+                  {race.name}
+                </li>
+              ))}
+            </ul>
+            <button onClick={() => setShowRaceModal(false)}>Cerrar</button>
           </div>
         </div>
       )}
