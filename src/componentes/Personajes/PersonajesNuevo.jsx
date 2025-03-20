@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Footer from "../Footer";
 import Header from "../Header";
+import SkillProficiencyForm from "./SkillProficiencyForm.jsx";
 import "../../assets/css/App.css";
 import "../../assets/css/modal.css";
 
@@ -186,6 +187,8 @@ export default function PersonajesNuevo() {
             <p>PB = {calcularProficiencyBonus(level)}</p>
           </div>
         )}
+
+        <SkillProficiencyForm/>
 
         {/* Lista de Features de la Clase */}
         {features.length > 0 && (
