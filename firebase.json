@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "impact5e",
     "public": "dist",
     "ignore": [
       "firebase.json",
