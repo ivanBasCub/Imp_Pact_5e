@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react"
-import { useParams, Link } from "react-router-dom"
+import { useParams, Link } from "react-router-dom";
+import { db } from "../../../firebase/config";
+import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 
 {/*
     Constantes Generales del componente    
@@ -32,47 +34,86 @@ function SpellList() {
         }));
     };
 
-    // Actualizamos los datos recogidos por la API
+
+    // Usamos este useEffect para actualizar la BBDD de Firebase con la información de la API
     useEffect(() => {
-        // Funcion principal donde se hara el filtrado de nivel
-        async function fetchList() {
-            // Hacemos la llamada general a la api
+        const nanmeColeccion = "SRD_Spells";
+
+        // Funcion para actualizar la BBDD con la información de la API
+        async function updateDataBBDD() {
+            // Recogemos la información de la API
             const res = await fetch(`${URL}/api/2014/spells`);
             const data = await res.json();
-            // Recogemos la información completa de la API
             const listArray = data.results;
-
-            // Filtramos la información de la API segun el nivel indicado en el formulario y hacemos llamadas a la API de nuevo para conseguir la información que necesitamos para mostrar en la tabla
-            const filterArray = listArray.filter(spell => spell.level === parseInt(infoForm.level));
-            const listSpellPromises = filterArray.map(spell => fetch(`${URL}${spell.url}`).then(res => res.json()));
+            const listSpellPromises = listArray.map(spell => fetch(`${URL}${spell.url}`).then(res => res.json()));
             const listSpell = await Promise.all(listSpellPromises);
-            
-            // En el caso de que no se filte ni por clase ni escuela
-            if(infoForm.class == "all" && infoForm.school == "all"){
-                setList(listSpell);
-            }
-            
-            {console.log(infoForm)}
 
-            // Filtrado segun clase y escuela si se cumplen las condiciones
-            if (infoForm.class != "all"){
-                {console.log("entro")}
-                var listSpellClass = listSpell.filter(spell =>spell.classes.some(pj => pj.index === infoForm.class));
-                {console.log(listSpellClass)}
-                setList(listSpellClass)
-                // En el caso de que tambien estemos filtrando por la escuela y actualizamos la constante list
-                if(infoForm.school != "all"){
-                    var result = listSpellClass.some(spell => spell.school.index === infoForm.school)
-                    setList(result)
+            // En el caso de que no existe el spell dentro de la colección Spells en la BBDD la creamos
+            listSpell.map(async spell => {
+                const spellRef = doc(db, nanmeColeccion, spell.index);
+                const spellDoc = await getDoc(spellRef);
+
+                if(!spellDoc.exists()){
+                    var classes = spell.classes.map(clase => clase.index);
+                    var subclasses = spell.subclasses.map(subclase => subclase.index);
+                    var damage_type = spell.damage?.damage_type?.name;
+                    var damage_at_slot_level = spell.damage?.damage_at_slot_level || [];
+                    setDoc(spellRef,{
+                        index: spell.index,
+                        name: spell.name,
+                        level: spell.level,
+                        school: spell.school.index,
+                        casting_time: spell.casting_time,
+                        range: spell.range,
+                        duration: spell.duration,
+                        components: spell.components,
+                        material: spell.material || "",
+                        ritual: spell.ritual,
+                        desc: spell.desc,
+                        higher_level: spell.higher_level,
+                        damage_type: damage_type || "",
+                        damage_at_slot_level: damage_at_slot_level,
+                        classes: classes,
+                        subclasses: subclasses
+                    })
                 }
-            }
+            })
+        }
+        // Funcion para comprobar si la información de la API y la BBDD coinciden
+        async function checkDataBBDD() {
+            const rest = await fetch(`${URL}/api/2014/spells`);
+            const data = await rest.json();
+            const total = data.count;
 
-            // En el caso de que solamente estemos filtrando por la escuela
-            if(infoForm.school != "all"){
-                var listSpellSchool = listSpell.filter(spell => spell.school.index === infoForm.school)
-                setList(listSpellSchool)
+            const collectionRef = collection(db, nanmeColeccion);
+            const query = await getDocs(collectionRef);
+            const totalSpell = query.size;
+
+            if(totalSpell !== total){
+                updateDataBBDD();
             }
-            
+        }
+        checkDataBBDD();
+    }, [])
+
+
+
+    // Actualizamos los datos recogidos por la API
+    useEffect(() => {
+        const nanmeColeccion = "SRD_Spells";
+        // Funcion para filtrar la información de la BBDD segun los parametros del formulario
+        async function fetchList() {
+            const collectionRef = collection(db, nanmeColeccion);
+            const query = await getDocs(collectionRef);
+
+            var filterData = query.docs.filter(spell => spell.data().level === parseInt(infoForm.level));
+            if(infoForm.school !== "all"){
+                filterData = filterData.filter(spell => spell.data().school === infoForm.school);
+            }
+            if(infoForm.class !== "all"){
+                filterData = filterData.filter(spell => spell.data().classes.includes(infoForm.class));
+            }
+            setList(filterData.map(spell => spell.data()));
         }
         fetchList();
     }, [infoForm]);
@@ -80,7 +121,6 @@ function SpellList() {
     return (
         <div>
             <form method="post">
-                
                 <h2>{clase === undefined ? "Spell List" : `${clase} Spell List`}</h2>
                 <div>
                     <label>Spell Level</label>
@@ -168,6 +208,7 @@ function SpellList() {
                     </tr>
                 </thead>
                 <tbody>
+                    {console.log(list)}
                     {list.map(spell => (
                         <tr key={spell.index}>
                             <td><Link to={`/SRD/Spell/${spell.index}`}>{spell.name}</Link></td>
@@ -192,10 +233,13 @@ function Spell() {
     const [spell, setSpell] = useState({})
 
     useEffect(() => {
+        const nanmeColeccion = "SRD_Spells";
         async function fetchSpell() {
-            const res = await fetch(`${URL}/api/2014/spells/${id}`)
-            const data = await res.json()
-            setSpell(data)
+            const spellRef = doc(db, nanmeColeccion, id);
+            const spellDoc = await getDoc(spellRef);
+            if (spellDoc.exists()) {
+                setSpell(spellDoc.data());
+            }
         }
         fetchSpell()
     }, [])
@@ -220,7 +264,7 @@ function Spell() {
                     return <p><b>At higher Levels.</b> {pf}</p>
                 }
             })}
-            <p><b>Spell Lists. </b> {spell.classes.map(clase => <Link to={`/SRD/SpellList/${clase.index}`}>{clase.name}</Link>)} </p>
+            <p><b>Spell Lists. </b> {spell.classes.map(clase => <Link to={`/SRD/SpellList/${clase}`}>{clase}</Link>)} </p>
         </div>
     )
 }
