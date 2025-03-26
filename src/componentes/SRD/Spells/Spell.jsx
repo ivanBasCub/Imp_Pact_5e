@@ -208,7 +208,6 @@ function SpellList() {
                     </tr>
                 </thead>
                 <tbody>
-                    {console.log(list)}
                     {list.map(spell => (
                         <tr key={spell.index}>
                             <td><Link to={`/SRD/Spell/${spell.index}`}>{spell.name}</Link></td>
