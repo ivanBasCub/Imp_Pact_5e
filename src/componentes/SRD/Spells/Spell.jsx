@@ -81,8 +81,8 @@ function SpellList() {
         }
         // Funcion para comprobar si la información de la API y la BBDD coinciden
         async function checkDataBBDD() {
-            const rest = await fetch(`${URL}/api/2014/spells`);
-            const data = await rest.json();
+            const res = await fetch(`${URL}/api/2014/spells`);
+            const data = await res.json();
             const total = data.count;
 
             const collectionRef = collection(db, nanmeColeccion);
@@ -234,7 +234,7 @@ function Spell() {
     useEffect(() => {
         const nanmeColeccion = "SRD_Spells";
         async function fetchSpell() {
-            const spellRef = doc(db, nanmeColeccion, id);
+        const spellRef = doc(db, nanmeColeccion, id);
             const spellDoc = await getDoc(spellRef);
             if (spellDoc.exists()) {
                 setSpell(spellDoc.data());
@@ -257,13 +257,18 @@ function Spell() {
             <p><b>Range: </b>{spell.range}</p>
             <p><b>Duration: </b>{spell.concentration ? 'Concentration,' : spell.duration}</p>
             <p><b>Components: </b>{spell.components.join(', ')} {spell.material ? `(${spell.material})` : ""}</p>
-            <p>{spell.desc.join(<br />)}</p>
+            {spell.desc.map( desc => (<p>{desc}</p>))}
             {spell.higher_level.map(pf => {
                 if (pf) {
                     return <p><b>At higher Levels.</b> {pf}</p>
                 }
             })}
-            <p><b>Spell Lists. </b> {spell.classes.map(clase => <Link to={`/SRD/SpellList/${clase}`}>{clase}</Link>)} </p>
+            <p><b>Spell Lists. </b> {spell.classes.map(clase => (
+                <>
+                    <Link to={`/SRD/SpellList/${clase}`}>{clase}</Link>
+                    {spell.classes[spell.classes.length - 1] !== clase ? ", " : ""}
+                </>
+                ))} </p>
         </div>
     )
 }
