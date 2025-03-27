@@ -8,6 +8,7 @@ import SRD from './componentes/SRD/SRD.jsx'
 import { SpellList, Spell } from './componentes/SRD/Spells/Spell.jsx'
 import { MonsterList, Monster } from './componentes/SRD/Monsters/Monster.jsx'
 import { RaceList, Race } from './componentes/SRD/Races/Race.jsx'
+import { MagicItemList, MagicItem } from './componentes/SRD/Magic_Items/magic_item.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -32,6 +33,11 @@ createRoot(document.getElementById('root')).render(
         <Route path='/SRD/SpellList/' element={<SpellList />} />
         <Route path='/SRD/SpellList/:clase' element={<SpellList />} />
         <Route path='/SRD/Spell/:id' element={<Spell />} />
+
+        {/* Rutas para el apartado que esta relacionado a los objetos mágicos */}
+        <Route path='/SRD/MagicItemList/' element={<MagicItemList />} />
+        <Route path='/SRD/MagicItem/:id' element={<MagicItem />} />
+
       </Routes>  
     </BrowserRouter>
   </StrictMode>

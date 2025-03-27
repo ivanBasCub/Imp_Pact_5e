@@ -46,56 +46,54 @@ function MonsterList() {
                 const monsterDoc = await getDoc(monsterRef);
 
                 if (!monsterDoc.exists()) {
-                    if (!monsterDoc.exists()) {
-                        // Aquí va el resto del código, como antes
-                        var stats = ["str", "dex", "con", "int", "wis", "cha"];
+                    // Aquí va el resto del código, como antes
+                    var stats = ["str", "dex", "con", "int", "wis", "cha"];
 
-                        var saves = monster.proficiencies.map(pf => {
-                            if (pf?.proficiency?.index) {
-                                var aux = pf.proficiency.index.split("-");
-                                return stats.includes(aux[aux.length - 1]) ? { "index": aux[aux.length - 1], "value": pf.value } : null;
-                            }
-                        }).filter(item => item !== null);
+                    var saves = monster.proficiencies.map(pf => {
+                        if (pf?.proficiency?.index) {
+                            var aux = pf.proficiency.index.split("-");
+                            return stats.includes(aux[aux.length - 1]) ? { "index": aux[aux.length - 1], "value": pf.value } : null;
+                        }
+                    }).filter(item => item !== null);
 
-                        var skills = monster.proficiencies.map(pf => {
-                            if (pf?.proficiency?.index) {
-                                var aux = pf.proficiency.index.split("-");
-                                return !stats.includes(aux[aux.length - 1]) ? { "index": aux[aux.length - 1], "value": pf.value } : null;
-                            }
-                        }).filter(item => item !== null);
+                    var skills = monster.proficiencies.map(pf => {
+                        if (pf?.proficiency?.index) {
+                            var aux = pf.proficiency.index.split("-");
+                            return !stats.includes(aux[aux.length - 1]) ? { "index": aux[aux.length - 1], "value": pf.value } : null;
+                        }
+                    }).filter(item => item !== null);
 
-                        setDoc(monsterRef, {
-                            index: monster.index,
-                            name: monster.name,
-                            size: monster.size,
-                            type: monster.type,
-                            alignment: monster.alignment,
-                            armor_class: monster.armor_class,
-                            hit_points: monster.hit_points,
-                            hit_points_roll: monster.hit_points_roll,
-                            speed: monster.speed,
-                            strength: monster.strength,
-                            dexterity: monster.dexterity,
-                            constitution: monster.constitution,
-                            intelligence: monster.intelligence,
-                            wisdom: monster.wisdom,
-                            charisma: monster.charisma,
-                            saving_throws: saves,
-                            skills: skills,
-                            senses: monster.senses,
-                            languages: monster.languages,
-                            challenge_rating: monster.challenge_rating,
-                            xp: monster.xp,
-                            proficiency_bonus: monster.proficiency_bonus,
-                            damage_vulnerabilities: monster.damage_vulnerabilities,
-                            damage_resistances: monster.damage_resistances,
-                            damage_immunities: monster.damage_immunities,
-                            condition_immunities: monster.condition_immunities,
-                            special_abilities: monster.special_abilities || "",
-                            actions: monster.actions || "",
-                            legendary_actions: monster.legendary_actions || ""
-                        });
-                    }
+                    setDoc(monsterRef, {
+                        index: monster.index,
+                        name: monster.name,
+                        size: monster.size,
+                        type: monster.type,
+                        alignment: monster.alignment,
+                        armor_class: monster.armor_class,
+                        hit_points: monster.hit_points,
+                        hit_points_roll: monster.hit_points_roll,
+                        speed: monster.speed,
+                        strength: monster.strength,
+                        dexterity: monster.dexterity,
+                        constitution: monster.constitution,
+                        intelligence: monster.intelligence,
+                        wisdom: monster.wisdom,
+                        charisma: monster.charisma,
+                        saving_throws: saves,
+                        skills: skills,
+                        senses: monster.senses,
+                        languages: monster.languages,
+                        challenge_rating: monster.challenge_rating,
+                        xp: monster.xp,
+                        proficiency_bonus: monster.proficiency_bonus,
+                        damage_vulnerabilities: monster.damage_vulnerabilities,
+                        damage_resistances: monster.damage_resistances,
+                        damage_immunities: monster.damage_immunities,
+                        condition_immunities: monster.condition_immunities,
+                        special_abilities: monster.special_abilities || "",
+                        actions: monster.actions || "",
+                        legendary_actions: monster.legendary_actions || ""
+                    });
                 }
             })
         }
@@ -108,7 +106,7 @@ function MonsterList() {
             const monstersRef = collection(db, nameCollection);
             const query = await getDocs(monstersRef);
             const monsters = query.size;
-            if (total !== monsters) {
+            if (monsters < total) {
                 updateDataBBDD();
             }
         }
@@ -277,12 +275,12 @@ function Monster() {
                         </tr>
                     </thead>
                     <tbody>
-                        {tableStats("str",monster.strength, monster.saving_throws.find(st => st.index === "str")?.value)}
-                        {tableStats("dex",monster.dexterity, monster.saving_throws.find(st => st.index === "dex")?.value)}
-                        {tableStats("con",monster.constitution, monster.saving_throws.find(st => st.index === "con")?.value)}
-                        {tableStats("int",monster.intelligence, monster.saving_throws.find(st => st.index === "int")?.value)}
-                        {tableStats("wis",monster.wisdom, monster.saving_throws.find(st => st.index === "wis")?.value)}
-                        {tableStats("cha",monster.charisma, monster.saving_throws.find(st => st.index === "cha")?.value)}
+                        {tableStats("str", monster.strength, monster.saving_throws.find(st => st.index === "str")?.value)}
+                        {tableStats("dex", monster.dexterity, monster.saving_throws.find(st => st.index === "dex")?.value)}
+                        {tableStats("con", monster.constitution, monster.saving_throws.find(st => st.index === "con")?.value)}
+                        {tableStats("int", monster.intelligence, monster.saving_throws.find(st => st.index === "int")?.value)}
+                        {tableStats("wis", monster.wisdom, monster.saving_throws.find(st => st.index === "wis")?.value)}
+                        {tableStats("cha", monster.charisma, monster.saving_throws.find(st => st.index === "cha")?.value)}
                     </tbody>
                 </table>
                 <p>Skills: {monster.skills.map(skill => (<> {skill.index} +{skill.value}</>))} </p>

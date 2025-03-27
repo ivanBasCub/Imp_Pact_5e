@@ -89,7 +89,7 @@ function SpellList() {
             const query = await getDocs(collectionRef);
             const totalSpell = query.size;
 
-            if(totalSpell !== total){
+            if(totalSpell < total){
                 updateDataBBDD();
             }
         }

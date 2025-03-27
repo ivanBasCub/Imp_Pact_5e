@@ -1,5 +1,7 @@
 import { use, useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
+import { db } from "../../../firebase/config";
+import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 
 {/*
     Constantes Generales del componente    
@@ -31,6 +33,10 @@ function Race(){
     return(
         <div key={race.index}>
             <h2>{race.name}</h2>
+            <p><b>Alignment:</b> {race.alignment}</p>
+            <p><b>Age:</b> {race.age}</p>
+            <p><b>Size:</b> {race.size_description}</p>
+            <p><b>Langauges:</b> {race.language_desc}</p>
         </div>
     )
 }
