@@ -29,6 +29,7 @@ export default function SkillProficiencyForm() {
   return (
     <div>
       <h2>Select Skill Proficiencies</h2>
+      <p>Selecciona al menos dos por transfondo, y todas las indicadas en tus features</p>
       <form>
         {skills.map(skill => (
           <label key={skill.index}>

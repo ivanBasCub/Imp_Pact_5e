@@ -19,6 +19,69 @@ export default function PersonajesNuevo() {
   const [subclassFeatures, setSubclassFeatures] = useState([]);
   const [stats, setStats] = useState([10, 10, 10, 10, 10, 10]);
   const [expandedFeatures, setExpandedFeatures] = useState({});
+  const [hitDie, setHitDie] = useState(null);
+  const [hp, setHp] = useState(null);
+  const [savingThrows, setSavingThrows] = useState([]);
+  const [savingThrowsBool, setSavingThrowsBool] = useState([false, false, false, false, false, false]);
+  const [proficiencies, setProficiencies] = useState([]);
+
+
+  useEffect(() => {
+    if (selectedClass) {
+      fetch(`https://www.dnd5eapi.co/api/classes/${selectedClass.toLowerCase()}/proficiencies`)
+        .then((response) => response.json())
+        .then((data) => {
+          const savingProficiencies = data.results
+            .filter((st) => !st.index.startsWith("saving-throw"))
+            .map((st) => st.index); 
+          setProficiencies(savingProficiencies);
+        })
+        .catch((error) => console.error("Error fetching proficiencies:", error));
+    }
+  }, [selectedClass]);
+  
+  
+
+
+useEffect(() => {
+  if (selectedClass) {
+    fetch(`https://www.dnd5eapi.co/api/classes/${selectedClass.toLowerCase()}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const savingThrowIndexes = data.saving_throws.map((st) => st.index); // ["str", "con", ...]
+        setSavingThrows(savingThrowIndexes);
+
+        // Mapeamos los atributos en un array de booleanos
+        const newSavingThrowsBool = ["str", "dex", "con", "int", "wis", "cha"].map(stat => 
+          savingThrowIndexes.includes(stat)
+        );
+        setSavingThrowsBool(newSavingThrowsBool);
+      })
+      .catch((error) => console.error("Error fetching saving throws:", error));
+  }
+}, [selectedClass]);
+
+useEffect(() => {
+  if (selectedClass) {
+    fetch(`https://www.dnd5eapi.co/api/classes/${selectedClass.toLowerCase()}`)
+      .then((response) => response.json())
+      .then((data) => setHitDie(data.hit_die))
+      .catch((error) => console.error("Error fetching hit die:", error));
+  }
+}, [selectedClass]);
+
+useEffect(() => {
+  if (hitDie && level) {
+    const conBonus = statBonus(stats[2]); // Modificador de Constitución
+    let calculatedHp = hitDie + conBonus; // HP de nivel 1
+
+    if (level > 1) {
+      calculatedHp += (level - 1) * ((hitDie / 2) + conBonus);
+    }
+
+    setHp(Math.max(1, Math.floor(calculatedHp))); // Asegurar que HP mínimo sea 1
+  }
+}, [hitDie, level, stats]);
 
   useEffect(() => {
     fetch("https://www.dnd5eapi.co/api/2014/classes/")
@@ -141,9 +204,21 @@ export default function PersonajesNuevo() {
     setStats(newStats);
   };
 
+  function statBonus(stat) {
+    let bonus = Math.floor(stat/2 - 5);
+    return bonus;
+
+  }
+
   function calcularProficiencyBonus(n) {
     return Math.floor((n - 1) / 4) + 2;
   }
+
+  const calcularSavingThrow = (statIndex) => {
+    const bonus = statBonus(stats[statIndex]); // Modificador base
+    const proficiencyBonus = calcularProficiencyBonus(level);
+    return savingThrowsBool[statIndex] ? bonus + proficiencyBonus : bonus;
+  };
 
   return (
     <>
@@ -151,6 +226,11 @@ export default function PersonajesNuevo() {
       <main>
         <h1>Personajes</h1>
         <p>Esta es la página principal de creación de personajes</p>
+
+        <div>
+          <label>Nombre:</label>
+          <input type="string" id="characterName"></input>
+        </div>
 
         {/* Formulario de estadísticas */}
         <div className="stats-grid">
@@ -161,11 +241,18 @@ export default function PersonajesNuevo() {
                 type="number"
                 id={statName}
                 value={stats[index]}
-                onChange={(e) => handleInputChange(index, e.target.value)} // Llamar la función al cambiar el valor
+                onChange={(e) => handleInputChange(index, e.target.value)}
               />
+              -- Bonus -- {statBonus(stats[index])}
+              -- Save -- {calcularSavingThrow(index)}
+              -- Tiene competencia? -- {savingThrowsBool[index] ? "✅" : "❌"}
             </div>
           ))}
           <button onClick={handleRandomStats}>Generar Atributos</button>
+        </div>
+
+        <div id="hp">
+          <h3>Puntos de Golpe (HP): {hp !== null ? hp : "Cargando..."}</h3>
         </div>
 
         <button onClick={() => setShowModal(true)}>Clase</button>
@@ -189,6 +276,18 @@ export default function PersonajesNuevo() {
         )}
 
         <SkillProficiencyForm/>
+
+      {/* Lista de Proficiencies */}
+      <h3>Competencias varias</h3>
+      <ul>
+        {proficiencies.length > 0 ? (
+          proficiencies.map((prof, index) => <li key={index}>{prof}</li>)
+        ) : (
+          <li>No hay proficiencias disponibles</li>
+        )}
+      </ul>
+
+
 
         {/* Lista de Features de la Clase */}
         {features.length > 0 && (
