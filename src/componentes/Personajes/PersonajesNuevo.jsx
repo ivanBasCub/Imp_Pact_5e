@@ -11,6 +11,7 @@ export default function PersonajesNuevo() {
   const [classes, setClasses] = useState([]);
   const [races, setRaces] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
+  const [spellcastingAbility, setSpellcastingAbility] = useState(null);
   const [selectedRace, setSelectedRace] = useState(null);
   const [level, setLevel] = useState(1);
   const [features, setFeatures] = useState([]);
@@ -21,10 +22,35 @@ export default function PersonajesNuevo() {
   const [expandedFeatures, setExpandedFeatures] = useState({});
   const [hitDie, setHitDie] = useState(null);
   const [hp, setHp] = useState(null);
-  const [savingThrows, setSavingThrows] = useState([]);
+  const [savingThrows, setSavingThrows] = useState(null);
   const [savingThrowsBool, setSavingThrowsBool] = useState([false, false, false, false, false, false]);
   const [proficiencies, setProficiencies] = useState([]);
+  const [pb, setPb] = useState(calcularProficiencyBonus(level));
+  const [casterLevel, setCasterLevel] = useState(0);
+  const [spellSlots, setSpellSlots] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
+
+
+  useEffect(() => {
+    setPb(calcularProficiencyBonus(level));
+  }, [level]);
+
+  useEffect(() => {
+    if(casterLevel>0 && level>0){
+      setSpellSlots([
+        level/casterLevel>=1 ? (level/casterLevel>1 ? (level/casterLevel>2 ? 4 : 3) : 2) : 0, //nivel 1
+        level/casterLevel>2 ? (level/casterLevel>3 ? 3 : 2) : 0, //nivel 2
+        level/casterLevel>4 ? (level/casterLevel>5 ? 3 : 2) : 0, //nivel 3
+        level/casterLevel>6 ? (level/casterLevel>7 ? (level/casterLevel>8 ? 3 : 2) : 1) : 0, //nivel 4
+        level/casterLevel>8 ? (level/casterLevel>9 ? (level/casterLevel>17 ? 3 : 2) : 1) : 0, //nivel 5
+        level/casterLevel>10 ? (level/casterLevel>18 ? 2 : 1) : 0, //nivel 6
+        level/casterLevel>12 ? (level/casterLevel>19 ? 2 : 1) : 0, //nivel 7
+        level/casterLevel>14 ? 1 : 0,   //nivel 8
+        level/casterLevel>16 ? 1 : 0]); //nivel 9
+    }else{
+      setSpellSlots([0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    }
+  }, [level, casterLevel]);
 
   useEffect(() => {
     if (selectedClass) {
@@ -50,6 +76,15 @@ useEffect(() => {
       .then((data) => {
         const savingThrowIndexes = data.saving_throws.map((st) => st.index); // ["str", "con", ...]
         setSavingThrows(savingThrowIndexes);
+
+        if (data.spellcasting) {
+          setSpellcastingAbility(data.spellcasting.spellcasting_ability.index);
+          setCasterLevel(data.spellcasting.level);
+        } else {
+          setSpellcastingAbility(null);
+          setCasterLevel(0);
+
+        }
 
         // Mapeamos los atributos en un array de booleanos
         const newSavingThrowsBool = ["str", "dex", "con", "int", "wis", "cha"].map(stat => 
@@ -220,6 +255,8 @@ useEffect(() => {
     return savingThrowsBool[statIndex] ? bonus + proficiencyBonus : bonus;
   };
 
+  var statsDict = [{key:"FUE", value:0},{key:"DEX", value:0},{key:"CON", value:0},{key:"INT", value:0},{key:"WIS", value:0},{key:"CHA", value:0}];
+
   return (
     <>
       <Header />
@@ -234,20 +271,24 @@ useEffect(() => {
 
         {/* Formulario de estadísticas */}
         <div className="stats-grid">
-          {["FUE", "DES", "CON", "INT", "WIS", "CHA"].map((statName, index) => (
-            <div key={statName} className="stat-item">
-              <label htmlFor={statName}>{statName}</label>
-              <input
-                type="number"
-                id={statName}
-                value={stats[index]}
-                onChange={(e) => handleInputChange(index, e.target.value)}
-              />
-              -- Bonus -- {statBonus(stats[index])}
-              -- Save -- {calcularSavingThrow(index)}
-              -- Tiene competencia? -- {savingThrowsBool[index] ? "✅" : "❌"}
-            </div>
-          ))}
+          {["FUE", "DES", "CON", "INT", "WIS", "CHA"].map((statName, index) => {
+            statsDict[statName] = stats[index]; // Se ejecuta sin renderizar
+            
+            return (
+              <div key={statName} className="stat-item">
+                <label htmlFor={statName}>{statName}</label>
+                <input
+                  type="number"
+                  id={statName}
+                  value={stats[index]}
+                  onChange={(e) => handleInputChange(index, e.target.value)}
+                />
+                -- Bonus -- {statBonus(stats[index])}
+                -- Save -- {calcularSavingThrow(index)}
+                -- Tiene competencia? -- {savingThrowsBool[index] ? "✅" : "❌"}
+              </div>
+            );
+          })}
           <button onClick={handleRandomStats}>Generar Atributos</button>
         </div>
 
@@ -259,6 +300,18 @@ useEffect(() => {
         <button onClick={() => setShowRaceModal(true)}>Raza</button>
         {selectedClass && <p>Clase seleccionada: {selectedClass}</p>}
         {selectedRace && <p>Raza seleccionada: {selectedRace}</p>}
+        {spellcastingAbility && <><p>Habilidad de spellcasting: {spellcastingAbility.toUpperCase()}</p>
+        <p>Spellcasting Bonus: {statBonus(statsDict[spellcastingAbility.toUpperCase()])+pb}</p>
+        <p>Spell Saving Difficulty: {statBonus(statsDict[spellcastingAbility.toUpperCase()])+pb+8}</p>
+        <p>Spellcasting Level: {casterLevel}</p>
+        </>}
+
+        <h2>Ranuras de Conjuros</h2>
+        <ul>
+          {spellSlots.map((slots, index) => (
+            slots > 0 && <li key={index}>Nivel {index + 1}: {slots} ranuras</li>
+          ))}
+        </ul>
 
         {selectedClass && (
           <div>
@@ -271,7 +324,8 @@ useEffect(() => {
               value={level}
               onChange={(e) => setLevel(Number(e.target.value))}
             />
-            <p>PB = {calcularProficiencyBonus(level)}</p>
+            <p>Proficiency Bonus: {pb}</p>
+            
           </div>
         )}
 
