@@ -14,6 +14,8 @@ export default function PersonajesNuevo() {
   const [spellcastingAbility, setSpellcastingAbility] = useState(null);
   const [selectedRace, setSelectedRace] = useState(null);
   const [level, setLevel] = useState(1);
+  const [levelMulticlase, setLevelMulticlase] = useState(0);
+  const [levelTotal, setLevelTotal] = useState(1);
   const [features, setFeatures] = useState([]);
   const [raceFeatures, setRaceFeatures] = useState([]);
   const [subclass, setSubclass] = useState(null);
@@ -38,33 +40,21 @@ export default function PersonajesNuevo() {
   useEffect(() => {
     if(casterLevel>0 && level>0){
       setSpellSlots([
-        level/casterLevel>=1 ? (level/casterLevel>1 ? (level/casterLevel>2 ? 4 : 3) : 2) : 0, //nivel 1
-        level/casterLevel>2 ? (level/casterLevel>3 ? 3 : 2) : 0, //nivel 2
-        level/casterLevel>4 ? (level/casterLevel>5 ? 3 : 2) : 0, //nivel 3
-        level/casterLevel>6 ? (level/casterLevel>7 ? (level/casterLevel>8 ? 3 : 2) : 1) : 0, //nivel 4
-        level/casterLevel>8 ? (level/casterLevel>9 ? (level/casterLevel>17 ? 3 : 2) : 1) : 0, //nivel 5
-        level/casterLevel>10 ? (level/casterLevel>18 ? 2 : 1) : 0, //nivel 6
-        level/casterLevel>12 ? (level/casterLevel>19 ? 2 : 1) : 0, //nivel 7
-        level/casterLevel>14 ? 1 : 0,   //nivel 8
-        level/casterLevel>16 ? 1 : 0]); //nivel 9
+        level/casterLevel>=1 ? (level/casterLevel>1 ? (level/casterLevel>2 ? 4 : 3) : 2) : 0,   //nivel 1
+        level/casterLevel>2 ? (level/casterLevel>3 ? 3 : 2) : 0,                                //nivel 2
+        level/casterLevel>4 ? (level/casterLevel>5 ? 3 : 2) : 0,                                //nivel 3
+        level/casterLevel>6 ? (level/casterLevel>7 ? (level/casterLevel>8 ? 3 : 2) : 1) : 0,    //nivel 4
+        level/casterLevel>8 ? (level/casterLevel>9 ? (level/casterLevel>17 ? 3 : 2) : 1) : 0,   //nivel 5
+        level/casterLevel>10 ? (level/casterLevel>18 ? 2 : 1) : 0,                              //nivel 6
+        level/casterLevel>12 ? (level/casterLevel>19 ? 2 : 1) : 0,                              //nivel 7
+        level/casterLevel>14 ? 1 : 0,                                                           //nivel 8
+        level/casterLevel>16 ? 1 : 0]);                                                         //nivel 9
     }else{
       setSpellSlots([0, 0, 0, 0, 0, 0, 0, 0, 0]);
     }
   }, [level, casterLevel]);
 
-  useEffect(() => {
-    if (selectedClass) {
-      fetch(`https://www.dnd5eapi.co/api/classes/${selectedClass.toLowerCase()}/proficiencies`)
-        .then((response) => response.json())
-        .then((data) => {
-          const savingProficiencies = data.results
-            .filter((st) => !st.index.startsWith("saving-throw"))
-            .map((st) => st.index); 
-          setProficiencies(savingProficiencies);
-        })
-        .catch((error) => console.error("Error fetching proficiencies:", error));
-    }
-  }, [selectedClass]);
+
   
   
 
@@ -76,6 +66,8 @@ useEffect(() => {
       .then((data) => {
         const savingThrowIndexes = data.saving_throws.map((st) => st.index); // ["str", "con", ...]
         setSavingThrows(savingThrowIndexes);
+
+        setHitDie(data.hit_die)
 
         if (data.spellcasting) {
           setSpellcastingAbility(data.spellcasting.spellcasting_ability.index);
@@ -93,17 +85,20 @@ useEffect(() => {
         setSavingThrowsBool(newSavingThrowsBool);
       })
       .catch((error) => console.error("Error fetching saving throws:", error));
+
+      fetch(`https://www.dnd5eapi.co/api/classes/${selectedClass.toLowerCase()}/proficiencies`)
+      .then((response) => response.json())
+      .then((data) => {
+        const savingProficiencies = data.results
+          .filter((st) => !st.index.startsWith("saving-throw"))
+          .map((st) => st.index); 
+        setProficiencies(savingProficiencies);
+      })
+      .catch((error) => console.error("Error fetching proficiencies:", error));
   }
 }, [selectedClass]);
 
-useEffect(() => {
-  if (selectedClass) {
-    fetch(`https://www.dnd5eapi.co/api/classes/${selectedClass.toLowerCase()}`)
-      .then((response) => response.json())
-      .then((data) => setHitDie(data.hit_die))
-      .catch((error) => console.error("Error fetching hit die:", error));
-  }
-}, [selectedClass]);
+
 
 useEffect(() => {
   if (hitDie && level) {
@@ -306,7 +301,7 @@ useEffect(() => {
         <p>Spellcasting Level: {casterLevel}</p>
         </>}
 
-        <h2>Ranuras de Conjuros</h2>
+        {spellSlots[0]>0 && <h2>Ranuras de Conjuros</h2>}
         <ul>
           {spellSlots.map((slots, index) => (
             slots > 0 && <li key={index}>Nivel {index + 1}: {slots} ranuras</li>
