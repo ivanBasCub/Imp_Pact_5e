@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 .firebase
-firebaseCommands.md
+
 
 # Editor directories and files
 .vscode/*
@@ -24,3 +24,8 @@ firebaseCommands.md
 *.njsproj
 *.sln
 *.sw?
+
+
+# Directorios y archivos de apoyo
+BBDD/*
+firebaseCommands.md

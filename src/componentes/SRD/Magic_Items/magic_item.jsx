@@ -27,7 +27,7 @@ function MagicItemList(){
 
     // Efecto para recoger la información de la API de los objetos mágicos
     useEffect(()=>{
-        const nameCollection = "SRD_magic_items";
+        const nameCollection = "SRD_Magic_Items";
         async function updateDataBBDD(){
             const res = await fetch(`${URL}/api/magic-items`);
             const data = await res.json();
@@ -72,7 +72,7 @@ function MagicItemList(){
 
     // Efecto para filtrar los objetos mágicos
     useEffect(()=>{
-        const nameCollection = "SRD_magic_items";
+        const nameCollection = "SRD_Magic_Items";
         async function getMagicItems(){
             const itemsRef = collection(db, nameCollection);
             const itemsSnap = await getDocs(itemsRef);
@@ -97,7 +97,7 @@ function MagicItemList(){
                     <select name="type" onChange={formEvent} value={infoForm.type}>
                         <option value="all">All</option>
                         <option value="armor">Armor</option>
-                        <option value="wondrous">Wondrous</option>
+                        <option value="wondrous-items">Wondrous</option>
                         <option value="weapon">Weapon</option>
                         <option value="rod">Rod</option>
                         <option value="staff">Staff</option>
