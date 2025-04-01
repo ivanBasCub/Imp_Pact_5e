@@ -100,30 +100,53 @@ function RaceList() {
 function Race() {
     const { id } = useParams();
     const [race, setRace] = useState({});
+    const [raceTraits, setRaceTraits] = useState([]);
 
     useEffect(() => {
+        const nameCollection = "SRD_Races";
         async function fetchRace() {
-            const res = await fetch(`${URL}/api/2014/races/${id}`);
-            const data = await res.json();
-            setRace(data);
+            const raceRef = doc(db, nameCollection, id);
+            const raceDoc = await getDoc(raceRef);
+            setRace(raceDoc.data());
         }
         fetchRace();
-    }, []);
+    }, [id]);
 
-    // Comprobación que se haya recogido la información de la API. Para que no nos de errores las comprobaciones en el return y no carge el componente
+    useEffect(() => {
+        const fetchRaceTraits = async () => {
+            if (race.race_traits) {
+                const data = await Promise.all(race.race_traits.map(async race_trait => {
+                    const nameCollection = "SRD_RaceTraits";
+                    const ref = doc(db, nameCollection, race_trait);
+                    const document = await getDoc(ref);
+                    return document.data();
+                }));
+                setRaceTraits(data);
+            }
+        };
+        fetchRaceTraits();
+    }, [race]);
+
     if (Object.keys(race).length === 0) {
-        return <div>Loading...</div>
+        return <div>Loading...</div>;
     }
 
     return (
         <div key={race.index}>
             <h2>{race.name}</h2>
-            <p><b>Alignment:</b> {race.alignment}</p>
-            <p><b>Age:</b> {race.age}</p>
-            <p><b>Size:</b> {race.size_description}</p>
-            <p><b>Langauges:</b> {race.language_desc}</p>
+            <ul>
+                <li><b>Alignment:</b> {race.alignment}</li>
+                <li><b>Age:</b> {race.age}</li>
+                <li><b>Size:</b> {race.size_description}</li>
+                <li><b>Languages:</b> {race.language_desc}</li>
+                {raceTraits.map((trait, index) => (
+                    <li key={index}>
+                        <b>{trait.name}</b>: {trait.desc}
+                    </li>
+                ))}
+            </ul>
         </div>
-    )
-}
+    );
+}   
 
 export { RaceList, Race }
