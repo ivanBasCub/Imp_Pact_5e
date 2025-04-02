@@ -10,6 +10,7 @@ import { RaceList, Race } from './Races/Race'
 import Rules from './Rules/Rules'
 import {FeatsList, Feat } from './Feats/Feats'
 import {EquimentList, Equiments }  from './Equiments/Equiments';
+import { Background, BackgroundList } from './Backgrounds/Backgrounds';
 
 function SRD() {
   return (
@@ -44,6 +45,10 @@ function SRD() {
       {/* Lista de Equipamiento basico */}
       <Route path='/SRD/Equiments' element={<EquimentList />}/>
       <Route path='/SRD/Equiment/:id' element={<Equiments />} />
+
+      {/* Backgrounds */}
+      <Route path='/SRD/Backgrounds' element={<BackgroundList />} />
+      <Route path='/SRD/Background/:id' element={<Background />} />
     </Routes>
   )
 }
