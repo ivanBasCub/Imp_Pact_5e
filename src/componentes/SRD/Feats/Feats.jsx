@@ -70,6 +70,7 @@ function FeatsList() {
 
     return (
         <div>
+            <h1>Feats</h1>
             {featsList.map(feat =>(
                 <div>
                     <div>

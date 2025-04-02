@@ -59,6 +59,7 @@ function SpellList() {
                     var subclasses = spell.subclasses.map(subclase => subclase.index);
                     var damage_type = spell.damage?.damage_type?.name;
                     var damage_at_slot_level = spell.damage?.damage_at_slot_level || [];
+                    
                     setDoc(spellRef,{
                         index: spell.index,
                         name: spell.name,
