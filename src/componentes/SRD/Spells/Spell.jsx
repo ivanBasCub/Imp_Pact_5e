@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom";
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
+import MarkdownViewer from "../../Extras/MarkDownViewer";
 
 {/*
     Constantes Generales del componente    
@@ -257,7 +258,7 @@ function Spell() {
             <p><b>Range: </b>{spell.range}</p>
             <p><b>Duration: </b>{spell.concentration ? 'Concentration,' : spell.duration}</p>
             <p><b>Components: </b>{spell.components.join(', ')} {spell.material ? `(${spell.material})` : ""}</p>
-            {spell.desc.map( desc => (<p>{desc}</p>))}
+            {spell.desc.map( desc => (<MarkdownViewer markdown={desc}/>))}
             {spell.higher_level.map(pf => {
                 if (pf) {
                     return <p><b>At higher Levels.</b> {pf}</p>

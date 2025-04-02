@@ -9,8 +9,9 @@ import { MagicItemList, MagicItem } from './Magic_Items/magic_item'
 import { RaceList, Race } from './Races/Race'
 import Rules from './Rules/Rules'
 import {FeatsList, Feat } from './Feats/Feats'
-import {EquimentList, Equiments }  from './Equiments/Equiments';
+import {EquipmentList, Equipments }  from './Equipments/Equipments';
 import { Background, BackgroundList } from './Backgrounds/Backgrounds';
+import SubRace from './SubRaces/SubRaces';
 
 function SRD() {
   return (
@@ -38,13 +39,16 @@ function SRD() {
       <Route path='/SRD/Race' element={<RaceList />} />
       <Route path='/SRD/Race/:id' element={<Race />} />
 
+      {/* SubRazas */}
+      <Route path='/SRD/SubRace/:id' element={<SubRace />} />
+
       {/* Feats */}
       <Route path='/SRD/Feats' element={<FeatsList />} />
       <Route path='/SRD/Feat/:id' element={<Feat />} />
 
       {/* Lista de Equipamiento basico */}
-      <Route path='/SRD/Equiments' element={<EquimentList />}/>
-      <Route path='/SRD/Equiment/:id' element={<Equiments />} />
+      <Route path='/SRD/Equipments' element={<EquipmentList />}/>
+      <Route path='/SRD/Equipment/:id' element={<Equipments />} />
 
       {/* Backgrounds */}
       <Route path='/SRD/Backgrounds' element={<BackgroundList />} />

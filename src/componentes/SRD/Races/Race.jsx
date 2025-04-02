@@ -4,7 +4,6 @@ import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import RaceTraits from "../Race_Traits/Race_Traits";
 
-
 {/*
     Constantes Generales del componente    
 */}
@@ -16,15 +15,15 @@ function RaceList() {
     useEffect(() => {
         const nameCollection = "SRD_Races";
         // Comprobamos si existen los datos en la BBDD de Firebase
-        async function updateDataBBDD(){
+        async function updateDataBBDD() {
             const res = await fetch(`${URL}/api/2014/races`);
             const data = await res.json();
             const list = data.results;
-            const listPromises = list.map(race  => fetch(`${URL}${race.url}`).then(res => res.json()));
+            const listPromises = list.map(race => fetch(`${URL}${race.url}`).then(res => res.json()));
             const listRaces = await Promise.all(listPromises);
 
-            listRaces.forEach(async (race) =>{
-                const raceRef = doc(db,nameCollection, race.index);
+            listRaces.forEach(async (race) => {
+                const raceRef = doc(db, nameCollection, race.index);
                 const raceDoc = await getDoc(raceRef);
 
                 if (!raceDoc.exists()) {
@@ -37,9 +36,14 @@ function RaceList() {
 
                     var languages = race.languages?.map((language) => language.index) || [];
                     var race_traits = race.traits?.map((trait) => trait.index) || [];
-                    var subraces = race.subraces?.map((subrace) => subrace.index) || [];
+                    var subraces = race.subraces?.map((subrace) => {
+                        return {
+                            index: subrace.index,
+                            name: subrace.name
+                        }
+                    }) || [];
 
-                    setDoc(raceRef,{
+                    setDoc(raceRef, {
                         index: race.index,
                         name: race.name,
                         speed: race.speed,
@@ -66,7 +70,7 @@ function RaceList() {
             const query = await getDocs(raceRef);
             const races = query.docs.length;
 
-            if(races < total){
+            if (races < total) {
                 updateDataBBDD();
             }
         }
@@ -84,7 +88,7 @@ function RaceList() {
 
     return (
         <div>
-            <RaceTraits/>
+            <RaceTraits />
             {listRaces.map(race => (
                 <div>
                     <div>
@@ -101,6 +105,7 @@ function Race() {
     const { id } = useParams();
     const [race, setRace] = useState({});
     const [raceTraits, setRaceTraits] = useState([]);
+    const [ draconicAscentry, setDraconicAscentry ] = useState([])
 
     useEffect(() => {
         const nameCollection = "SRD_Races";
@@ -127,6 +132,22 @@ function Race() {
         fetchRaceTraits();
     }, [race]);
 
+    useEffect(() => {
+        async function fetchDraconicAscentry() {
+            const nameCollection = "SRD_RaceTraits";
+            const regex = /^draconic-ancestry-.+/;
+    
+            const ref = collection(db, nameCollection);
+            const documents = await getDocs(ref);
+            var list = documents.docs.map(docu => docu.data());
+            var filterdata = list.filter(feat => regex.test(feat.index))
+            setDraconicAscentry(filterdata);
+            // Procesa los datos aquí, si es necesario, y guárdalos en un estado para usarlos después
+        }
+        fetchDraconicAscentry();
+    },[])
+
+
     if (Object.keys(race).length === 0) {
         return <div>Loading...</div>;
     }
@@ -135,18 +156,51 @@ function Race() {
         <div key={race.index}>
             <h2>{race.name}</h2>
             <ul>
+                <li><b>Ability Bonuses:</b> {race.ability_bonuses.map(ab => (<>Increases by {ab.bonus} in {ab.index} stat. </>))}</li>
                 <li><b>Alignment:</b> {race.alignment}</li>
                 <li><b>Age:</b> {race.age}</li>
                 <li><b>Size:</b> {race.size_description}</li>
                 <li><b>Languages:</b> {race.language_desc}</li>
                 {raceTraits.map((trait, index) => (
-                    <li key={index}>
-                        <b>{trait.name}</b>: {trait.desc}
-                    </li>
+                    <>
+                        <li key={index}>
+                            <b>{trait.name}</b>: {trait.desc}
+                        </li>
+                        {trait.index === "draconic-ancestry" ? (
+                            <>
+                               <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Dragon Color</th>
+                                            <th>Damage Type</th>
+                                            <th>Breath Weapon</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {draconicAscentry.map(color => (
+                                            <tr>
+                                                <td>{color.index.split("-")[2]}</td>
+                                                <td>{color.trait_specific.damage_type.name}</td>
+                                                <td>{color.trait_specific.breath_weapon.area_of_effect.size}ft {color.trait_specific.breath_weapon.area_of_effect.type} ({color.trait_specific.breath_weapon.dc.dc_type.name} save) </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                               </table>
+                            </>
+                        ) : ""}
+                    </>
                 ))}
             </ul>
+            {race.subraces.length != 0 ? (
+                <>
+                    <h4>Subraces</h4>
+                    <p>{race.subraces.map(subrace => (<Link to={`/SRD/SubRace/${subrace.index}`}>{subrace.name}</Link>))}</p>
+                </>
+            ) : ""}
+
         </div>
     );
-}   
+}
+
 
 export { RaceList, Race }

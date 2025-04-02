@@ -8,7 +8,7 @@ import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 */}
 const URL = "https://www.dnd5eapi.co";
 
-function EquimentList() {
+function EquipmentList() {
     const nameCollection = "SRD_Equipments";
     const equiemntsTypes = ["weapon", "armor", "adventuring-gear", "mounts-and-vehicles", "tools"];
 
@@ -162,7 +162,7 @@ function EquimentList() {
 
 }
 
-function Equiments() {
+function Equipments() {
     const id = useParams();
     const [equipmentCategoryList, setEquipmentCategoryList] = useState([]);
     const nameCollection = "SRD_Equipments";
@@ -293,4 +293,4 @@ function Equiments() {
         </div>
     )
 }
-export { EquimentList, Equiments }; 
+export { EquipmentList, Equipments }; 
