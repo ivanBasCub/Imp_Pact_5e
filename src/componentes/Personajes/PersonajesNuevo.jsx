@@ -8,55 +8,75 @@ import "../../assets/css/modal.css";
 export default function PersonajesNuevo() {
   const [showModal, setShowModal] = useState(false);
   const [showRaceModal, setShowRaceModal] = useState(false);
+  const [showMulticlassModal, setShowMulticlassModal] = useState(false);
   const [classes, setClasses] = useState([]);
   const [races, setRaces] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
+  const [selectedMulticlass, setSelectedMulticlass] = useState(null);
   const [spellcastingAbility, setSpellcastingAbility] = useState(null);
+  const [spellcastingAbilityMulticlass, setSpellcastingAbilityMulticlass] = useState(null);
   const [selectedRace, setSelectedRace] = useState(null);
   const [level, setLevel] = useState(1);
   const [levelMulticlase, setLevelMulticlase] = useState(0);
   const [levelTotal, setLevelTotal] = useState(1);
   const [features, setFeatures] = useState([]);
+  const [featuresMulticlase, setFeaturesMulticlase] = useState([]);
   const [raceFeatures, setRaceFeatures] = useState([]);
   const [subclass, setSubclass] = useState(null);
   const [subclassFeatures, setSubclassFeatures] = useState([]);
+  const [subclassMulticlass, setSubclassMulticlass] = useState(null);
+  const [subclassMulticlassFeatures, setSubclassMulticlassFeatures] = useState([]);
   const [stats, setStats] = useState([10, 10, 10, 10, 10, 10]);
   const [expandedFeatures, setExpandedFeatures] = useState({});
   const [hitDie, setHitDie] = useState(null);
+  const [hitDieMulticlass, setHitDieMulticlass] = useState(null);
   const [hp, setHp] = useState(null);
   const [savingThrows, setSavingThrows] = useState(null);
   const [savingThrowsBool, setSavingThrowsBool] = useState([false, false, false, false, false, false]);
   const [proficiencies, setProficiencies] = useState([]);
-  const [pb, setPb] = useState(calcularProficiencyBonus(level));
+  const [pb, setPb] = useState(calcularProficiencyBonus(levelTotal));
   const [casterLevel, setCasterLevel] = useState(0);
+  const [casterLevelMulticlass, setCasterLevelMulticlass] = useState(0);
   const [spellSlots, setSpellSlots] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
 
 
   useEffect(() => {
-    setPb(calcularProficiencyBonus(level));
-  }, [level]);
+    setPb(calcularProficiencyBonus(levelTotal));
+  }, [levelTotal]);
 
   useEffect(() => {
-    if(casterLevel>0 && level>0){
+    if(level>0 && levelMulticlase==0){
+      setLevelTotal(level);
+    }else if(level>0 && levelMulticlase>0){
+      setLevelTotal(level+levelMulticlase);
+    }
+  }, [level, levelMulticlase]);
+
+  useEffect(() => {
+    if((casterLevel>0 && level>0) || (casterLevelMulticlass>0 && levelMulticlase>0)){
+      let levelEfectivo = 0;
+      if(casterLevelMulticlass==0 || levelMulticlase==0){
+        levelEfectivo = level/casterLevel;
+      }else if(casterLevel==0 || level==0){
+        levelEfectivo = levelMulticlase/casterLevelMulticlass;
+      }else{
+        levelEfectivo = level/casterLevel+levelMulticlase/casterLevelMulticlass;
+      }
       setSpellSlots([
-        level/casterLevel>=1 ? (level/casterLevel>1 ? (level/casterLevel>2 ? 4 : 3) : 2) : 0,   //nivel 1
-        level/casterLevel>2 ? (level/casterLevel>3 ? 3 : 2) : 0,                                //nivel 2
-        level/casterLevel>4 ? (level/casterLevel>5 ? 3 : 2) : 0,                                //nivel 3
-        level/casterLevel>6 ? (level/casterLevel>7 ? (level/casterLevel>8 ? 3 : 2) : 1) : 0,    //nivel 4
-        level/casterLevel>8 ? (level/casterLevel>9 ? (level/casterLevel>17 ? 3 : 2) : 1) : 0,   //nivel 5
-        level/casterLevel>10 ? (level/casterLevel>18 ? 2 : 1) : 0,                              //nivel 6
-        level/casterLevel>12 ? (level/casterLevel>19 ? 2 : 1) : 0,                              //nivel 7
-        level/casterLevel>14 ? 1 : 0,                                                           //nivel 8
-        level/casterLevel>16 ? 1 : 0]);                                                         //nivel 9
+        levelEfectivo>=1 ? (levelEfectivo>1 ? (levelEfectivo>2 ? 4 : 3) : 2) : 0,   //nivel 1
+        levelEfectivo>2 ? (levelEfectivo>3 ? 3 : 2) : 0,                                //nivel 2
+        levelEfectivo>4 ? (levelEfectivo>5 ? 3 : 2) : 0,                                //nivel 3
+        levelEfectivo>6 ? (levelEfectivo>7 ? (levelEfectivo>8 ? 3 : 2) : 1) : 0,    //nivel 4
+        levelEfectivo>8 ? (levelEfectivo>9 ? (levelEfectivo>17 ? 3 : 2) : 1) : 0,   //nivel 5
+        levelEfectivo>10 ? (levelEfectivo>18 ? 2 : 1) : 0,                              //nivel 6
+        levelEfectivo>12 ? (levelEfectivo>19 ? 2 : 1) : 0,                              //nivel 7
+        levelEfectivo>14 ? 1 : 0,                                                           //nivel 8
+        levelEfectivo>16 ? 1 : 0]);                                                         //nivel 9
     }else{
       setSpellSlots([0, 0, 0, 0, 0, 0, 0, 0, 0]);
     }
-  }, [level, casterLevel]);
-
-
-  
-  
+  }, [level, casterLevel, levelMulticlase, casterLevelMulticlass]);
 
 
 useEffect(() => {
@@ -98,6 +118,30 @@ useEffect(() => {
   }
 }, [selectedClass]);
 
+useEffect(() => {
+  if (selectedMulticlass) {
+    fetch(`https://www.dnd5eapi.co/api/classes/${selectedMulticlass.toLowerCase()}`)
+      .then((response) => response.json())
+      .then((data) => {
+
+        setHitDieMulticlass(data.hit_die)
+        console.log(data.hit_die);
+        console.log(data.spellcasting.spellcasting_ability.index);
+        console.log(data.spellcasting.level);
+
+        if (data.spellcasting) {
+          setSpellcastingAbilityMulticlass(data.spellcasting.spellcasting_ability.index);
+          setCasterLevelMulticlass(data.spellcasting.level);
+        } else {
+          setSpellcastingAbilityMulticlass(null);
+          setCasterLevelMulticlass(0);
+
+        }
+      })
+      .catch((error) => console.error("Error fetching saving throws:", error));
+  }
+}, [selectedMulticlass]);
+
 
 
 useEffect(() => {
@@ -107,11 +151,16 @@ useEffect(() => {
 
     if (level > 1) {
       calculatedHp += (level - 1) * ((hitDie / 2) + conBonus);
+      console.log(levelMulticlase);
+    }
+
+    if(levelMulticlase > 0){
+      calculatedHp = calculatedHp+((levelMulticlase) * ((hitDieMulticlass / 2) + conBonus));
     }
 
     setHp(Math.max(1, Math.floor(calculatedHp))); // Asegurar que HP mínimo sea 1
   }
-}, [hitDie, level, stats]);
+}, [hitDie, level, stats, hitDieMulticlass, levelMulticlase]);
 
   useEffect(() => {
     fetch("https://www.dnd5eapi.co/api/2014/classes/")
@@ -144,6 +193,29 @@ useEffect(() => {
   }, [selectedClass, level]);
 
   useEffect(() => {
+    if (selectedMulticlass && levelMulticlase) {
+      fetch(`https://www.dnd5eapi.co/api/2014/classes/${selectedMulticlass.toLowerCase()}/levels/`)
+        .then((response) => response.json())
+        .then(async (data) => {
+          const filteredFeatures = data
+            .filter((lvl) => lvl.level <= levelMulticlase)
+            .flatMap((lvl) => lvl.features);
+
+          const featuresWithDesc = await Promise.all(
+            filteredFeatures.map(async (feature) => {
+              const res = await fetch(`https://www.dnd5eapi.co/api/2014/features/${feature.index}`);
+              const featureData = await res.json();
+              return { ...feature, desc: featureData.desc };
+            })
+          );
+
+          setFeaturesMulticlase(featuresWithDesc);
+        })
+        .catch((error) => console.error("Error fetching class levels:", error));
+    }
+  }, [selectedMulticlass, levelMulticlase]);
+
+  useEffect(() => {
     if (selectedClass) {
       fetch(`https://www.dnd5eapi.co/api/2014/classes/${selectedClass.toLowerCase()}/subclasses/`)
         .then((response) => response.json())
@@ -155,6 +227,19 @@ useEffect(() => {
         .catch((error) => console.error("Error fetching subclass:", error));
     }
   }, [selectedClass]);
+
+  useEffect(() => {
+    if (selectedMulticlass) {
+      fetch(`https://www.dnd5eapi.co/api/2014/classes/${selectedMulticlass.toLowerCase()}/subclasses/`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.results.length > 0) {
+            setSubclassMulticlass(data.results[0].index);
+          }
+        })
+        .catch((error) => console.error("Error fetching subclass:", error));
+    }
+  }, [selectedMulticlass]);
 
   useEffect(() => {
     if (subclass && level) {
@@ -178,6 +263,29 @@ useEffect(() => {
         .catch((error) => console.error("Error fetching subclass features:", error));
     }
   }, [subclass, level]);
+
+  useEffect(() => {
+    if (subclassMulticlass && levelMulticlase) {
+      fetch(`https://www.dnd5eapi.co/api/2014/subclasses/${subclassMulticlass}/levels/`)
+        .then((response) => response.json())
+        .then(async (data) => {
+          const filteredSubclassFeatures = data
+            .filter((lvl) => lvl.level <= levelMulticlase)
+            .flatMap((lvl) => lvl.features);
+
+          const subclassFeaturesWithDesc = await Promise.all(
+            filteredSubclassFeatures.map(async (feature) => {
+              const res = await fetch(`https://www.dnd5eapi.co/api/2014/features/${feature.index}`);
+              const featureData = await res.json();
+              return { ...feature, desc: featureData.desc };
+            })
+          );
+
+          setSubclassMulticlassFeatures(subclassFeaturesWithDesc);
+        })
+        .catch((error) => console.error("Error fetching subclass features:", error));
+    }
+  }, [subclassMulticlass, levelMulticlase]);
 
   useEffect(() => {
     fetch("https://www.dnd5eapi.co/api/2014/races/")
@@ -292,6 +400,9 @@ useEffect(() => {
         </div>
 
         <button onClick={() => setShowModal(true)}>Clase</button>
+        {selectedClass && (
+        <button onClick={() => setShowMulticlassModal(true)}>Seleccionar Multiclase</button>
+        )}
         <button onClick={() => setShowRaceModal(true)}>Raza</button>
         {selectedClass && <p>Clase seleccionada: {selectedClass}</p>}
         {selectedRace && <p>Raza seleccionada: {selectedRace}</p>}
@@ -300,6 +411,9 @@ useEffect(() => {
         <p>Spell Saving Difficulty: {statBonus(statsDict[spellcastingAbility.toUpperCase()])+pb+8}</p>
         <p>Spellcasting Level: {casterLevel}</p>
         </>}
+        {selectedMulticlass && <p>Multiclase seleccionada: {selectedMulticlass}</p>}
+        
+
 
         {spellSlots[0]>0 && <h2>Ranuras de Conjuros</h2>}
         <ul>
@@ -321,6 +435,20 @@ useEffect(() => {
             />
             <p>Proficiency Bonus: {pb}</p>
             
+          </div>
+        )}
+
+        {selectedMulticlass && (
+          <div>
+            <label htmlFor="levelM">Nivel:</label>
+            <input
+              type="number"
+              id="level"
+              min="1"
+              max="20"
+              value={levelMulticlase}
+              onChange={(e) => setLevelMulticlase(Number(e.target.value))}
+            />            
           </div>
         )}
 
@@ -371,6 +499,40 @@ useEffect(() => {
             </ul>
           </div>
         )}
+        
+        {/* Lista de Features de la MultiClase */}
+        {featuresMulticlase.length > 0 && (
+          <div>
+            <h2>Características hasta nivel {levelMulticlase} de multiclase</h2>
+            <ul>
+              {featuresMulticlase.map((feature) => (
+                <li key={feature.index}>
+                  <button onClick={() => handleToggleFeature(feature.index)}>
+                    <strong>{feature.name}</strong>
+                  </button>
+                  {expandedFeatures[feature.index] && <p>{feature.desc.join(" ")}</p>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Lista de Features de la Subclase de Multiclase*/}
+        {subclassMulticlass && subclassMulticlassFeatures.length > 0 && (
+          <div>
+            <h2>Características de Subclase: {subclassMulticlass}</h2>
+            <ul>
+              {subclassMulticlassFeatures.map((feature) => (
+                <li key={feature.index}>
+                  <button onClick={() => handleToggleFeature(feature.index)}>
+                    <strong>{feature.name}</strong>
+                  </button>
+                  {expandedFeatures[feature.index] && <p>{feature.desc.join(" ")}</p>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {raceFeatures.length > 0 && (
           <div>
@@ -390,7 +552,7 @@ useEffect(() => {
       </main>
       <Footer />
 
-      {/* Modal */}
+      {/* Modal clase*/}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
@@ -414,6 +576,7 @@ useEffect(() => {
         </div>
       )}
 
+      {/* Modal raza*/}
       {showRaceModal && (
         <div className="modal-overlay" onClick={() => setShowRaceModal(false)}>
           <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
@@ -433,6 +596,29 @@ useEffect(() => {
               ))}
             </ul>
             <button onClick={() => setShowRaceModal(false)}>Cerrar</button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para la segunda clase */}
+      {showMulticlassModal && (
+        <div className="modal-overlay" onClick={() => setShowMulticlassModal(false)}>
+          <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Selecciona una segunda clase</h2>
+            <ul>
+              <li onClick={() => {setSelectedMulticlass(null); setShowMulticlassModal(false); setLevelMulticlase(0); setSubclassMulticlass(null)}}>
+                Ninguna
+              </li>
+              {classes.map((clase) => (
+                <li key={clase.index} style={{ cursor: "pointer" }} onClick={() => {
+                  setSelectedMulticlass(clase.index); 
+                  setShowMulticlassModal(false);
+                }}>
+                  {clase.name}
+                </li>
+              ))}
+            </ul>
+            <button onClick={() => setShowMulticlassModal(false)}>Cerrar</button>
           </div>
         </div>
       )}
