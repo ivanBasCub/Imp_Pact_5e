@@ -102,10 +102,16 @@ function Feat(){
         fetchFeat()
     },[])
 
+    if (Object.keys(feat).length === 0) {
+        return <div>Loading...</div>
+    }
+
     return (
         <div>
             <h1>{feat.name}</h1>
-            {feat.desc.map(p => (<p>{p}</p>))}
+            {console.log(feat.prerequisites)}
+            <p>Prerequisites: {feat.prerequisites.map(data => (<>Minimum {data.minimun} in {data.name} </>))}</p>
+            {feat.desc.map(p => (<p>{p}</p>))}            
         </div>
     )
 }
