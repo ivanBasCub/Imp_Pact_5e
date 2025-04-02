@@ -9,12 +9,14 @@ import { MagicItemList, MagicItem } from './Magic_Items/magic_item'
 import { RaceList, Race } from './Races/Race'
 import Rules from './Rules/Rules'
 import {FeatsList, Feat } from './Feats/Feats'
+import {EquimentList, Equiments }  from './Equiments/Equiments';
 
 function SRD() {
   return (
     <Routes>
       {/* Pagina Principal del SRD */}
       <Route path='/SRD/' element={<App />} />
+
       {/* Reglas del DnD 5e */}
       <Route path='/SRD/Rules' element={<Rules />} />
 
@@ -39,6 +41,9 @@ function SRD() {
       <Route path='/SRD/Feats' element={<FeatsList />} />
       <Route path='/SRD/Feat/:id' element={<Feat />} />
 
+      {/* Lista de Equipamiento basico */}
+      <Route path='/SRD/Equiments' element={<EquimentList />}/>
+      <Route path='/SRD/Equiment/:id' element={<Equiments />} />
     </Routes>
   )
 }
