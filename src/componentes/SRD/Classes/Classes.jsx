@@ -60,15 +60,26 @@ function ClassesList() {
                     }))
 
                     // Proficiencies
+                    var tools_choices = [];
                     var saving_throws = clase.saving_throws.map(saving => saving.name);
-                    var skills_choices = clase.proficiency_choices.map(choise => {
-                        var options = choise.from.options.map(proficiency => proficiency.item.name)
-                        return {
-                            choose: choise.choose,
-                            desc: choise.desc,
-                            options: options
+                    var skills_choices = clase.proficiency_choices.map( (choise, index) => {
+                        if (index === 0) {
+                            var options = choise.from.options.map(proficiency => proficiency.item.name)
+                            return {
+                                choose: choise.choose,
+                                desc: choise.desc,
+                                options: options
+                            }
+                        }else{
+                            var options = choise.from.options.map(proficiency => proficiency.choice.desc)
+                            var tools ={
+                                choose: choise.choose,
+                                desc: choise.desc,
+                                options: options
+                            }
+                            tools_choices = tools
                         }
-                    })
+                    }).filter(Boolean);
 
                     var armors = (await Promise.all(clase.proficiencies.map(async armor => {
                         var armorRef = await fetch(`${URL}${armor.url}`);
@@ -96,7 +107,8 @@ function ClassesList() {
                         armor: armors,
                         weapons: weapons,
                         saving_throws: saving_throws,
-                        skills_choices: skills_choices
+                        skills_choices: skills_choices,
+                        tools_choices: tools_choices
                     }
 
                     // Equipamentos
@@ -107,7 +119,7 @@ function ClassesList() {
                         }
                     })
 
-                    var equipment_options = clase.starting_equipment_options.map(equipment => equipment.desc)
+                    var equipment_options = clase.starting_equipment_options.map(equipment => equipment.desc || "")
 
                     var equipments = {
                         starting: starting_equipment,
@@ -187,7 +199,6 @@ function ClassesList() {
             const res = await fetch(`${URL}/api/2014/classes`);
             const data = await res.json();
             const total = data.count;
-
             const classRef = collection(db, nameCollection);
             const query = await getDocs(classRef);
             const classes = query.docs.length;
@@ -196,9 +207,32 @@ function ClassesList() {
                 updateDataBBDD();
             }
         }
-
         checkDataBBDD()
     }, [])
+
+    // Coger la lista con la información de las clases
+    useEffect(() => {
+        async function fecthClasses() {
+            const classesRef = collection(db, nameCollection);
+            const query = await getDocs(classesRef);
+
+            setClassesList(query.docs.map(document => document.data()))
+        }
+        fecthClasses();
+    }, [])
+
+    return (
+        <div>
+            {classesList.map(clase =>(
+                <div>
+                    <div>
+                        <h5>{clase.name}</h5>
+                        <Link to={`/SRD/class/${clase.index}`}>More Info</Link>
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
 }
 
 function Clase() {
