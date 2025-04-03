@@ -12,6 +12,8 @@ import {FeatsList, Feat } from './Feats/Feats'
 import {EquipmentList, Equipments }  from './Equipments/Equipments';
 import { Background, BackgroundList } from './Backgrounds/Backgrounds';
 import SubRace from './SubRaces/SubRaces';
+import { Clase, ClassesList } from './Classes/Classes';
+import SubClass from './SubClasses/SubClasses';
 
 function SRD() {
   return (
@@ -20,39 +22,46 @@ function SRD() {
       <Route path='/SRD/' element={<App />} />
 
       {/* Reglas del DnD 5e */}
-      <Route path='/SRD/Rules' element={<Rules />} />
+      <Route path='/SRD/rules' element={<Rules />} />
 
       {/* Spells */}
-      <Route path='/SRD/Spells/' element={<SpellList />} />
-      <Route path='/SRD/Spells/:clase' element={<SpellList />} />
-      <Route path='/SRD/Spell/:id' element={<Spell />} />
+      <Route path='/SRD/spells/' element={<SpellList />} />
+      <Route path='/SRD/spells/:clase' element={<SpellList />} />
+      <Route path='/SRD/spell/:id' element={<Spell />} />
 
       {/* Objetos Mágicos */}
-      <Route path='/SRD/MagicItems/' element={<MagicItemList />} />
-      <Route path='/SRD/MagicItem/:id' element={<MagicItem />} />
+      <Route path='/SRD/magic_items/' element={<MagicItemList />} />
+      <Route path='/SRD/magic_item/:id' element={<MagicItem />} />
 
       {/* Monstruos */}
-      <Route path='/SRD/Monsters' element={<MonsterList />} />
-      <Route path='/SRD/Monster/:id' element={<Monster />} />
+      <Route path='/SRD/monsters' element={<MonsterList />} />
+      <Route path='/SRD/monster/:id' element={<Monster />} />
 
       {/* Razas */}
-      <Route path='/SRD/Race' element={<RaceList />} />
-      <Route path='/SRD/Race/:id' element={<Race />} />
+      <Route path='/SRD/race' element={<RaceList />} />
+      <Route path='/SRD/race/:id' element={<Race />} />
 
       {/* SubRazas */}
-      <Route path='/SRD/SubRace/:id' element={<SubRace />} />
+      <Route path='/SRD/subrace/:id' element={<SubRace />} />
 
       {/* Feats */}
-      <Route path='/SRD/Feats' element={<FeatsList />} />
-      <Route path='/SRD/Feat/:id' element={<Feat />} />
+      <Route path='/SRD/feats' element={<FeatsList />} />
+      <Route path='/SRD/feat/:id' element={<Feat />} />
 
       {/* Lista de Equipamiento basico */}
-      <Route path='/SRD/Equipments' element={<EquipmentList />}/>
-      <Route path='/SRD/Equipment/:id' element={<Equipments />} />
+      <Route path='/SRD/equipments' element={<EquipmentList />}/>
+      <Route path='/SRD/equipment/:id' element={<Equipments />} />
 
       {/* Backgrounds */}
-      <Route path='/SRD/Backgrounds' element={<BackgroundList />} />
-      <Route path='/SRD/Background/:id' element={<Background />} />
+      <Route path='/SRD/backgrounds' element={<BackgroundList />} />
+      <Route path='/SRD/background/:id' element={<Background />} />
+
+      {/* Clases */}
+      <Route path='/SRD/classes/' element={<ClassesList />} />
+      <Route path='/SRD/class/:id' element={<Clase />} />
+      
+      {/* Subclases */}
+      <Route path='/SRD/subclass/:id' element={<SubClass />} />
     </Routes>
   )
 }
