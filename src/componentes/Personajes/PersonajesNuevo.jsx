@@ -22,6 +22,7 @@ export default function PersonajesNuevo() {
   const [features, setFeatures] = useState([]);
   const [featuresMulticlase, setFeaturesMulticlase] = useState([]);
   const [raceFeatures, setRaceFeatures] = useState([]);
+  const [speed, setSpeed] = useState(0);
   const [subclass, setSubclass] = useState(null);
   const [subclassFeatures, setSubclassFeatures] = useState([]);
   const [subclassMulticlass, setSubclassMulticlass] = useState(null);
@@ -34,6 +35,8 @@ export default function PersonajesNuevo() {
   const [savingThrows, setSavingThrows] = useState(null);
   const [savingThrowsBool, setSavingThrowsBool] = useState([false, false, false, false, false, false]);
   const [proficiencies, setProficiencies] = useState([]);
+  const [proficienciesMulticlass, setProficienciesMulticlass] = useState([]);
+  const [proficiencyChoicesMulticlass, setProficiencyChoicesMulticlass] = useState([]);
   const [pb, setPb] = useState(calcularProficiencyBonus(levelTotal));
   const [casterLevel, setCasterLevel] = useState(0);
   const [casterLevelMulticlass, setCasterLevelMulticlass] = useState(0);
@@ -123,11 +126,7 @@ useEffect(() => {
     fetch(`https://www.dnd5eapi.co/api/classes/${selectedMulticlass.toLowerCase()}`)
       .then((response) => response.json())
       .then((data) => {
-
-        setHitDieMulticlass(data.hit_die)
-        console.log(data.hit_die);
-        console.log(data.spellcasting.spellcasting_ability.index);
-        console.log(data.spellcasting.level);
+        setHitDieMulticlass(data.hit_die);
 
         if (data.spellcasting) {
           setSpellcastingAbilityMulticlass(data.spellcasting.spellcasting_ability.index);
@@ -135,10 +134,28 @@ useEffect(() => {
         } else {
           setSpellcastingAbilityMulticlass(null);
           setCasterLevelMulticlass(0);
-
         }
       })
-      .catch((error) => console.error("Error fetching saving throws:", error));
+      .catch((error) => console.error("Error fetching multiclass details:", error));
+
+    // Nueva petición para obtener proficiencias de la multiclase
+    fetch(`https://www.dnd5eapi.co/api/2014/classes/${selectedMulticlass.toLowerCase()}/multi-classing`)
+      .then((response) => response.json())
+      .then((data) => {
+        // Proficiencias fijas de la multiclase
+        const multiClassProficiencies = data.proficiencies.map((prof) => prof.index);
+
+        // Opciones de proficiencias a elegir
+        const multiClassProficiencyChoices = data.proficiency_choices.map((choice) => ({
+          choose: choice.choose,
+          options: choice.from.options.map((option) => option.item.index),
+        }));
+
+        setProficienciesMulticlass(multiClassProficiencies);
+        setProficiencyChoicesMulticlass(multiClassProficiencyChoices);
+        console.log(multiClassProficiencyChoices);
+      })
+      .catch((error) => console.error("Error fetching multiclass proficiencies:", error));
   }
 }, [selectedMulticlass]);
 
@@ -299,6 +316,7 @@ useEffect(() => {
       fetch(`https://www.dnd5eapi.co/api/races/${selectedRace}`)
         .then((response) => response.json())
         .then(async (data) => {
+          setSpeed(data.speed);
           const traitsWithDesc = await Promise.all(
             data.traits.map(async (trait) => {
               const res = await fetch(`https://www.dnd5eapi.co/api/traits/${trait.index}`);
@@ -434,15 +452,16 @@ useEffect(() => {
           </div>
         )}
 
-        {selectedRace && <p>Raza seleccionada: {selectedRace}</p>}
-        {selectedClass && <p>Clase seleccionada: {selectedClass}</p>}
+        {selectedRace && <h2>Raza seleccionada: {selectedRace}</h2>}
+        {selectedRace && <p>Velocidad: {speed} ft</p>}
+        {selectedClass && <h2>Clase seleccionada: {selectedClass}</h2>}
         {spellcastingAbility && <><p>Habilidad de spellcasting: {spellcastingAbility.toUpperCase()}</p>
         <p>Spellcasting Bonus: {statBonus(statsDict[spellcastingAbility.toUpperCase()])+pb}</p>
         <p>Spell Saving Difficulty: {statBonus(statsDict[spellcastingAbility.toUpperCase()])+pb+8}</p>
         <p>Spellcasting Level: {casterLevel}</p>
         </>}
-        {selectedMulticlass && <p>Multiclase seleccionada: {selectedMulticlass}</p>}
-        {spellcastingAbility && <><p>Habilidad de spellcasting: {spellcastingAbilityMulticlass.toUpperCase()}</p>
+        {selectedMulticlass && <h2>Multiclase seleccionada: {selectedMulticlass}</h2>}
+        {spellcastingAbilityMulticlass && <><p>Habilidad de spellcasting: {spellcastingAbilityMulticlass.toUpperCase()}</p>
         <p>Spellcasting Bonus: {statBonus(statsDict[spellcastingAbilityMulticlass.toUpperCase()])+pb}</p>
         <p>Spell Saving Difficulty: {statBonus(statsDict[spellcastingAbilityMulticlass.toUpperCase()])+pb+8}</p>
         <p>Spellcasting Level: {casterLevelMulticlass}</p>
@@ -473,6 +492,15 @@ useEffect(() => {
           <li>No hay proficiencias disponibles</li>
         )}
       </ul>
+      {selectedMulticlass && (
+      <><h3>Competencias multiclase</h3><ul>
+            {proficienciesMulticlass.length > 0 ? (
+              proficienciesMulticlass.map((prof, index) => <li key={index}>{prof}</li>)
+            ) : (
+              <li>No hay proficiencias disponibles</li>
+            )}
+          </ul></>
+      )}
 
 
 
@@ -562,29 +590,34 @@ useEffect(() => {
       </main>
       <Footer />
 
-      {/* Modal clase*/}
-      {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Selecciona una clase</h2>
-            <ul>
-              {classes.map((clase) => (
-                <li
-                  key={clase.index}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
+      {/* Modal clase */}
+    {showModal && (
+      <div className="modal-overlay" onClick={() => setShowModal(false)}>
+        <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
+          <h2>Selecciona una clase</h2>
+          <ul>
+            {classes.map((clase) => (
+              <li
+                key={clase.index}
+                style={{
+                  cursor: selectedMulticlass === clase.index ? "not-allowed" : "pointer",
+                  color: selectedMulticlass === clase.index ? "gray" : "black",
+                }}
+                onClick={() => {
+                  if (selectedMulticlass !== clase.index) {
                     setSelectedClass(clase.index);
                     setShowModal(false);
-                  }}
-                >
-                  {clase.name}
-                </li>
-              ))}
-            </ul>
-            <button onClick={() => setShowModal(false)}>Cerrar</button>
-          </div>
+                  }
+                }}
+              >
+                {clase.name}
+              </li>
+            ))}
+          </ul>
+          <button onClick={() => setShowModal(false)}>Cerrar</button>
         </div>
-      )}
+      </div>
+    )}
 
       {/* Modal raza*/}
       {showRaceModal && (
@@ -620,10 +653,17 @@ useEffect(() => {
                 Ninguna
               </li>
               {classes.map((clase) => (
-                <li key={clase.index} style={{ cursor: "pointer" }} onClick={() => {
-                  setSelectedMulticlass(clase.index); 
-                  setShowMulticlassModal(false);
-                }}>
+                <li key={clase.index} 
+                  style={{
+                    cursor: selectedClass === clase.index ? "not-allowed" : "pointer",
+                    color: selectedClass === clase.index ? "gray" : "black",
+                  }}
+                  onClick={() => {
+                    if (selectedClass !== clase.index) {
+                      setSelectedMulticlass(clase.index); 
+                      setShowMulticlassModal(false);
+                    }
+                  }}>
                   {clase.name}
                 </li>
               ))}

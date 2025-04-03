@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 export default function Modales() {
     const [showModal, setShowModal] = useState(false);
     const [showRaceModal, setShowRaceModal] = useState(false);
-    const [classes, setClasses] = useState([]);
-    const [races, setRaces] = useState([]);
     return(
     <>
         <button onClick={() => setShowModal(true)}>Clase</button>
