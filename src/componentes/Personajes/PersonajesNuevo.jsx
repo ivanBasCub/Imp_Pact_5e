@@ -404,14 +404,49 @@ useEffect(() => {
         <button onClick={() => setShowMulticlassModal(true)}>Seleccionar Multiclase</button>
         )}
         <button onClick={() => setShowRaceModal(true)}>Raza</button>
-        {selectedClass && <p>Clase seleccionada: {selectedClass}</p>}
+        {/*Nivel Clase*/}
+        {selectedClass && (
+          <div>
+            <label htmlFor="level">Nivel Clase:</label>
+            <input
+              type="number"
+              id="level"
+              min="1"
+              max={20 - levelMulticlase}
+              value={level}
+              onChange={(e) => setLevel(Number(e.target.value))}
+            />
+            
+          </div>
+        )}
+        {/*Nivel Multiclase*/}
+        {selectedMulticlass && (
+          <div>
+            <label htmlFor="levelM">Nivel Multiclase:</label>
+            <input
+              type="number"
+              id="level"
+              min="1"
+              max={20 - level}
+              value={levelMulticlase}
+              onChange={(e) => setLevelMulticlase(Number(e.target.value))}
+            />            
+          </div>
+        )}
+
         {selectedRace && <p>Raza seleccionada: {selectedRace}</p>}
+        {selectedClass && <p>Clase seleccionada: {selectedClass}</p>}
         {spellcastingAbility && <><p>Habilidad de spellcasting: {spellcastingAbility.toUpperCase()}</p>
         <p>Spellcasting Bonus: {statBonus(statsDict[spellcastingAbility.toUpperCase()])+pb}</p>
         <p>Spell Saving Difficulty: {statBonus(statsDict[spellcastingAbility.toUpperCase()])+pb+8}</p>
         <p>Spellcasting Level: {casterLevel}</p>
         </>}
         {selectedMulticlass && <p>Multiclase seleccionada: {selectedMulticlass}</p>}
+        {spellcastingAbility && <><p>Habilidad de spellcasting: {spellcastingAbilityMulticlass.toUpperCase()}</p>
+        <p>Spellcasting Bonus: {statBonus(statsDict[spellcastingAbilityMulticlass.toUpperCase()])+pb}</p>
+        <p>Spell Saving Difficulty: {statBonus(statsDict[spellcastingAbilityMulticlass.toUpperCase()])+pb+8}</p>
+        <p>Spellcasting Level: {casterLevelMulticlass}</p>
+        </>}
         
 
 
@@ -422,35 +457,10 @@ useEffect(() => {
           ))}
         </ul>
 
-        {selectedClass && (
-          <div>
-            <label htmlFor="level">Nivel:</label>
-            <input
-              type="number"
-              id="level"
-              min="1"
-              max="20"
-              value={level}
-              onChange={(e) => setLevel(Number(e.target.value))}
-            />
-            <p>Proficiency Bonus: {pb}</p>
-            
-          </div>
-        )}
 
-        {selectedMulticlass && (
-          <div>
-            <label htmlFor="levelM">Nivel:</label>
-            <input
-              type="number"
-              id="level"
-              min="1"
-              max="20"
-              value={levelMulticlase}
-              onChange={(e) => setLevelMulticlase(Number(e.target.value))}
-            />            
-          </div>
-        )}
+
+        <p>Proficiency Bonus: {pb}</p>
+
 
         <SkillProficiencyForm/>
 
