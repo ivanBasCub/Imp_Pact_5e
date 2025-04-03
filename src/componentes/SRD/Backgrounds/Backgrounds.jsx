@@ -38,7 +38,7 @@ function BackgroundList() {
             const query = await getDocs(featRef);
             const backgrounds = query.docs.length;
 
-            if(backgrounds < total){
+            if (backgrounds < total) {
                 updateDataBBDD();
             }
         }
@@ -59,11 +59,11 @@ function BackgroundList() {
             <h1>Backgrounds</h1>
             {backgroundList.map(background => (
                 <div>
-                <div>
-                    <h5>{background.name}</h5>
-                    <Link to={`/SRD/Background/${background.index}`}>More Info</Link>
+                    <div>
+                        <h5>{background.name}</h5>
+                        <Link to={`/SRD/Background/${background.index}`}>More Info</Link>
+                    </div>
                 </div>
-            </div>
             ))}
         </div>
     )
@@ -90,11 +90,71 @@ function Background() {
         return <div>Loading...</div>
     }
 
-    return(
+    return (
         <div>
             <h2>{background.name}</h2>
+            <p><b>Skills Proficiencies:</b>{background.starting_proficiencies.map(proficiency => (
+                <>{proficiency.name.split(":")[0] === "Skill" ? (<>{proficiency.name.split(":")[1]}</>) : ""}</>
+            ))}</p>
+            <p><b>Tools Proficiencies:</b>{background.starting_proficiencies.map(proficiency => (
+                <>{proficiency.name.split(":")[0] != "Skill" ? (<>{proficiency.name.split(":")[1]}</>) : ""}</>
+            ))}</p>
+            <p><b>Languages:</b>{background.language_options ? (
+                <>
+                    {background.language_options.from.option_set_type === "resource_list" ? (
+                        <>{background.language_options.choose} of your choice</>
+                    ) : ""}
+                </>
+            ) : ""}</p>
+            <p><b>Equipment:</b> {background.starting_equipment ? (
+                <>
+                    {background.starting_equipment.map(equipment => (
+                        <> {equipment.quantity} of {equipment.equipment.name}</>
+                    ))}
+                </>
+            ) : ""}
+            </p>
+
+            {background.feature ? (
+                <>
+                    <h3>{background.feature.name}</h3>
+                    <p>{background.feature.desc.join(" ")}</p>
+                </>
+            ) : ""}
+            {table(background.personality_traits)}
+            {table(background.ideals)}
+            {table(background.bonds)}
+            {table(background.flaws)}
+
         </div>
     )
 }
 
+
+function table(data) {
+    var aux = 0;
+
+    return (
+        <table>
+            <thead>
+                <tr>
+                    <th>d{data.from.options.length}</th>
+                    <th>{data.type.split("_").join(" ")}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {data.from.options.map(opt => {
+                    aux++;
+                    return (
+                        <tr>
+                            <td>{aux}</td>
+                            <td>{data.type === "ideals" ? (<>{opt.desc}  </>) : (<>{opt.string}</>) }</td>
+                        </tr>
+                    )
+                })}
+            </tbody>
+        </table>
+    )
+
+}
 export { BackgroundList, Background }
