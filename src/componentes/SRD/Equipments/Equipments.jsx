@@ -136,26 +136,26 @@ function EquipmentList() {
             <h1>Equiments Types</h1>
             <div>
                 <h4>Weapons</h4>
-                <Link to={`/SRD/Equiment/${equiemntsTypes[0]}`}>More Info</Link>
+                <Link to={`/SRD/equipment/${equiemntsTypes[0]}`}>More Info</Link>
             </div>
             <div>
                 <h4>Armors</h4>
-                <Link to={`/SRD/Equiment/${equiemntsTypes[1]}`}>More Info</Link>
+                <Link to={`/SRD/equipment/${equiemntsTypes[1]}`}>More Info</Link>
             </div>
 
             <div>
                 <h4>Adventuring gear</h4>
-                <Link to={`/SRD/Equiment/${equiemntsTypes[2]}`}>More Info</Link>
+                <Link to={`/SRD/equipment/${equiemntsTypes[2]}`}>More Info</Link>
             </div>
 
             <div>
                 <h4>Mounts and Vehicules</h4>
-                <Link to={`/SRD/Equiment/${equiemntsTypes[3]}`}>More Info</Link>
+                <Link to={`/SRD/equipment/${equiemntsTypes[3]}`}>More Info</Link>
             </div>
 
             <div>
                 <h4>Tools</h4>
-                <Link to={`/SRD/Equiment/${equiemntsTypes[4]}`}>More Info</Link>
+                <Link to={`/SRD/equipment/${equiemntsTypes[4]}`}>More Info</Link>
             </div>
         </div>
     )

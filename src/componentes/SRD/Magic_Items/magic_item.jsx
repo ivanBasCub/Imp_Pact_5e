@@ -132,7 +132,7 @@ function MagicItemList(){
                     <tbody>
                         {magicItems.map(item =>(
                             <tr key={item.index}>
-                                <td><Link to={`/SRD/MagicItem/${item.index}`}>{item.name}</Link></td>
+                                <td><Link to={`/SRD/magic_item/${item.index}`}>{item.name}</Link></td>
                                 <td>{item.equiment_category}</td>
                                 <td>{item.rarity}</td>
                             </tr>

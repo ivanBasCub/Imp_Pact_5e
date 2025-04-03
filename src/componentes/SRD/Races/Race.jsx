@@ -93,7 +93,7 @@ function RaceList() {
                 <div>
                     <div>
                         <h5 >{race.name}</h5>
-                        <Link to={`/SRD/Race/${race.index}`}>More Info</Link>
+                        <Link to={`/SRD/race/${race.index}`}>More Info</Link>
                     </div>
                 </div>
             ))}
@@ -194,7 +194,7 @@ function Race() {
             {race.subraces.length != 0 ? (
                 <>
                     <h4>Subraces</h4>
-                    <p>{race.subraces.map(subrace => (<Link to={`/SRD/SubRace/${subrace.index}`}>{subrace.name}</Link>))}</p>
+                    <p>{race.subraces.map(subrace => (<Link to={`/SRD/subrace/${subrace.index}`}>{subrace.name}</Link>))}</p>
                 </>
             ) : ""}
 

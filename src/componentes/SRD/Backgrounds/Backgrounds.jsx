@@ -61,7 +61,7 @@ function BackgroundList() {
                 <div>
                     <div>
                         <h5>{background.name}</h5>
-                        <Link to={`/SRD/Background/${background.index}`}>More Info</Link>
+                        <Link to={`/SRD/background/${background.index}`}>More Info</Link>
                     </div>
                 </div>
             ))}

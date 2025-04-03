@@ -212,7 +212,7 @@ function SpellList() {
                 <tbody>
                     {list.map(spell => (
                         <tr key={spell.index}>
-                            <td><Link to={`/SRD/Spell/${spell.index}`}>{spell.name}</Link></td>
+                            <td><Link to={`/SRD/spell/${spell.index}`}>{spell.name}</Link></td>
                             <td>{spell.school.name}</td>
                             <td>{spell.casting_time} {spell.ritual ? "R" : ""}</td>
                             <td>{spell.range}</td>
@@ -267,7 +267,7 @@ function Spell() {
             })}
             <p><b>Spell Lists. </b> {spell.classes.map(clase => (
                 <>
-                    <Link to={`/SRD/SpellList/${clase}`}>{clase}</Link>
+                    <Link to={`/SRD/spells/${clase}`}>{clase}</Link>
                     {spell.classes[spell.classes.length - 1] !== clase ? ", " : ""}
                 </>
                 ))} </p>

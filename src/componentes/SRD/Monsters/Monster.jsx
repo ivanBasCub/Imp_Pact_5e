@@ -212,7 +212,7 @@ function MonsterList() {
                 <tbody>
                     {list.map(monster => (
                         <tr key={monster.index}>
-                            <td><Link to={`/SRD/Monster/${monster.index}`}>{monster.name}</Link></td>
+                            <td><Link to={`/SRD/monster/${monster.index}`}>{monster.name}</Link></td>
                             <td>{monster.challenge_rating}</td>
                             <td>{monster.type}</td>
                             <td>{monster.size}</td>
