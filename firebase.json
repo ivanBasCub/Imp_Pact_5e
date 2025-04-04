@@ -1,11 +1,21 @@
 {
   "hosting": {
-    "site": "el-grimorio-de-mephistopheles",
-    "public": "public",
+    "site": "impact5e",
+    "public": "dist",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   }
 }
