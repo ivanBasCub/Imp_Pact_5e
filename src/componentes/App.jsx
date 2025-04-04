@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth } from "../firebase/config";
@@ -51,6 +52,22 @@ function App() {
           <p>{message}</p>
         </div>
       )}
+=======
+import { useState } from 'react';
+import '../assets/css/App.css';
+import Header from './Header';
+import Footer from './Footer';
+import MenuInicial from './MenuInicial';
+
+function App() {
+  return (
+    <div id="root">
+      <Header />
+      <main>
+        <MenuInicial />
+      </main>
+      <Footer />
+>>>>>>> master
     </div>
   );
 }
