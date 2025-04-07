@@ -7,7 +7,7 @@ const Header = () => {
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
         <a class="navbar-brand" href="#">
-            <img src="images/diavlo.png" class="d-block w-100" height="20"/>
+            <img src="images/Logo.ico" class="d-block w-100" height="20"/>
         </a>
         <Link to="/" className="text-decoration-none">
             <p class="nav-link">Inicio</p>
@@ -18,7 +18,7 @@ const Header = () => {
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
             <li class="nav-item">
-                <Link to="/Personajes" className="text-decoration-none">
+                <Link to="/SRD" className="text-decoration-none">
                     <p class="nav-link">SRD</p>
                 </Link>
             </li>
@@ -26,7 +26,9 @@ const Header = () => {
                 <p class="nav-link">Homebrew</p>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Personajes</a>
+                <Link to="/Personajes" className="text-decoration-none">
+                    <p class="nav-link">Personajes</p>
+                </Link>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">Sharespace</a>
