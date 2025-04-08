@@ -7,12 +7,13 @@ import App from './componentes/App.jsx'
 import SRD from './componentes/SRD/SRD.jsx'
 import Personajes from './componentes/Personajes/Personajes.jsx'
 import PersonajesNuevo from './componentes/Personajes/PersonajesNuevo.jsx'
+import Login from './componentes/Users/Login.jsx'
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     {/* Configuración de las rutas */}
     <BrowserRouter>
-      {/* Componente con todas las rutas relacionadas con el SRD */}
       <SRD />
       <Routes>
         <Route path="/" element={<App />} />
@@ -21,8 +22,10 @@ createRoot(document.getElementById('root')).render(
         <Route path='/Personajes' element={<Personajes />} />
         <Route path='/Personajes/new' element={<PersonajesNuevo />} />
 
+        {/* Ruta para el inicio y creación de cuenta */}
+        <Route path='/login' element={<Login />} />
 
-      </Routes>  
+      </Routes>
     </BrowserRouter>
   </StrictMode>
 )
