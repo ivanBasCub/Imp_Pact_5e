@@ -213,7 +213,7 @@ function SpellList() {
                     {list.map(spell => (
                         <tr key={spell.index}>
                             <td><Link to={`/SRD/spell/${spell.index}`}>{spell.name}</Link></td>
-                            <td>{spell.school.name}</td>
+                            <td>{spell.school}</td>
                             <td>{spell.casting_time} {spell.ritual ? "R" : ""}</td>
                             <td>{spell.range}</td>
                             <td>{spell.duration}</td>
@@ -254,7 +254,7 @@ function Spell() {
     return (
         <div key={id}>
             <h2>{spell.name}</h2>
-            <p>{spell.level === 0 ? `${spell.school.name} Cantrip` : spell.ritual ? `${spell.school.name} Level ${spell.level} (Ritual)` : `${spell.school.name} Level ${spell.level}`}</p>
+            <p>{spell.level === 0 ? `${spell.school} Cantrip` : spell.ritual ? `${spell.school} Level ${spell.level} (Ritual)` : `${spell.school} Level ${spell.level}`}</p>
             <p><b>Casting Time: </b> {spell.casting_time}</p>
             <p><b>Range: </b>{spell.range}</p>
             <p><b>Duration: </b>{spell.concentration ? 'Concentration,' : spell.duration}</p>
