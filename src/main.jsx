@@ -8,6 +8,7 @@ import SRD from './componentes/SRD/SRD.jsx'
 import Personajes from './componentes/Personajes/Personajes.jsx'
 import PersonajesNuevo from './componentes/Personajes/PersonajesNuevo.jsx'
 import Login from './componentes/Users/Login.jsx'
+import Signup from './componentes/Users/Signup.jsx'
 
 
 createRoot(document.getElementById('root')).render(
@@ -24,6 +25,8 @@ createRoot(document.getElementById('root')).render(
 
         {/* Ruta para el inicio y creación de cuenta */}
         <Route path='/login' element={<Login />} />
+        <Route path='/signup' element={<Signup />} />
+        
 
       </Routes>
     </BrowserRouter>

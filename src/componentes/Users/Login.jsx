@@ -2,6 +2,7 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/config";
 import { useNavigate } from "react-router-dom";
+import Logout from "./Logout";
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -23,7 +24,13 @@ function Login() {
                 })
                 .catch((error) => {
                     const errorMessage = error.message;
-                    setError(errorMessage);
+
+                    if(errorMessage.includes("auth/user-not-found")) {
+                        setError("User not found. Please check your email or sign up.");
+                    }
+                    if(errorMessage.includes("auth/invalid-credential")){
+                        setError("Invalid credentials. Please check your email and password.");
+                    }
                 });
         }
     }
@@ -39,7 +46,7 @@ function Login() {
                 {error ? (<div className="error">{error}</div>) : ""}
                 <button type="submit" onClick={btnLogin}>Login</button>
             </form>
-
+            <p>Don't have an account? <a href="/signup">Register</a></p>
         </div>
     )
 }
