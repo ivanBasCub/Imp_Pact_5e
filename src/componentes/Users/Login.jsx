@@ -47,6 +47,7 @@ function Login() {
                 <button type="submit" onClick={btnLogin}>Login</button>
             </form>
             <p>Don't have an account? <a href="/signup">Register</a></p>
+            <Logout />
         </div>
     )
 }
