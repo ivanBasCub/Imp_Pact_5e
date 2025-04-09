@@ -32,7 +32,7 @@ export default function PersonajesNuevo() {
   const [hitDie, setHitDie] = useState(null);
   const [hitDieMulticlass, setHitDieMulticlass] = useState(null);
   const [hp, setHp] = useState(null);
-  const [savingThrows, setSavingThrows] = useState(null);
+  //const [savingThrows, setSavingThrows] = useState(null);
   const [savingThrowsBool, setSavingThrowsBool] = useState([false, false, false, false, false, false]);
   const [proficiencies, setProficiencies] = useState([]);
   const [proficienciesMulticlass, setProficienciesMulticlass] = useState([]);
@@ -41,6 +41,8 @@ export default function PersonajesNuevo() {
   const [casterLevel, setCasterLevel] = useState(0);
   const [casterLevelMulticlass, setCasterLevelMulticlass] = useState(0);
   const [spellSlots, setSpellSlots] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  const [spellSlotsWarlock, setSpellSlotsWarlock] = useState([0, 0, 0, 0, 0]);
+
 
 
 
@@ -59,23 +61,48 @@ export default function PersonajesNuevo() {
   useEffect(() => {
     if((casterLevel>0 && level>0) || (casterLevelMulticlass>0 && levelMulticlase>0)){
       let levelEfectivo = 0;
+      let levelWarlock = 0;
       if(casterLevelMulticlass==0 || levelMulticlase==0){
-        levelEfectivo = level/casterLevel;
+        if(selectedClass != "warlock"){
+          levelEfectivo = level/casterLevel;
+        }else{
+          levelWarlock = level;
+        }
       }else if(casterLevel==0 || level==0){
-        levelEfectivo = levelMulticlase/casterLevelMulticlass;
+        if(selectedMulticlass != "warlock"){
+          levelEfectivo = levelMulticlase/casterLevelMulticlass;
+        }else{
+          levelWarlock = levelMulticlase;
+        }
       }else{
-        levelEfectivo = level/casterLevel+levelMulticlase/casterLevelMulticlass;
+        if(selectedClass == "warlock"){
+          levelEfectivo = levelMulticlase/casterLevelMulticlass;
+          levelWarlock = level;
+        }else if(selectedMulticlass == "warlock"){
+          levelEfectivo = level/casterLevel;
+          levelWarlock = levelMulticlase;
+        }else{
+          levelEfectivo = level/casterLevel+levelMulticlase/casterLevelMulticlass;
+        }
       }
       setSpellSlots([
-        levelEfectivo>=1 ? (levelEfectivo>1 ? (levelEfectivo>2 ? 4 : 3) : 2) : 0,   //nivel 1
-        levelEfectivo>2 ? (levelEfectivo>3 ? 3 : 2) : 0,                                //nivel 2
-        levelEfectivo>4 ? (levelEfectivo>5 ? 3 : 2) : 0,                                //nivel 3
-        levelEfectivo>6 ? (levelEfectivo>7 ? (levelEfectivo>8 ? 3 : 2) : 1) : 0,    //nivel 4
-        levelEfectivo>8 ? (levelEfectivo>9 ? (levelEfectivo>17 ? 3 : 2) : 1) : 0,   //nivel 5
-        levelEfectivo>10 ? (levelEfectivo>18 ? 2 : 1) : 0,                              //nivel 6
-        levelEfectivo>12 ? (levelEfectivo>19 ? 2 : 1) : 0,                              //nivel 7
+        levelEfectivo>=1 ? (levelEfectivo>1 ? (levelEfectivo>2 ? 4 : 3) : 2) : 0,           //nivel 1
+        levelEfectivo>2 ? (levelEfectivo>3 ? 3 : 2) : 0,                                    //nivel 2
+        levelEfectivo>4 ? (levelEfectivo>5 ? 3 : 2) : 0,                                    //nivel 3
+        levelEfectivo>6 ? (levelEfectivo>7 ? (levelEfectivo>8 ? 3 : 2) : 1) : 0,            //nivel 4
+        levelEfectivo>8 ? (levelEfectivo>9 ? (levelEfectivo>17 ? 3 : 2) : 1) : 0,           //nivel 5
+        levelEfectivo>10 ? (levelEfectivo>18 ? 2 : 1) : 0,                                  //nivel 6
+        levelEfectivo>12 ? (levelEfectivo>19 ? 2 : 1) : 0,                                  //nivel 7
         levelEfectivo>14 ? 1 : 0,                                                           //nivel 8
         levelEfectivo>16 ? 1 : 0]);                                                         //nivel 9
+      
+      setSpellSlotsWarlock([
+        levelWarlock==1 ? 1 : (levelWarlock==2 ? 2 : 0),                           //nivel 1
+        levelWarlock>2 ? (levelWarlock>4 ? 0 : 2) : 0,                             //nivel 2
+        levelWarlock>4 ? (levelWarlock>6 ? 0 : 2) : 0,                             //nivel 3
+        levelWarlock>6 ? (levelWarlock>8 ? 0 : 2) : 0,                             //nivel 4
+        levelWarlock>8 ? (levelWarlock>10 ? (levelWarlock>16 ? 4 : 3) : 2) : 0,    //nivel 5
+      ]);
     }else{
       setSpellSlots([0, 0, 0, 0, 0, 0, 0, 0, 0]);
     }
@@ -88,7 +115,7 @@ useEffect(() => {
       .then((response) => response.json())
       .then((data) => {
         const savingThrowIndexes = data.saving_throws.map((st) => st.index); // ["str", "con", ...]
-        setSavingThrows(savingThrowIndexes);
+        //setSavingThrows(savingThrowIndexes);
 
         setHitDie(data.hit_die)
 
@@ -472,6 +499,13 @@ useEffect(() => {
         {spellSlots[0]>0 && <h2>Ranuras de Conjuros</h2>}
         <ul>
           {spellSlots.map((slots, index) => (
+            slots > 0 && <li key={index}>Nivel {index + 1}: {slots} ranuras</li>
+          ))}
+        </ul>
+
+        {(selectedClass=="warlock" || (selectedMulticlass=="warlock" && levelMulticlase>0)) && <h2>Ranuras de Conjuros de Warlock</h2>}
+        <ul>
+          {spellSlotsWarlock.map((slots, index) => (
             slots > 0 && <li key={index}>Nivel {index + 1}: {slots} ranuras</li>
           ))}
         </ul>
