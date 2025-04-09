@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
@@ -151,17 +151,27 @@ function MagicItem(){
 
     // Efecto para recoger la información de un objeto mágico en concreto
     useEffect(()=>{
-        const nameCollection = "SRD_magic_items";
+        const nameCollection = "SRD_Magic_Items";
         async function getMagicItem(){
             const itemRef = doc(db, nameCollection, id);
             const itemDoc = await getDoc(itemRef);
-            console.log(itemDoc.data());
+
             if (itemDoc.exists()){
                 setMagicItem(itemDoc.data());
+            }else{
+                console.log("No existe el objeto mágico");
             }
         }
         getMagicItem();
     },[]);
+
+    if(Object.keys(magicItem).length === 0){
+        return(
+            <div className="loading">
+                <h2>Loading...</h2>
+            </div>
+        )
+    }
 
     return(
         <div key={magicItem.index}>
