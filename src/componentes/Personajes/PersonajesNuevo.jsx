@@ -42,9 +42,34 @@ export default function PersonajesNuevo() {
   const [casterLevelMulticlass, setCasterLevelMulticlass] = useState(0);
   const [spellSlots, setSpellSlots] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0]);
   const [spellSlotsWarlock, setSpellSlotsWarlock] = useState([0, 0, 0, 0, 0]);
+  const [skillsClass, setSkillsClass] = useState([]);
+  const [skillsClassNumber, setSkillsClassNumber] = useState(0);
+  const [skillsMulticlass, setSkillsMulticlass] = useState([]);
+  const [skillsMulticlassNumber, setSkillsMulticlassNumber] = useState(0);
+  const [selectedClassSkills, setSelectedClassSkills] = useState([]);
+  const [selectedMulticlassSkills, setSelectedMulticlassSkills] = useState([]);
+  const [allSkills, setAllSkills] = useState([]);
+  const [selectedSkills, setSelectedSkills] = useState([]);
 
 
 
+  // Obtén todas las habilidades posibles
+  useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const response = await fetch("https://www.dnd5eapi.co/api/proficiencies");
+        const data = await response.json();
+        
+        // Filtramos las habilidades de tipo 'skill'
+        const skillProficiencies = data.results.filter(skill => skill.index.startsWith("skill-"));
+        setAllSkills(skillProficiencies);
+      } catch (error) {
+        console.error("Error fetching skills:", error);
+      }
+    };
+    
+    fetchSkills();
+  }, []);
 
   useEffect(() => {
     setPb(calcularProficiencyBonus(levelTotal));
@@ -133,6 +158,22 @@ useEffect(() => {
           savingThrowIndexes.includes(stat)
         );
         setSavingThrowsBool(newSavingThrowsBool);
+
+        // Obtener skills (proficiency_choices)
+      const proficiencyChoices = data.proficiency_choices?.[0]; // solo usamos el primero
+      if (proficiencyChoices) {
+        const skills = proficiencyChoices.from.options.map(option => ({
+          name: option.item.name,   // "Skill: Acrobatics"
+          index: option.item.index, // "skill-acrobatics"
+        }));
+        setSkillsClass(skills); // <-- crea este useState en tu componente
+        setSkillsClassNumber(proficiencyChoices.choose); // <-- crea este useState si quieres mostrar cuántos elegir
+        setSelectedClassSkills([]);
+      } else {
+        setSkillsClass([]);
+        setSkillsClassNumber(0);
+        setSelectedClassSkills([]);
+      }
       })
       .catch((error) => console.error("Error fetching saving throws:", error));
 
@@ -158,9 +199,11 @@ useEffect(() => {
         if (data.spellcasting) {
           setSpellcastingAbilityMulticlass(data.spellcasting.spellcasting_ability.index);
           setCasterLevelMulticlass(data.spellcasting.level);
+          setSelectedMulticlassSkills([]);
         } else {
           setSpellcastingAbilityMulticlass(null);
           setCasterLevelMulticlass(0);
+          setSelectedMulticlassSkills([]);
         }
       })
       .catch((error) => console.error("Error fetching multiclass details:", error));
@@ -173,14 +216,21 @@ useEffect(() => {
         const multiClassProficiencies = data.proficiencies.map((prof) => prof.index);
 
         // Opciones de proficiencias a elegir
-        const multiClassProficiencyChoices = data.proficiency_choices.map((choice) => ({
-          choose: choice.choose,
-          options: choice.from.options.map((option) => option.item.index),
-        }));
+        const proficiencyChoices = data.proficiency_choices?.[0]; // solo usamos el primero
+        if (proficiencyChoices) {
+          const skills = proficiencyChoices.from.options.map(option => ({
+            name: option.item.name,   // "Skill: Acrobatics"
+            index: option.item.index, // "skill-acrobatics"
+          }));
+          setSkillsMulticlass(skills); // <-- crea este useState en tu componente
+          setSkillsMulticlassNumber(proficiencyChoices.choose); // <-- crea este useState si quieres mostrar cuántos elegir
+          
+        } else {
+          setSkillsMulticlass([]);
+          setSkillsMulticlassNumber(0);
+        }
 
         setProficienciesMulticlass(multiClassProficiencies);
-        setProficiencyChoicesMulticlass(multiClassProficiencyChoices);
-        console.log(multiClassProficiencyChoices);
       })
       .catch((error) => console.error("Error fetching multiclass proficiencies:", error));
   }
@@ -403,6 +453,147 @@ useEffect(() => {
     return savingThrowsBool[statIndex] ? bonus + proficiencyBonus : bonus;
   };
 
+  const handleClassSkillToggle = (skillIndex, max) => {
+    setSelectedClassSkills((prev) => {
+      if (prev.includes(skillIndex)) {
+        return prev.filter((s) => s !== skillIndex);
+      }
+  
+      if (prev.length >= max) {
+        return prev; // No dejar seleccionar más de lo permitido
+      }
+      console.log(selectedClassSkills);
+      return [...prev, skillIndex];
+    });
+  };
+  
+  const handleMulticlassSkillToggle = (skillIndex, max) => {
+    setSelectedMulticlassSkills((prev) => {
+      if (prev.includes(skillIndex)) {
+        return prev.filter((s) => s !== skillIndex);
+      }
+  
+      if (prev.length >= max) {
+        return prev;
+      }
+  
+      return [...prev, skillIndex];
+    });
+  };
+
+    // Función para manejar la selección de skills
+    const handleSkillSelect = (skill) => {
+      // Si la habilidad ya está seleccionada, la deseleccionamos
+      if (selectedSkills.includes(skill)) {
+        setSelectedSkills(prevState => prevState.filter(item => item !== skill));
+      } else {
+        // Si la habilidad no está seleccionada, la añadimos
+        setSelectedSkills(prevState => [...prevState, skill]);
+      }
+    };
+
+
+  function jsonPersonaje() {
+    if(spellcastingAbility){
+
+    }
+    const personaje = {
+      name:  '',
+      level: levelTotal,
+      hit_points: hp,
+      armor_class: 10+statBonus(stats[2]),
+      initiative: statBonus(stats[2]),
+      speed: 30,
+      class: [
+        {
+          name: selectedClass,
+          level: level,
+          subclass: subclass,
+          hit_dice: hitDie,
+          features: features+subclassFeatures,
+          spell_caster: this.clase?.spell_claster || true
+        },
+        {
+          name: this.clase?.name || '',
+          level: this.clase?.level || 0,
+          subclass: this.clase?.subclass || '',
+          hit_dice: this.clase?.hit_dice || 0,
+          features: this.clase?.features || [],
+          spell_caster: this.clase?.spell_claster || true
+        }
+      ],
+      stats: {
+        strength: stats[0],
+        dextrerity: stats[1],
+        intelligence: stats[2],
+        constitution: stats[3],
+        wisdom: stats[4],
+        charisma: stats[5]
+      },
+      saving_throws: {
+        strength: calcularSavingThrow(stats[0]),
+        dexterity:  calcularSavingThrow(stats[1]),
+        intelligence:  calcularSavingThrow(stats[2]),
+        constitution:  calcularSavingThrow(stats[3]),
+        wisdom:  calcularSavingThrow(stats[4]),
+        charisma:  calcularSavingThrow(stats[5])
+      },
+      skills: {
+        acrobatics: this.acrobatics || 0,
+        animal_handling: this.animal_handling || 0,
+        arcana: this.arcana || 0,
+        athletics: this.athletics || 0,
+        deception: this.deception || 0,
+        history: this.history || 0,
+        insight: this.insight || 0,
+        intimidation: this.intimidation || 0,
+        investigation: this.investigation || 0,
+        medicine: this.medicine || 0,
+        nature: this.nature || 0,
+        perception: this.perception || 0,
+        performance: this.performance || 0,
+        persuasion: this.persuasion || 0,
+        religion: this.religion || 0,
+        sleight_of_hand: this.sleight_of_hand || 0,
+        stealth: this.stealth || 0,
+        survival: this.survival || 0
+      },
+      proficiencies: proficiencies+proficienciesMulticlass,
+      equipment: 'lorem ipsum',
+      spells: {
+        spell_slots: {
+          level_1: spellSlots[0]+spellSlotsWarlock[0],
+          level_2: spellSlots[1]+spellSlotsWarlock[1],
+          level_3: spellSlots[2]+spellSlotsWarlock[2],
+          level_4: spellSlots[3]+spellSlotsWarlock[3],
+          level_5: spellSlots[4]+spellSlotsWarlock[4],
+          level_6: spellSlots[5],
+          level_7: spellSlots[6],
+          level_8: spellSlots[7],
+          level_9: spellSlots[8],
+        },
+        spells_known: 0,
+        /*spellbook: this.spellbook?.map(spell => ({
+          index: spell.index || '',
+          name: spell.name || '',
+          class: spell.class || ''
+        })) || []*/
+      },
+      /*background: {
+        name: this.background?.name || '',
+        proficiencies: this.background?.proficiencies || [],
+        equipment: this.background?.equipment || '',
+        feature: this.background?.feature || ''
+      },*/
+      creator: 'user' 
+    };
+  
+    // Ahora imprimimos el JSON
+    console.log(personaje);
+  }
+  
+  
+
   var statsDict = [{key:"FUE", value:0},{key:"DEX", value:0},{key:"CON", value:0},{key:"INT", value:0},{key:"WIS", value:0},{key:"CHA", value:0}];
 
   return (
@@ -411,6 +602,7 @@ useEffect(() => {
       <main>
         <h1>Personajes</h1>
         <p>Esta es la página principal de creación de personajes</p>
+        <button onClick={() => jsonPersonaje()}>json</button>
 
         <div>
           <label>Nombre:</label>
@@ -514,6 +706,78 @@ useEffect(() => {
 
         <p>Proficiency Bonus: {pb}</p>
 
+
+      {skillsClassNumber > 0 && (
+        <>
+          <h3>Choose {skillsClassNumber} Class Skills:</h3>
+          <ul>
+            {skillsClass.map((skill) => (
+              <li key={skill.index}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selectedClassSkills.includes(skill.index)}
+                    onChange={() => handleClassSkillToggle(skill.index, skillsClassNumber)}
+                    disabled={
+                      (!selectedClassSkills.includes(skill.index) && selectedClassSkills.length >= skillsClassNumber)
+                      || selectedMulticlassSkills.includes(skill.index)
+                    }
+                  />
+                  {skill.name}
+                </label>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {skillsMulticlassNumber > 0 && (
+        <>
+          <h3>Choose {skillsMulticlassNumber} Multiclass Skills:</h3>
+          <ul>
+            {skillsMulticlass.map((skill) => (
+              <li key={skill.index}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selectedMulticlassSkills.includes(skill.index)}
+                    onChange={() => handleMulticlassSkillToggle(skill.index, skillsMulticlassNumber)}
+                    disabled={
+                      (!selectedMulticlassSkills.includes(skill.index) && selectedMulticlassSkills.length >= skillsMulticlassNumber)
+                      || selectedClassSkills.includes(skill.index)
+                    }
+                  />
+                  {skill.name}
+                </label>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+    <div>
+      <h3>Select your skills (at least 2)</h3>
+      <ul>
+        {allSkills.map(skill => (
+          <li key={skill.index}>
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedSkills.includes(skill.index)}
+                onChange={() => handleSkillSelect(skill.index)}
+                disabled={selectedMulticlassSkills.includes(skill.index) || selectedClassSkills.includes(skill.index)} // Deshabilitamos las habilidades ya seleccionadas por clase o multiclase
+              />
+              {skill.name}
+            </label>
+          </li>
+        ))}
+      </ul>
+      
+      {/* Validación para mostrar un mensaje si no se cumplen los requisitos */}
+      {selectedSkills.length < 2 && selectedSkills.length > 0 && (
+        <p style={{ color: 'red' }}>Please select at least 2 skills because of your background.</p>
+      )}
+    </div>
 
         <SkillProficiencyForm/>
 
