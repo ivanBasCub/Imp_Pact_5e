@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Footer from "../Footer";
 import Header from "../Header";
-import SkillProficiencyForm from "./SkillProficiencyForm.jsx";
 import "../../assets/css/App.css";
 import "../../assets/css/modal.css";
 
@@ -50,7 +49,10 @@ export default function PersonajesNuevo() {
   const [selectedMulticlassSkills, setSelectedMulticlassSkills] = useState([]);
   const [allSkills, setAllSkills] = useState([]);
   const [selectedSkills, setSelectedSkills] = useState([]);
+  const [skillsBonus, setSkillsBonus] = useState([]);
 
+
+  
 
 
   // Obtén todas las habilidades posibles
@@ -448,7 +450,10 @@ useEffect(() => {
   }
 
   const calcularSavingThrow = (statIndex) => {
+    console.log(statIndex);
     const bonus = statBonus(stats[statIndex]); // Modificador base
+    console.log(bonus);
+
     const proficiencyBonus = calcularProficiencyBonus(level);
     return savingThrowsBool[statIndex] ? bonus + proficiencyBonus : bonus;
   };
@@ -494,8 +499,13 @@ useEffect(() => {
 
 
   function jsonPersonaje() {
+    let spellCaster,spellCasterMult = false;
+    let speedFt = 30000;
     if(spellcastingAbility){
-
+      spellCaster = true;
+    }
+    if(spellcastingAbilityMulticlass){
+      spellCasterMult = true;
     }
     const personaje = {
       name:  '',
@@ -511,20 +521,20 @@ useEffect(() => {
           subclass: subclass,
           hit_dice: hitDie,
           features: features+subclassFeatures,
-          spell_caster: this.clase?.spell_claster || true
+          spell_caster: spellCaster
         },
         {
-          name: this.clase?.name || '',
-          level: this.clase?.level || 0,
-          subclass: this.clase?.subclass || '',
-          hit_dice: this.clase?.hit_dice || 0,
-          features: this.clase?.features || [],
-          spell_caster: this.clase?.spell_claster || true
+          name: selectedMulticlass,
+          level: levelMulticlase,
+          subclass: subclassMulticlass,
+          hit_dice: hitDieMulticlass,
+          features: featuresMulticlase+subclassMulticlassFeatures,
+          spell_caster: spellCasterMult
         }
       ],
       stats: {
         strength: stats[0],
-        dextrerity: stats[1],
+        dexterity: stats[1],
         intelligence: stats[2],
         constitution: stats[3],
         wisdom: stats[4],
@@ -539,24 +549,24 @@ useEffect(() => {
         charisma:  calcularSavingThrow(stats[5])
       },
       skills: {
-        acrobatics: this.acrobatics || 0,
-        animal_handling: this.animal_handling || 0,
-        arcana: this.arcana || 0,
-        athletics: this.athletics || 0,
-        deception: this.deception || 0,
-        history: this.history || 0,
-        insight: this.insight || 0,
-        intimidation: this.intimidation || 0,
-        investigation: this.investigation || 0,
-        medicine: this.medicine || 0,
-        nature: this.nature || 0,
-        perception: this.perception || 0,
-        performance: this.performance || 0,
-        persuasion: this.persuasion || 0,
-        religion: this.religion || 0,
-        sleight_of_hand: this.sleight_of_hand || 0,
-        stealth: this.stealth || 0,
-        survival: this.survival || 0
+        acrobatics: skillsBonus[0],
+        animal_handling: skillsBonus[1],
+        arcana: skillsBonus[2],
+        athletics: skillsBonus[3],
+        deception: skillsBonus[4],
+        history: skillsBonus[5],
+        insight: skillsBonus[6],
+        intimidation: skillsBonus[7],
+        investigation: skillsBonus[8],
+        medicine: skillsBonus[9],
+        nature: skillsBonus[10],
+        perception: skillsBonus[11],
+        performance: skillsBonus[12],
+        persuasion: skillsBonus[13],
+        religion: skillsBonus[14],
+        sleight_of_hand: skillsBonus[15],
+        stealth: skillsBonus[16],
+        survival: skillsBonus[17]
       },
       proficiencies: proficiencies+proficienciesMulticlass,
       equipment: 'lorem ipsum',
@@ -592,29 +602,29 @@ useEffect(() => {
     console.log(personaje);
   }
   
-  const renderSkillsWithBonuses = () => {
-    return skills.map((skill) => {
-      // Obtener el bono de habilidad basado en el stat
+  useEffect(() => {
+    // Solo actualizamos el array de skillsBonus si los datos de stats, selectedClassSkills, selectedMulticlassSkills, o selectedSkills cambian
+    const newSkillsBonus = skills.map((skill) => {
       const statBonusValue = statBonus(stats[skill.statNumber]);
-  
-      // Verificar si la habilidad está seleccionada en alguna lista
-      const proficiencyBonus = 
-        (selectedClassSkills.includes(skill.index) || 
-         selectedMulticlassSkills.includes(skill.index) || 
-         selectedSkills.includes(skill.index)) 
-        ? pb 
-        : 0;
-  
-      // Calcular el bono total (bono de atributo + bono de competencia)
-      const totalBonus = statBonusValue + proficiencyBonus;
-  
-      return (
-        <li key={skill.index}>
-          {skill.name} (Bonus: {totalBonus >= 0 ? `+${totalBonus}` : totalBonus})
-        </li>
-      );
+      const proficiencyBonus =
+        (selectedClassSkills.includes(skill.index) ||
+          selectedMulticlassSkills.includes(skill.index) ||
+          selectedSkills.includes(skill.index))
+          ? pb
+          : 0;
+
+      return statBonusValue + proficiencyBonus;
     });
-  };
+
+    // Solo actualizamos el estado si hay un cambio en los valores
+    setSkillsBonus((prevSkillsBonus) => {
+      // Evitar actualizar si no hay cambios
+      if (JSON.stringify(prevSkillsBonus) !== JSON.stringify(newSkillsBonus)) {
+        return newSkillsBonus;
+      }
+      return prevSkillsBonus;
+    });
+  }, [stats, selectedClassSkills, selectedMulticlassSkills, selectedSkills, pb]);
 
   const skills = [
     { index: "skill-acrobatics", name: "Acrobatics", stat: "dexterity", statNumber: 1 },
@@ -823,9 +833,19 @@ useEffect(() => {
       )}
     </div>
 
-    <ul>
-      {renderSkillsWithBonuses()}
-    </ul>
+    <div>
+      <h3>Skills with Bonuses:</h3>
+      <ul>
+        {skills.map((skill, index) => {
+          const totalBonus = skillsBonus[index];
+          return (
+            <li key={skill.index}>
+              {skill.name} (Bonus: {totalBonus >= 0 ? `+${totalBonus}` : totalBonus})
+            </li>
+          );
+        })}
+      </ul>
+    </div>
 
       {/* Lista de Proficiencies */}
       <h3>Competencias varias</h3>
