@@ -87,7 +87,6 @@ function SubClass() {
 
     return (
         <div>
-            {console.log(subClass)}
             <h2>{subClass.subclass_flavor}: {subClass.name}</h2>
             <p>{subClass.desc.join(" ")}</p>
             {subClass.spells.length > 0 ? (

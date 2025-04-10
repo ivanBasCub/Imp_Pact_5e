@@ -133,7 +133,7 @@ function MagicItemList(){
                         {magicItems.map(item =>(
                             <tr key={item.index}>
                                 <td><Link to={`/SRD/magic_item/${item.index}`}>{item.name}</Link></td>
-                                <td>{item.equiment_category}</td>
+                                <td>{item.equiment_category.split("-").join(" ")}</td>
                                 <td>{item.rarity}</td>
                             </tr>
                         ))}
@@ -179,6 +179,9 @@ function MagicItem(){
             <div>
                 <p><b>Item Type: </b> {magicItem.equiment_category}</p>
                 <p><b>Item Rarity: </b> {magicItem.rarity}</p>
+                {magicItem.variants.length > 0 ? (
+                    <p><b>Variants: </b> {magicItem.variants.map(v => (<><Link to={`/SRD/magic_item/${v}`}>{v}</Link>, </>))} </p>
+                ) : ""}
                 <p><b>Item Description: </b></p>
                 {magicItem.desc && magicItem.desc.map((desc, index) => (
                     <p key={index}>{desc}</p>

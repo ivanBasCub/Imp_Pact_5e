@@ -283,8 +283,11 @@ function Monster() {
                         {tableStats("cha", monster.charisma, monster.saving_throws.find(st => st.index === "cha")?.value)}
                     </tbody>
                 </table>
-                <p>Skills: {monster.skills.map(skill => (<> {skill.index} +{skill.value}</>))} </p>
-                <p>Languages: {monster.languages}</p>
+                <p>Damage Resistances: {monster.damage_resistances.length > 0 ? (<>{monster.damage_resistances.join(", ")}</>) : (<>--</>) }</p>
+                <p>Damage Inmunities: {monster.damage_immunities.length > 0 ? (<>{monster.damage_immunities.join(", ")}</>) : (<>--</>) }</p>
+                <p>Conditions Inmunities: {monster.condition_immunities.length > 0 ? (<>{monster.condition_immunities.map(c => (<>{c.name}, </>))}</>) : (<>--</>) }</p>
+                <p>Skills: { monster.skills.length > 0 ? (<>{monster.skills.map(skill => (<> {skill.index} +{skill.value}</>))}</>) : (<>--</>)} </p>
+                <p>Languages: {monster.languages ? (<>{monster.languages}</>) : (<>--</>)}</p>
                 <p>CR {monster.challenge_rating} (XP {monster.xp}; PB +{monster.proficiency_bonus})</p>
             </div>
             {monster.special_abilities.length != 0 ? (
