@@ -592,6 +592,50 @@ useEffect(() => {
     console.log(personaje);
   }
   
+  const renderSkillsWithBonuses = () => {
+    return skills.map((skill) => {
+      // Obtener el bono de habilidad basado en el stat
+      const statBonusValue = statBonus(stats[skill.statNumber]);
+  
+      // Verificar si la habilidad está seleccionada en alguna lista
+      const proficiencyBonus = 
+        (selectedClassSkills.includes(skill.index) || 
+         selectedMulticlassSkills.includes(skill.index) || 
+         selectedSkills.includes(skill.index)) 
+        ? pb 
+        : 0;
+  
+      // Calcular el bono total (bono de atributo + bono de competencia)
+      const totalBonus = statBonusValue + proficiencyBonus;
+  
+      return (
+        <li key={skill.index}>
+          {skill.name} (Bonus: {totalBonus >= 0 ? `+${totalBonus}` : totalBonus})
+        </li>
+      );
+    });
+  };
+
+  const skills = [
+    { index: "skill-acrobatics", name: "Acrobatics", stat: "dexterity", statNumber: 1 },
+    { index: "skill-animal-handling", name: "Animal Handling", stat: "wisdom", statNumber: 4 },
+    { index: "skill-arcana", name: "Arcana", stat: "intelligence", statNumber: 3 },
+    { index: "skill-athletics", name: "Athletics", stat: "strength", statNumber: 0 },
+    { index: "skill-deception", name: "Deception", stat: "charisma", statNumber: 5 },
+    { index: "skill-history", name: "History", stat: "intelligence", statNumber: 3 },
+    { index: "skill-insight", name: "Insight", stat: "wisdom", statNumber: 4 },
+    { index: "skill-intimidation", name: "Intimidation", stat: "charisma", statNumber: 5 },
+    { index: "skill-investigation", name: "Investigation", stat: "intelligence", statNumber: 3 },
+    { index: "skill-medicine", name: "Medicine", stat: "wisdom", statNumber: 4 },
+    { index: "skill-nature", name: "Nature", stat: "intelligence", statNumber: 3 },
+    { index: "skill-perception", name: "Perception", stat: "wisdom", statNumber: 4 },
+    { index: "skill-performance", name: "Performance", stat: "charisma", statNumber: 5 },
+    { index: "skill-persuasion", name: "Persuasion", stat: "charisma", statNumber: 5 },
+    { index: "skill-religion", name: "Religion", stat: "intelligence", statNumber: 3 },
+    { index: "skill-sleight-of-hand", name: "Sleight of Hand", stat: "dexterity", statNumber: 1 },
+    { index: "skill-stealth", name: "Stealth", stat: "dexterity", statNumber: 1 },
+    { index: "skill-survival", name: "Survival", stat: "wisdom", statNumber: 4 }
+  ];
   
 
   var statsDict = [{key:"FUE", value:0},{key:"DEX", value:0},{key:"CON", value:0},{key:"INT", value:0},{key:"WIS", value:0},{key:"CHA", value:0}];
@@ -779,7 +823,9 @@ useEffect(() => {
       )}
     </div>
 
-        <SkillProficiencyForm/>
+    <ul>
+      {renderSkillsWithBonuses()}
+    </ul>
 
       {/* Lista de Proficiencies */}
       <h3>Competencias varias</h3>
