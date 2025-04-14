@@ -35,7 +35,7 @@ export default function PersonajesNuevo() {
   const [savingThrowsBool, setSavingThrowsBool] = useState([false, false, false, false, false, false]);
   const [proficiencies, setProficiencies] = useState([]);
   const [proficienciesMulticlass, setProficienciesMulticlass] = useState([]);
-  const [proficiencyChoicesMulticlass, setProficiencyChoicesMulticlass] = useState([]);
+  //const [proficiencyChoicesMulticlass, setProficiencyChoicesMulticlass] = useState([]);
   const [pb, setPb] = useState(calcularProficiencyBonus(levelTotal));
   const [casterLevel, setCasterLevel] = useState(0);
   const [casterLevelMulticlass, setCasterLevelMulticlass] = useState(0);
@@ -50,6 +50,9 @@ export default function PersonajesNuevo() {
   const [allSkills, setAllSkills] = useState([]);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [skillsBonus, setSkillsBonus] = useState([]);
+  const [equipmentSections, setEquipmentSections] = useState(["", "", "", ""]);
+  const [characterName, setCharacterName] = useState('');
+
 
 
   
@@ -450,9 +453,7 @@ useEffect(() => {
   }
 
   const calcularSavingThrow = (statIndex) => {
-    console.log(statIndex);
     const bonus = statBonus(stats[statIndex]); // Modificador base
-    console.log(bonus);
 
     const proficiencyBonus = calcularProficiencyBonus(level);
     return savingThrowsBool[statIndex] ? bonus + proficiencyBonus : bonus;
@@ -500,7 +501,6 @@ useEffect(() => {
 
   function jsonPersonaje() {
     let spellCaster,spellCasterMult = false;
-    let speedFt = 30000;
     if(spellcastingAbility){
       spellCaster = true;
     }
@@ -508,12 +508,12 @@ useEffect(() => {
       spellCasterMult = true;
     }
     const personaje = {
-      name:  '',
+      name:  characterName,
       level: levelTotal,
       hit_points: hp,
       armor_class: 10+statBonus(stats[2]),
       initiative: statBonus(stats[2]),
-      speed: 30,
+      speed: speed,
       class: [
         {
           name: selectedClass,
@@ -541,12 +541,12 @@ useEffect(() => {
         charisma: stats[5]
       },
       saving_throws: {
-        strength: calcularSavingThrow(stats[0]),
-        dexterity:  calcularSavingThrow(stats[1]),
-        intelligence:  calcularSavingThrow(stats[2]),
-        constitution:  calcularSavingThrow(stats[3]),
-        wisdom:  calcularSavingThrow(stats[4]),
-        charisma:  calcularSavingThrow(stats[5])
+        strength: calcularSavingThrow(0),
+        dexterity:  calcularSavingThrow(1),
+        intelligence:  calcularSavingThrow(2),
+        constitution:  calcularSavingThrow(3),
+        wisdom:  calcularSavingThrow(4),
+        charisma:  calcularSavingThrow(5)
       },
       skills: {
         acrobatics: skillsBonus[0],
@@ -569,7 +569,12 @@ useEffect(() => {
         survival: skillsBonus[17]
       },
       proficiencies: proficiencies+proficienciesMulticlass,
-      equipment: 'lorem ipsum',
+      equipment: {
+        weapons: equipmentSections[0],
+        armor: equipmentSections[1],
+        tools: equipmentSections[2],
+        other: equipmentSections[3]
+    },
       spells: {
         spell_slots: {
           level_1: spellSlots[0]+spellSlotsWarlock[0],
@@ -589,12 +594,12 @@ useEffect(() => {
           class: spell.class || ''
         })) || []*/
       },
-      /*background: {
-        name: this.background?.name || '',
-        proficiencies: this.background?.proficiencies || [],
-        equipment: this.background?.equipment || '',
-        feature: this.background?.feature || ''
-      },*/
+      background: {
+        name: '',
+        proficiencies: [],
+        equipment: '',
+        feature: ''
+      },
       creator: 'user' 
     };
   
@@ -625,6 +630,13 @@ useEffect(() => {
       return prevSkillsBonus;
     });
   }, [stats, selectedClassSkills, selectedMulticlassSkills, selectedSkills, pb]);
+
+  //Para manejar los cambios en el equipment
+  const handleSectionChange = (index, value) => {
+    const updatedSections = [...equipmentSections];
+    updatedSections[index] = value;
+    setEquipmentSections(updatedSections);
+  }; 
 
   const skills = [
     { index: "skill-acrobatics", name: "Acrobatics", stat: "dexterity", statNumber: 1 },
@@ -660,7 +672,12 @@ useEffect(() => {
 
         <div>
           <label>Nombre:</label>
-          <input type="string" id="characterName"></input>
+          <input
+            type="text"
+            id="characterName"
+            value={characterName}
+            onChange={(e) => setCharacterName(e.target.value)}
+          />
         </div>
 
         {/* Formulario de estadísticas */}
@@ -677,6 +694,7 @@ useEffect(() => {
                   value={stats[index]}
                   onChange={(e) => handleInputChange(index, e.target.value)}
                 />
+                {index}
                 -- Bonus -- {statBonus(stats[index])}
                 -- Save -- {calcularSavingThrow(index)}
                 -- Tiene competencia? -- {savingThrowsBool[index] ? "✅" : "❌"}
@@ -866,7 +884,22 @@ useEffect(() => {
           </ul></>
       )}
 
-
+      {/*Equipment*/}
+      <div>
+          <h3>Equipment:</h3>
+          <div style={{ display: "flex", gap: "1rem", marginTop: "0.5rem" }}>
+            {["Weapons", "Armor", "Tools", "Other items"].map((label, index) => (
+              <div key={index} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                <strong>{label} section</strong>
+                <textarea
+                  value={equipmentSections[index]}
+                  onChange={(e) => handleSectionChange(index, e.target.value)}
+                  rows={6}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Lista de Features de la Clase */}
         {features.length > 0 && (
