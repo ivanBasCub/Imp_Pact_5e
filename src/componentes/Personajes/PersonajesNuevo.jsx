@@ -3,9 +3,11 @@ import Footer from "../Footer";
 import Header from "../Header";
 import "../../assets/css/App.css";
 import "../../assets/css/modal.css";
+import SpellSelector from "./SpellSelector";
+
 
 export default function PersonajesNuevo() {
-  const [showModal, setShowModal] = useState(false);
+  const [selectedSpells, setSelectedSpells] = useState([]);  const [showModal, setShowModal] = useState(false);
   const [showRaceModal, setShowRaceModal] = useState(false);
   const [showMulticlassModal, setShowMulticlassModal] = useState(false);
   const [classes, setClasses] = useState([]);
@@ -883,6 +885,11 @@ useEffect(() => {
             )}
           </ul></>
       )}
+
+    <SpellSelector
+      classList={[selectedClass,selectedMulticlass]}
+      onSelectSpells={setSelectedSpells}
+    />
 
       {/*Equipment*/}
       <div>
