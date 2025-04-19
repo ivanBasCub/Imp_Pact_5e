@@ -1,67 +1,77 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { db } from "../../firebase/config.jsx";
-import { collection, getDocs } from 'firebase/firestore';
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase/config";
 
-function SpellSelector({ classList, onSelectSpells }) {
-  const [spells, setSpells] = useState([]);
+export default function SpellSelector({ classList = [], onSelectSpells }) {
+  const [mainClassSpells, setMainClassSpells] = useState([]);
+  const [multiClassSpells, setMultiClassSpells] = useState([]);
   const [selectedSpells, setSelectedSpells] = useState([]);
 
+  const [mainClass, multiclass] = classList;
+
   useEffect(() => {
-    const fetchSpells = async () => {
-      const nanmeColeccion = "SRD_Spells"; // Nombre de la colección en Firestore
-      const spellsSnapshot = await getDocs(collection(db, nanmeColeccion));
-      const allSpells = spellsSnapshot.docs.map(doc => doc.data());
+    async function fetchSpellsByClass(className) {
+      const spellsSnapshot = await getDocs(collection(db, "SRD_Spells"));
+      const filtered = spellsSnapshot.docs
+        .map(doc => doc.data())
+        .filter(spell => spell.classes.includes(className));
+      return filtered;
+    }
 
-      // Filtrar los hechizos por clases
-      const filteredSpells = allSpells.filter(spell =>
-        spell.classes.some(cls => classList.includes(cls))
-      );
+    async function fetchAllSpells() {
+      if (mainClass) {
+        const mainSpells = await fetchSpellsByClass(mainClass);
+        setMainClassSpells(mainSpells);
+      }
 
-      setSpells(filteredSpells);
-    };
+      if (multiclass) {
+        const multiSpells = await fetchSpellsByClass(multiclass);
+        setMultiClassSpells(multiSpells);
+      }
+    }
 
-    fetchSpells();
-  }, [classList]); // Solo se vuelve a ejecutar cuando 'classList' cambia
+    fetchAllSpells();
+  }, [mainClass, multiclass]);
 
-  const toggleSpell = (spell) => {
-    const isSelected = selectedSpells.find(s => s.index === spell.index);
-    const updatedSelectedSpells = isSelected
+  // Maneja selección/deselección de hechizos
+  function handleSpellToggle(spell) {
+    const alreadySelected = selectedSpells.some(s => s.index === spell.index);
+    const updated = alreadySelected
       ? selectedSpells.filter(s => s.index !== spell.index)
       : [...selectedSpells, spell];
 
-    setSelectedSpells(updatedSelectedSpells);
-    onSelectSpells(updatedSelectedSpells); // Llamar a la función de callback con los hechizos seleccionados
-  };
+    setSelectedSpells(updated);
+    onSelectSpells(updated);
+  }
+
+  function renderSpellList(spells, label) {
+    return (
+      <div>
+        <h3>{label}</h3>
+        {spells.length === 0 ? <p>No spells available</p> : (
+          <ul>
+            {spells.map(spell => (
+              <li key={spell.index}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selectedSpells.some(s => s.index === spell.index)}
+                    onChange={() => handleSpellToggle(spell)}
+                  />
+                  {spell.name} (lvl {spell.level})
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h2>Available Spells</h2>
-      <ul>
-        {spells.length === 0 ? (
-          <li>No spells available for the selected classes.</li>
-        ) : (
-          spells.map(spell => (
-            <li key={spell.index}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={selectedSpells.some(s => s.index === spell.index)}
-                  onChange={() => toggleSpell(spell)}
-                />
-                {spell.name} (Level {spell.level}, School: {spell.school})
-              </label>
-            </li>
-          ))
-        )}
-      </ul>
+    <div style={{ display: "flex", gap: "2rem" }}>
+      {mainClass && renderSpellList(mainClassSpells, `Spells for ${mainClass}`)}
+      {multiclass && renderSpellList(multiClassSpells, `Spells for ${multiclass}`)}
     </div>
   );
 }
-
-SpellSelector.propTypes = {
-  classList: PropTypes.arrayOf(PropTypes.string).isRequired, // Cambié la definición del tipo a solo strings
-  onSelectSpells: PropTypes.func.isRequired,
-};
-
-export default SpellSelector;
