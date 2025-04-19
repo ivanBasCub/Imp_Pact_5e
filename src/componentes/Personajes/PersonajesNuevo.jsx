@@ -7,7 +7,8 @@ import SpellSelector from "./SpellSelector";
 
 
 export default function PersonajesNuevo() {
-  const [selectedSpells, setSelectedSpells] = useState([]);  const [showModal, setShowModal] = useState(false);
+  const [selectedSpells, setSelectedSpells] = useState([]);  
+  const [showModal, setShowModal] = useState(false);
   const [showRaceModal, setShowRaceModal] = useState(false);
   const [showMulticlassModal, setShowMulticlassModal] = useState(false);
   const [classes, setClasses] = useState([]);
@@ -590,11 +591,7 @@ useEffect(() => {
           level_9: spellSlots[8],
         },
         spells_known: 0,
-        /*spellbook: this.spellbook?.map(spell => ({
-          index: spell.index || '',
-          name: spell.name || '',
-          class: spell.class || ''
-        })) || []*/
+        spellbook: selectedSpells
       },
       background: {
         name: '',
