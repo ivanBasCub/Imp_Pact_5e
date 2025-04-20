@@ -664,44 +664,60 @@ useEffect(() => {
   return (
     <>
       <Header />
-      <main>
+      <main className="mx-4 my-4">
         <h1>Personajes</h1>
         <p>Esta es la página principal de creación de personajes</p>
         <button onClick={() => jsonPersonaje()}>json</button>
 
-        <div>
-          <label>Nombre:</label>
-          <input
-            type="text"
-            id="characterName"
-            value={characterName}
-            onChange={(e) => setCharacterName(e.target.value)}
-          />
-        </div>
+          {/* Nombre del personaje */}
+            <div className="col-sm-6 col-md-4 my-4">
+              <div className="form-group">
+                <label htmlFor="characterName">Character Name</label>
+                <input
+                  type="text"
+                  id="characterName"
+                  className="form-control"
+                  value={characterName}
+                  onChange={(e) => setCharacterName(e.target.value)}
+                />
+              </div>
+            </div>
 
         {/* Formulario de estadísticas */}
-        <div className="stats-grid">
-          {["FUE", "DES", "CON", "INT", "WIS", "CHA"].map((statName, index) => {
-            statsDict[statName] = stats[index]; // Se ejecuta sin renderizar
-            
-            return (
-              <div key={statName} className="stat-item">
-                <label htmlFor={statName}>{statName}</label>
+        <div className="row">
+        {["FUE", "DES", "CON", "INT", "WIS", "CHA"].map((statName, index) => {
+          statsDict[statName] = stats[index]; // Se ejecuta sin renderizar
+
+          return (
+            <div key={statName} className="col-6 col-md-4 col-lg-2 mb-3">
+              <div className="border rounded p-2 shadow-sm text-center bg-light">
+                <label htmlFor={statName} className="form-label fw-bold">{statName}</label>
                 <input
                   type="number"
                   id={statName}
+                  className="form-control text-center mb-2"
                   value={stats[index]}
                   onChange={(e) => handleInputChange(index, e.target.value)}
                 />
-                {index}
-                -- Bonus -- {statBonus(stats[index])}
-                -- Save -- {calcularSavingThrow(index)}
-                -- Tiene competencia? -- {savingThrowsBool[index] ? "✅" : "❌"}
+                <div className="small">
+                  <div><strong>Bonus:</strong> {statBonus(stats[index])}</div>
+                  <div><strong>Save:</strong> {calcularSavingThrow(index)}</div>
+                  <div><strong>Competencia:</strong> {savingThrowsBool[index] ? "✅" : "❌"}</div>
+                </div>
               </div>
-            );
-          })}
-          <button onClick={handleRandomStats}>Generar Atributos</button>
+            </div>
+          );
+        })}
+
+        <div className="col-12 mt-3">
+          <div className="d-flex justify-content-center">
+            <button className="btn btn-primary w-auto" onClick={handleRandomStats}>
+              Generar Atributos
+            </button>
+          </div>
         </div>
+      </div>
+
 
         <div id="hp">
           <h3>Puntos de Golpe (HP): {hp !== null ? hp : "Cargando..."}</h3>
@@ -1003,54 +1019,47 @@ useEffect(() => {
       <Footer />
 
       {/* Modal clase */}
-    {showModal && (
-      <div className="modal-overlay" onClick={() => setShowModal(false)}>
-        <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
-          <h2>Selecciona una clase</h2>
-          <ul>
-            {classes.map((clase) => (
-              <li
-                key={clase.index}
-                style={{
-                  cursor: selectedMulticlass === clase.index ? "not-allowed" : "pointer",
-                  color: selectedMulticlass === clase.index ? "gray" : "black",
-                }}
-                onClick={() => {
-                  if (selectedMulticlass !== clase.index) {
-                    setSelectedClass(clase.index);
-                    setShowModal(false);
-                  }
-                }}
-              >
-                {clase.name}
-              </li>
-            ))}
-          </ul>
-          <button onClick={() => setShowModal(false)}>Cerrar</button>
-        </div>
-      </div>
-    )}
-
-      {/* Modal raza*/}
-      {showRaceModal && (
-        <div className="modal-overlay" onClick={() => setShowRaceModal(false)}>
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Selecciona una raza</h2>
-            <ul>
-              {races.map((race) => (
+            <h2 className="mb-3">Selecciona una clase</h2>
+            <ul className="list-group">
+              {classes.map((clase) => (
                 <li
-                  key={race.index}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    setSelectedRace(race.index);
-                    setShowRaceModal(false);
+                  key={clase.index}
+                  className="list-group-item d-flex justify-content-between align-items-center"
+                  style={{
+                    cursor: selectedMulticlass === clase.index ? "not-allowed" : "pointer",
+                    color: selectedMulticlass === clase.index ? "gray" : "black",
                   }}
                 >
-                  {race.name}
+                  <span
+                    onClick={() => {
+                      if (selectedMulticlass !== clase.index) {
+                        setSelectedClass(clase.index);
+                        setShowModal(false);
+                      }
+                    }}
+                  >
+                    {clase.name}
+                  </span>
+                  <button
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(`/SRD/class/${clase.index}`, "_blank");
+                    }}
+                  >
+                    Más información
+                  </button>
                 </li>
               ))}
             </ul>
-            <button onClick={() => setShowRaceModal(false)}>Cerrar</button>
+            <div className="text-end mt-3">
+              <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                Cerrar
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1059,28 +1068,88 @@ useEffect(() => {
       {showMulticlassModal && (
         <div className="modal-overlay" onClick={() => setShowMulticlassModal(false)}>
           <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Selecciona una segunda clase</h2>
-            <ul>
-              <li onClick={() => {setSelectedMulticlass(null); setShowMulticlassModal(false); setLevelMulticlase(0); setSubclassMulticlass(null)}}>
+            <h2 className="mb-3">Selecciona una segunda clase</h2>
+            <ul className="list-group">
+              <li
+                className="list-group-item"
+                onClick={() => {
+                  setSelectedMulticlass(null);
+                  setShowMulticlassModal(false);
+                  setLevelMulticlase(0);
+                  setSubclassMulticlass(null);
+                }}
+                style={{ cursor: "pointer" }}
+              >
                 Ninguna
               </li>
               {classes.map((clase) => (
-                <li key={clase.index} 
+                <li
+                  key={clase.index}
+                  className="list-group-item d-flex justify-content-between align-items-center"
                   style={{
                     cursor: selectedClass === clase.index ? "not-allowed" : "pointer",
                     color: selectedClass === clase.index ? "gray" : "black",
                   }}
-                  onClick={() => {
-                    if (selectedClass !== clase.index) {
-                      setSelectedMulticlass(clase.index); 
-                      setShowMulticlassModal(false);
-                    }
-                  }}>
-                  {clase.name}
+                >
+                  <span
+                    onClick={() => {
+                      if (selectedClass !== clase.index) {
+                        setSelectedMulticlass(clase.index);
+                        setShowMulticlassModal(false);
+                      }
+                    }}
+                  >
+                    {clase.name}
+                  </span>
+                  <button
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(`/SRD/class/${clase.index}`, "_blank");
+                    }}
+                  >
+                    Más información
+                  </button>
                 </li>
               ))}
             </ul>
-            <button onClick={() => setShowMulticlassModal(false)}>Cerrar</button>
+            <div className="text-end mt-3">
+              <button className="btn btn-secondary" onClick={() => setShowMulticlassModal(false)}>
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {/* Modal raza */}
+      {showRaceModal && (
+        <div className="modal-overlay" onClick={() => setShowRaceModal(false)}>
+          <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Selecciona una raza</h2>
+            <ul className="list-group">
+              {races.map((race) => (
+                <li
+                  key={race.index}
+                  className="list-group-item d-flex justify-content-between align-items-center"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setSelectedRace(race.index);
+                    setShowRaceModal(false);
+                  }}
+                >
+                  {race.name}
+                  <button
+                    onClick={() => window.open(`/SRD/race/${race.index}`, "_blank")}
+                    className="btn btn-sm btn-outline-primary"
+                  >
+                    Más información
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <button onClick={() => setShowRaceModal(false)} className="btn btn-secondary mt-2">Cerrar</button>
           </div>
         </div>
       )}

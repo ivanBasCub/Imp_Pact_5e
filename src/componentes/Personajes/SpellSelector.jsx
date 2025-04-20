@@ -122,7 +122,7 @@ export default function SpellSelector({ classList = [], spellSlots = [], onSelec
   }
   
   return (
-    <div style={{ display: "flex", gap: "2rem" }}>
+    <div className="d-flex flex-column gap-4">
       {mainClass && renderSpellList(mainClassSpells, `Spells for ${mainClass}`)}
       {multiclass && renderSpellList(multiClassSpells, `Spells for ${multiclass}`)}
     </div>

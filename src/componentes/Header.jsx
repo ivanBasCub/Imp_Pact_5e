@@ -7,7 +7,7 @@ const Header = () => {
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
         <a class="navbar-brand" href="#">
-            <img src="images/Logo.ico" class="d-block w-100" height="20"/>
+            <img src="/images/Logo.ico" class="d-block w-100" height="20"/>
         </a>
         <Link to="/" className="text-decoration-none">
             <p class="nav-link">Inicio</p>
