@@ -690,7 +690,7 @@ useEffect(() => {
 
           return (
             <div key={statName} className="col-6 col-md-4 col-lg-2 mb-3">
-              <div className="border rounded p-2 shadow-sm text-center bg-light">
+              <div className="border rounded p-2 shadow-sm text-center bg-light shadow">
                 <label htmlFor={statName} className="form-label fw-bold">{statName}</label>
                 <input
                   type="number"
@@ -915,34 +915,57 @@ useEffect(() => {
   onSelectSpells={setSelectedSpells}
 />
 
-      {/*Equipment*/}
-      <div>
-          <h3>Equipment:</h3>
-          <div style={{ display: "flex", gap: "1rem", marginTop: "0.5rem" }}>
-            {["Weapons", "Armor", "Tools", "Other items"].map((label, index) => (
-              <div key={index} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                <strong>{label} section</strong>
-                <textarea
-                  value={equipmentSections[index]}
-                  onChange={(e) => handleSectionChange(index, e.target.value)}
-                  rows={6}
-                />
-              </div>
-            ))}
-          </div>
+      {/* Equipment */}
+      <div className="mb-4">
+        <div className="table-responsive table-rounded">
+          <table className="table table-bordered">
+            <thead>
+              <tr>
+                <th colSpan="4" className="text-center">Equipment</th>
+              </tr>
+              <tr>
+                <th>Weapons</th>
+                <th>Armor</th>
+                <th>Tools</th>
+                <th>Other items</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {["Weapons", "Armor", "Tools", "Other items"].map((label, index) => (
+                  <td key={index}>
+                    <textarea
+                      className="form-control"
+                      value={equipmentSections[index]}
+                      onChange={(e) => handleSectionChange(index, e.target.value)}
+                      rows={6}
+                    />
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
 
-        {/* Lista de Features de la Clase */}
+
+      
+      
+      {/* Lista de Features de la Clase */}
+      {(features.length > 0 || featuresMulticlase.length>0 || raceFeatures.length>0) && (<div className="bg-light p-3 rounded my-4 shadow">
         {features.length > 0 && (
-          <div>
-            <h2>Características hasta nivel {level}</h2>
-            <ul>
+          <div className="mb-4">
+            <h2 className="h4">Class Features: {selectedClass}</h2>
+            <ul className="list-group">
               {features.map((feature) => (
-                <li key={feature.index}>
-                  <button onClick={() => handleToggleFeature(feature.index)}>
-                    <strong>{feature.name}</strong>
+                <li key={feature.index} className="list-group-item d-flex justify-content-between align-items-center">
+                  <button 
+                    onClick={() => handleToggleFeature(feature.index)} 
+                    className="btn btn-outline-primary btn-sm feature-item"
+                  >
+                    <strong className="feature-name">{feature.name}</strong>
                   </button>
-                  {expandedFeatures[feature.index] && <p>{feature.desc.join(" ")}</p>}
+                  {expandedFeatures[feature.index] && <p className="mt-2 mx-2">{feature.desc.join(" ")}</p>}
                 </li>
               ))}
             </ul>
@@ -951,70 +974,85 @@ useEffect(() => {
 
         {/* Lista de Features de la Subclase */}
         {subclass && subclassFeatures.length > 0 && (
-          <div>
-            <h2>Características de Subclase: {subclass}</h2>
-            <ul>
+          <div className="mb-4">
+            <h2 className="h4">Subclass Features: {subclass}</h2>
+            <ul className="list-group">
               {subclassFeatures.map((feature) => (
-                <li key={feature.index}>
-                  <button onClick={() => handleToggleFeature(feature.index)}>
-                    <strong>{feature.name}</strong>
+                <li key={feature.index} className="list-group-item d-flex justify-content-between align-items-center">
+                  <button 
+                    onClick={() => handleToggleFeature(feature.index)} 
+                    className="btn btn-outline-primary btn-sm feature-item"
+                  >
+                    <strong className="feature-name">{feature.name}</strong>
                   </button>
-                  {expandedFeatures[feature.index] && <p>{feature.desc.join(" ")}</p>}
+                  {expandedFeatures[feature.index] && <p className="mt-2 mx-2">{feature.desc.join(" ")}</p>}
                 </li>
               ))}
             </ul>
           </div>
         )}
-        
+
         {/* Lista de Features de la MultiClase */}
         {featuresMulticlase.length > 0 && (
-          <div>
-            <h2>Características hasta nivel {levelMulticlase} de multiclase</h2>
-            <ul>
+          <div className="mb-4">
+            <h2 className="h4">Multiclass Features: {selectedMulticlass}</h2>
+            <ul className="list-group">
               {featuresMulticlase.map((feature) => (
-                <li key={feature.index}>
-                  <button onClick={() => handleToggleFeature(feature.index)}>
-                    <strong>{feature.name}</strong>
+                <li key={feature.index} className="list-group-item d-flex justify-content-between align-items-center">
+                  <button 
+                    onClick={() => handleToggleFeature(feature.index)} 
+                    className="btn btn-outline-primary btn-sm feature-item"
+                  >
+                    <strong className="feature-name">{feature.name}</strong>
                   </button>
-                  {expandedFeatures[feature.index] && <p>{feature.desc.join(" ")}</p>}
+                  {expandedFeatures[feature.index] && <p className="mt-2 mx-2">{feature.desc.join(" ")}</p>}
                 </li>
               ))}
             </ul>
           </div>
         )}
 
-        {/* Lista de Features de la Subclase de Multiclase*/}
+        {/* Lista de Features de la Subclase de Multiclase */}
         {subclassMulticlass && subclassMulticlassFeatures.length > 0 && (
-          <div>
-            <h2>Características de Subclase: {subclassMulticlass}</h2>
-            <ul>
+          <div className="mb-4">
+            <h2 className="h4">Subclass Features: {subclassMulticlass}</h2>
+            <ul className="list-group">
               {subclassMulticlassFeatures.map((feature) => (
-                <li key={feature.index}>
-                  <button onClick={() => handleToggleFeature(feature.index)}>
-                    <strong>{feature.name}</strong>
+                <li key={feature.index} className="list-group-item d-flex justify-content-between align-items-center">
+                  <button 
+                    onClick={() => handleToggleFeature(feature.index)} 
+                    className="btn btn-outline-primary btn-sm feature-item"
+                  >
+                    <strong className="feature-name">{feature.name}</strong>
                   </button>
-                  {expandedFeatures[feature.index] && <p>{feature.desc.join(" ")}</p>}
+                  {expandedFeatures[feature.index] && <p className="mt-2 mx-2">{feature.desc.join(" ")}</p>}
                 </li>
               ))}
             </ul>
           </div>
         )}
 
+        {/* Lista de Features de la Raza */}
         {raceFeatures.length > 0 && (
-          <div>
-            <h2>Características de la Raza</h2>
-            <ul>
+          <div className="mb-4">
+            <h2 className="h4">Race Features</h2>
+            <ul className="list-group">
               {raceFeatures.map((feature) => (
-                <li key={feature.index}>
-                  <button onClick={() => handleToggleFeature(feature.index)}>
-                    <strong>{feature.name}</strong>
+                <li key={feature.index} className="list-group-item d-flex justify-content-between align-items-center">
+                  <button 
+                    onClick={() => handleToggleFeature(feature.index)} 
+                    className="btn btn-outline-primary btn-sm feature-item"
+                  >
+                    <strong className="feature-name">{feature.name}</strong>
                   </button>
-                  {expandedFeatures[feature.index] && <p>{feature.desc.join(" ")}</p>}
+                  {expandedFeatures[feature.index] && <p className="mt-2 mx-2">{feature.desc.join(" ")}</p>}
                 </li>
               ))}
             </ul>
           </div>
         )}
+      </div>)}
+
       </main>
       <Footer />
 

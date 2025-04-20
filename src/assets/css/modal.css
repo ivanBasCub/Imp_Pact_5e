@@ -28,4 +28,21 @@
     transition: background-color 0.2s;
     cursor: pointer;
   }
+
+  .feature-name {
+    white-space: nowrap; /* Evita que el texto se envuelva en varias líneas */
+    overflow: hidden;    /* Oculta el texto que se desborda */
+    text-overflow: ellipsis; /* Agrega '...' al final si el texto es demasiado largo */
+    width: 100%; /* Asegúrate de que ocupe todo el ancho disponible */
+  }
+  
+  .feature-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .table-rounded {
+    border-radius: 10px;
+  }
   
