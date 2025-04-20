@@ -883,10 +883,21 @@ useEffect(() => {
           </ul></>
       )}
 
-    <SpellSelector
-      classList={[selectedClass,selectedMulticlass]}
-      onSelectSpells={setSelectedSpells}
-    />
+<SpellSelector
+  classList={[selectedClass, selectedMulticlass]}
+  spellSlots={[
+    spellSlots[0] + (spellSlotsWarlock[0] || 0), // nivel 1
+    spellSlots[1] + (spellSlotsWarlock[1] || 0), // nivel 2
+    spellSlots[2] + (spellSlotsWarlock[2] || 0), // nivel 3
+    spellSlots[3] + (spellSlotsWarlock[3] || 0), // nivel 4
+    spellSlots[4] + (spellSlotsWarlock[4] || 0), // nivel 5
+    spellSlots[5],  // nivel 6 (solo de spellSlots)
+    spellSlots[6],  // nivel 7 (solo de spellSlots)
+    spellSlots[7],  // nivel 8 (solo de spellSlots)
+    spellSlots[8],  // nivel 9 (solo de spellSlots)
+  ]}
+  onSelectSpells={setSelectedSpells}
+/>
 
       {/*Equipment*/}
       <div>
