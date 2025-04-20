@@ -79,6 +79,7 @@ export default function SpellSelector({ classList = [], spellSlots = [], onSelec
   }
 
   function renderSpellList(spells, label) {
+    spells=sortSpells(spells);
     return (
       <div className="mb-4">
         <h3>{label}</h3>
