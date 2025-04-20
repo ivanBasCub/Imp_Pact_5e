@@ -501,7 +501,7 @@ useEffect(() => {
       }
     };
 
-
+  //Genera un json apto para la base de datos del personaje creado
   function jsonPersonaje() {
     let spellCaster,spellCasterMult = false;
     if(spellcastingAbility){
@@ -718,20 +718,29 @@ useEffect(() => {
         </div>
       </div>
 
-
-        <div id="hp">
+      <div className="bg-light p-3 rounded my-4 shadow">
+        <div id="hp" className="mb-3">
           <h3>Puntos de Golpe (HP): {hp !== null ? hp : "Cargando..."}</h3>
         </div>
 
-        <button onClick={() => setShowModal(true)}>Clase</button>
-        {selectedClass && (
-        <button onClick={() => setShowMulticlassModal(true)}>Seleccionar Multiclase</button>
-        )}
-        <button onClick={() => setShowRaceModal(true)}>Raza</button>
+        <div className="d-flex flex-wrap gap-2 mb-3">
+          <button className="btn btn-outline-primary" onClick={() => setShowModal(true)}>
+            Clase
+          </button>
+          {selectedClass && (
+            <button className="btn btn-outline-primary" onClick={() => setShowMulticlassModal(true)}>
+              Seleccionar Multiclase
+            </button>
+          )}
+          <button className="btn btn-outline-primary" onClick={() => setShowRaceModal(true)}>
+            Raza
+          </button>
+        </div>
+
         {/*Nivel Clase*/}
         {selectedClass && (
-          <div>
-            <label htmlFor="level">Nivel Clase:</label>
+          <div className="mb-3">
+            <label htmlFor="level" className="form-label">Nivel Clase:</label>
             <input
               type="number"
               id="level"
@@ -739,14 +748,16 @@ useEffect(() => {
               max={20 - levelMulticlase}
               value={level}
               onChange={(e) => setLevel(Number(e.target.value))}
+              className="form-control"
+              style={{ maxWidth: "150px" }}
             />
-            
           </div>
         )}
-        {/*Nivel Multiclase*/}
-        {selectedMulticlass && (
-          <div>
-            <label htmlFor="levelM">Nivel Multiclase:</label>
+
+          {/*Nivel Multiclase*/}
+          {selectedMulticlass && (
+          <div className="mb-3">
+            <label htmlFor="levelM" className="form-label">Nivel Multiclase:</label>
             <input
               type="number"
               id="level"
@@ -754,44 +765,55 @@ useEffect(() => {
               max={20 - level}
               value={levelMulticlase}
               onChange={(e) => setLevelMulticlase(Number(e.target.value))}
-            />            
+              className="form-control"
+              style={{ maxWidth: "150px" }}
+            />
           </div>
         )}
 
-        {selectedRace && <h2>Raza seleccionada: {selectedRace}</h2>}
-        {selectedRace && <p>Velocidad: {speed} ft</p>}
-        {selectedClass && <h2>Clase seleccionada: {selectedClass}</h2>}
-        {spellcastingAbility && <><p>Habilidad de spellcasting: {spellcastingAbility.toUpperCase()}</p>
-        <p>Spellcasting Bonus: {statBonus(statsDict[spellcastingAbility.toUpperCase()])+pb}</p>
-        <p>Spell Saving Difficulty: {statBonus(statsDict[spellcastingAbility.toUpperCase()])+pb+8}</p>
-        <p>Spellcasting Level: {casterLevel}</p>
-        </>}
-        {selectedMulticlass && <h2>Multiclase seleccionada: {selectedMulticlass}</h2>}
-        {spellcastingAbilityMulticlass && <><p>Habilidad de spellcasting: {spellcastingAbilityMulticlass.toUpperCase()}</p>
-        <p>Spellcasting Bonus: {statBonus(statsDict[spellcastingAbilityMulticlass.toUpperCase()])+pb}</p>
-        <p>Spell Saving Difficulty: {statBonus(statsDict[spellcastingAbilityMulticlass.toUpperCase()])+pb+8}</p>
-        <p>Spellcasting Level: {casterLevelMulticlass}</p>
-        </>}
-        
+          {/*Info de Raza*/}
+          {selectedRace && <h2>Selected Race: {selectedRace}</h2>}
+          {selectedRace && <p>Speed: {speed} ft</p>}
+          {selectedRace && <hr/>}
 
+          {/*Info de Clase*/}          
+          {selectedClass && <h2>Selected Class: {selectedClass}</h2>}
+          {spellcastingAbility && <><p>Spellcasting Ability: {spellcastingAbility.toUpperCase()}</p>
+          <p>Spellcasting Bonus: {statBonus(statsDict[spellcastingAbility.toUpperCase()])+pb}</p>
+          <p>Spell Saving Difficulty: {statBonus(statsDict[spellcastingAbility.toUpperCase()])+pb+8}</p>
+          <p>Spellcasting Level: {casterLevel}</p>
+          </>}
+          {selectedClass && <hr/>}
 
-        {spellSlots[0]>0 && <h2>Ranuras de Conjuros</h2>}
-        <ul>
-          {spellSlots.map((slots, index) => (
-            slots > 0 && <li key={index}>Nivel {index + 1}: {slots} ranuras</li>
-          ))}
-        </ul>
+          {/*Info de Multiclase*/}
+          {selectedMulticlass && <h2>Selected Multiclass: {selectedMulticlass}</h2>}
+          {spellcastingAbilityMulticlass && <><p>Spellcasting Ability: {spellcastingAbilityMulticlass.toUpperCase()}</p>
+          <p>Spellcasting Bonus: {statBonus(statsDict[spellcastingAbilityMulticlass.toUpperCase()])+pb}</p>
+          <p>Spell Saving Difficulty: {statBonus(statsDict[spellcastingAbilityMulticlass.toUpperCase()])+pb+8}</p>
+          <p>Spellcasting Level: {casterLevelMulticlass}</p>
+          </>}
+          {selectedMulticlass && <hr/>}
 
-        {(selectedClass=="warlock" || (selectedMulticlass=="warlock" && levelMulticlase>0)) && <h2>Ranuras de Conjuros de Warlock</h2>}
-        <ul>
-          {spellSlotsWarlock.map((slots, index) => (
-            slots > 0 && <li key={index}>Nivel {index + 1}: {slots} ranuras</li>
-          ))}
-        </ul>
+          {/*Spell Slots*/}
+          {spellSlots[0]>0 && <h2>Spell Slots</h2>}
+          <ul>
+            {spellSlots.map((slots, index) => (
+              slots > 0 && <li key={index}>Level {index + 1}: {slots} slots</li>
+            ))}
+          </ul>
+          {spellSlots[0]>0 && <hr/>}
 
+          {/*Warlock Spell Slots*/}
+          {(selectedClass=="warlock" || (selectedMulticlass=="warlock" && levelMulticlase>0)) && <h2>Warlock Spell Slots</h2>}
+          <ul>
+            {spellSlotsWarlock.map((slots, index) => (
+              slots > 0 && <li key={index}>Level {index + 1}: {slots} slots</li>
+            ))}
+          </ul>
+          {(selectedClass=="warlock" || (selectedMulticlass=="warlock" && levelMulticlase>0)) && <hr/>}
 
-
-        <p>Proficiency Bonus: {pb}</p>
+          <h2>Proficiency Bonus: {pb}</h2>
+        </div>
 
 
       {skillsClassNumber > 0 && (
@@ -899,25 +921,25 @@ useEffect(() => {
           </ul></>
       )}
 
-<SpellSelector
-  classList={[selectedClass, selectedMulticlass]}
-  spellSlots={[
-    spellSlots[0] + (spellSlotsWarlock[0] || 0), // nivel 1
-    spellSlots[1] + (spellSlotsWarlock[1] || 0), // nivel 2
-    spellSlots[2] + (spellSlotsWarlock[2] || 0), // nivel 3
-    spellSlots[3] + (spellSlotsWarlock[3] || 0), // nivel 4
-    spellSlots[4] + (spellSlotsWarlock[4] || 0), // nivel 5
-    spellSlots[5],  // nivel 6 (solo de spellSlots)
-    spellSlots[6],  // nivel 7 (solo de spellSlots)
-    spellSlots[7],  // nivel 8 (solo de spellSlots)
-    spellSlots[8],  // nivel 9 (solo de spellSlots)
-  ]}
-  onSelectSpells={setSelectedSpells}
-/>
+      <SpellSelector
+        classList={[selectedClass, selectedMulticlass]}
+        spellSlots={[
+          spellSlots[0] + (spellSlotsWarlock[0] || 0), // nivel 1
+          spellSlots[1] + (spellSlotsWarlock[1] || 0), // nivel 2
+          spellSlots[2] + (spellSlotsWarlock[2] || 0), // nivel 3
+          spellSlots[3] + (spellSlotsWarlock[3] || 0), // nivel 4
+          spellSlots[4] + (spellSlotsWarlock[4] || 0), // nivel 5
+          spellSlots[5],  // nivel 6 (solo de spellSlots)
+          spellSlots[6],  // nivel 7 (solo de spellSlots)
+          spellSlots[7],  // nivel 8 (solo de spellSlots)
+          spellSlots[8],  // nivel 9 (solo de spellSlots)
+        ]}
+        onSelectSpells={setSelectedSpells}
+      />
 
       {/* Equipment */}
       <div className="mb-4">
-        <div className="table-responsive table-rounded">
+        <div className="table-responsive">
           <table className="table table-bordered">
             <thead>
               <tr>
@@ -949,8 +971,6 @@ useEffect(() => {
       </div>
 
 
-      
-      
       {/* Lista de Features de la Clase */}
       {(features.length > 0 || featuresMulticlase.length>0 || raceFeatures.length>0) && (<div className="bg-light p-3 rounded my-4 shadow">
         {features.length > 0 && (
