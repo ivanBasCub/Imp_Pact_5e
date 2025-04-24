@@ -816,110 +816,157 @@ useEffect(() => {
         </div>
 
 
-      {skillsClassNumber > 0 && (
-        <>
-          <h3>Choose {skillsClassNumber} Class Skills:</h3>
-          <ul>
-            {skillsClass.map((skill) => (
-              <li key={skill.index}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={selectedClassSkills.includes(skill.index)}
-                    onChange={() => handleClassSkillToggle(skill.index, skillsClassNumber)}
-                    disabled={
-                      (!selectedClassSkills.includes(skill.index) && selectedClassSkills.length >= skillsClassNumber)
-                      || selectedMulticlassSkills.includes(skill.index)
-                    }
-                  />
+        <div className="card mb-4">
+  <div className="card-body text-start">
+    <h3 className="mb-4">Skill Selection</h3>
+
+    {skillsClassNumber > 0 && (
+      <>
+        <h5 className="mb-3">Choose {skillsClassNumber} Class Skills:</h5>
+        <div className="d-flex flex-wrap gap-2 mb-3">
+          {skillsClass.map((skill) => (
+            <div key={skill.index} className="border rounded p-2 px-3 bg-light">
+              <div className="form-check m-0">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id={`class-skill-${skill.index}`}
+                  checked={selectedClassSkills.includes(skill.index)}
+                  onChange={() => handleClassSkillToggle(skill.index, skillsClassNumber)}
+                  disabled={
+                    (!selectedClassSkills.includes(skill.index) &&
+                      selectedClassSkills.length >= skillsClassNumber) ||
+                    selectedMulticlassSkills.includes(skill.index)
+                  }
+                />
+                <label className="form-check-label ms-2" htmlFor={`class-skill-${skill.index}`}>
                   {skill.name}
                 </label>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+              </div>
+            </div>
+          ))}
+        </div>
+        <hr />
+      </>
+    )}
 
-      {skillsMulticlassNumber > 0 && (
-        <>
-          <h3>Choose {skillsMulticlassNumber} Multiclass Skills:</h3>
-          <ul>
-            {skillsMulticlass.map((skill) => (
-              <li key={skill.index}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={selectedMulticlassSkills.includes(skill.index)}
-                    onChange={() => handleMulticlassSkillToggle(skill.index, skillsMulticlassNumber)}
-                    disabled={
-                      (!selectedMulticlassSkills.includes(skill.index) && selectedMulticlassSkills.length >= skillsMulticlassNumber)
-                      || selectedClassSkills.includes(skill.index)
-                    }
-                  />
+    {skillsMulticlassNumber > 0 && (
+      <>
+        <h5 className="mb-3">Choose {skillsMulticlassNumber} Multiclass Skills:</h5>
+        <div className="d-flex flex-wrap gap-2 mb-3">
+          {skillsMulticlass.map((skill) => (
+            <div key={skill.index} className="border rounded p-2 px-3 bg-light">
+              <div className="form-check m-0">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id={`multiclass-skill-${skill.index}`}
+                  checked={selectedMulticlassSkills.includes(skill.index)}
+                  onChange={() => handleMulticlassSkillToggle(skill.index, skillsMulticlassNumber)}
+                  disabled={
+                    (!selectedMulticlassSkills.includes(skill.index) &&
+                      selectedMulticlassSkills.length >= skillsMulticlassNumber) ||
+                    selectedClassSkills.includes(skill.index)
+                  }
+                />
+                <label className="form-check-label ms-2" htmlFor={`multiclass-skill-${skill.index}`}>
                   {skill.name}
                 </label>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+              </div>
+            </div>
+          ))}
+        </div>
+        <hr />
+      </>
+    )}
 
-    <div>
-      <h3>Select your skills (at least 2)</h3>
-      <ul>
-        {allSkills.map(skill => (
-          <li key={skill.index}>
-            <label>
-              <input
-                type="checkbox"
-                checked={selectedSkills.includes(skill.index)}
-                onChange={() => handleSkillSelect(skill.index)}
-                disabled={selectedMulticlassSkills.includes(skill.index) || selectedClassSkills.includes(skill.index)} // Deshabilitamos las habilidades ya seleccionadas por clase o multiclase
-              />
+    <h5 className="mb-3">Select your skills (at least 2):</h5>
+    <div className="d-flex flex-wrap gap-2 mb-2">
+      {allSkills.map((skill) => (
+        <div key={skill.index} className="border rounded p-2 px-3 bg-light">
+          <div className="form-check m-0">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id={`general-skill-${skill.index}`}
+              checked={selectedSkills.includes(skill.index)}
+              onChange={() => handleSkillSelect(skill.index)}
+              disabled={
+                selectedMulticlassSkills.includes(skill.index) || selectedClassSkills.includes(skill.index)
+              }
+            />
+            <label className="form-check-label ms-2" htmlFor={`general-skill-${skill.index}`}>
               {skill.name}
             </label>
-          </li>
-        ))}
-      </ul>
-      
-      {/* Validación para mostrar un mensaje si no se cumplen los requisitos */}
-      {selectedSkills.length < 2 && selectedSkills.length > 0 && (
-        <p style={{ color: 'red' }}>Please select at least 2 skills because of your background.</p>
-      )}
+          </div>
+        </div>
+      ))}
     </div>
 
-    <div>
-      <h3>Skills with Bonuses:</h3>
-      <ul>
+    {selectedSkills.length < 2 && selectedSkills.length > 0 && (
+      <p className="text-danger mt-2">Please select at least 2 skills because of your background.</p>
+    )}
+  </div>
+</div>
+
+
+
+    
+    <div className="bg-white p-3 rounded shadow mb-4">
+      <h3 className="mb-3">Skills with Bonuses</h3>
+      <div className="d-flex flex-wrap gap-2">
         {skills.map((skill, index) => {
           const totalBonus = skillsBonus[index];
           return (
-            <li key={skill.index}>
-              {skill.name} (Bonus: {totalBonus >= 0 ? `+${totalBonus}` : totalBonus})
-            </li>
+            <div key={skill.index} className="border rounded p-2 px-3 d-flex align-items-center">
+              <strong className="me-2">{skill.name}</strong>
+              <span className={`badge ${totalBonus >= 0 ? "bg-success" : "bg-danger"} rounded-pill`}>
+                {totalBonus >= 0 ? `+${totalBonus}` : totalBonus}
+              </span>
+            </div>
           );
         })}
-      </ul>
+      </div>
     </div>
 
-      {/* Lista de Proficiencies */}
-      <h3>Competencias varias</h3>
-      <ul>
-        {proficiencies.length > 0 ? (
-          proficiencies.map((prof, index) => <li key={index}>{prof}</li>)
-        ) : (
-          <li>No hay proficiencias disponibles</li>
-        )}
-      </ul>
-      {selectedMulticlass && (
-      <><h3>Competencias multiclase</h3><ul>
-            {proficienciesMulticlass.length > 0 ? (
-              proficienciesMulticlass.map((prof, index) => <li key={index}>{prof}</li>)
-            ) : (
-              <li>No hay proficiencias disponibles</li>
-            )}
-          </ul></>
+
+
+  {/* Bloque conjunto para proficiencies */}
+  <div className="bg-white p-3 rounded shadow mb-4">
+    {/* Proficiencies de clase */}
+    <h3 className="mb-2">Competencias varias</h3>
+    <ul className="list-group mb-3">
+      {proficiencies.length > 0 ? (
+        proficiencies.map((prof, index) => (
+          <li key={index} className="list-group-item">
+            {prof}
+          </li>
+        ))
+      ) : (
+        <li className="list-group-item text-muted">No hay proficiencias disponibles</li>
       )}
+    </ul>
+
+    {selectedMulticlass && (
+      <>
+        {/* Proficiencies de subclase */}
+        <h3 className="mb-2">Competencias multiclase</h3>
+        <ul className="list-group">
+          {proficienciesMulticlass.length > 0 ? (
+            proficienciesMulticlass.map((prof, index) => (
+              <li key={index} className="list-group-item">
+                {prof}
+              </li>
+            ))
+          ) : (
+            <li className="list-group-item text-muted">No hay proficiencias disponibles</li>
+          )}
+        </ul>
+      </>
+    )}
+  </div>
+
+
 
       <SpellSelector
         classList={[selectedClass, selectedMulticlass]}
