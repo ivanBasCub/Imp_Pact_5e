@@ -54,13 +54,13 @@ function SpellList() {
                 const spellRef = doc(db, nanmeColeccion, spell.index);
                 const spellDoc = await getDoc(spellRef);
 
-                if(!spellDoc.exists()){
+                if (!spellDoc.exists()) {
                     var classes = spell.classes.map(clase => clase.index);
                     var subclasses = spell.subclasses.map(subclase => subclase.index);
                     var damage_type = spell.damage?.damage_type?.name;
                     var damage_at_slot_level = spell.damage?.damage_at_slot_level || [];
-                    
-                    setDoc(spellRef,{
+
+                    setDoc(spellRef, {
                         index: spell.index,
                         name: spell.name,
                         level: spell.level,
@@ -91,7 +91,7 @@ function SpellList() {
             const query = await getDocs(collectionRef);
             const totalSpell = query.size;
 
-            if(totalSpell < total){
+            if (totalSpell < total) {
                 updateDataBBDD();
             }
         }
@@ -109,17 +109,17 @@ function SpellList() {
             const query = await getDocs(collectionRef);
 
             var filterData = query.docs.filter(spell => spell.data().level === parseInt(infoForm.level));
-            if(infoForm.school !== "all"){
+            if (infoForm.school !== "all") {
                 filterData = filterData.filter(spell => spell.data().school === infoForm.school);
             }
-            if(infoForm.class !== "all"){
+            if (infoForm.class !== "all") {
                 filterData = filterData.filter(spell => spell.data().classes.includes(infoForm.class));
             }
             setList(filterData.map(spell => spell.data()));
         }
         fetchList();
     }, [infoForm]);
-    
+
     return (
         <div>
             <form method="post">
@@ -210,16 +210,25 @@ function SpellList() {
                     </tr>
                 </thead>
                 <tbody>
-                    {list.map(spell => (
-                        <tr key={spell.index}>
-                            <td><Link to={`/SRD/spell/${spell.index}`}>{spell.name}</Link></td>
-                            <td>{spell.school}</td>
-                            <td>{spell.casting_time} {spell.ritual ? "R" : ""}</td>
-                            <td>{spell.range}</td>
-                            <td>{spell.duration}</td>
-                            <td>{spell.components.join(', ')}</td>
+                    {list.length != 0 ? (
+                        <>
+                            {list.map(spell => (
+                                <tr key={spell.index}>
+                                    <td><Link to={`/SRD/spell/${spell.index}`}>{spell.name}</Link></td>
+                                    <td>{spell.school}</td>
+                                    <td>{spell.casting_time} {spell.ritual ? "R" : ""}</td>
+                                    <td>{spell.range}</td>
+                                    <td>{spell.duration}</td>
+                                    <td>{spell.components.join(', ')}</td>
+                                </tr>
+                            ))}
+                        </>
+                    ) : (
+                        <tr>
+                            <td colSpan={6}>Spells not found</td>
                         </tr>
-                    ))}
+                    )}
+
                 </tbody>
             </table>
         </div>
@@ -236,7 +245,7 @@ function Spell() {
     useEffect(() => {
         const nanmeColeccion = "SRD_Spells";
         async function fetchSpell() {
-        const spellRef = doc(db, nanmeColeccion, id);
+            const spellRef = doc(db, nanmeColeccion, id);
             const spellDoc = await getDoc(spellRef);
             if (spellDoc.exists()) {
                 setSpell(spellDoc.data());
@@ -259,7 +268,7 @@ function Spell() {
             <p><b>Range: </b>{spell.range}</p>
             <p><b>Duration: </b>{spell.concentration ? 'Concentration,' : spell.duration}</p>
             <p><b>Components: </b>{spell.components.join(', ')} {spell.material ? `(${spell.material})` : ""}</p>
-            {spell.desc.map( desc => (<MarkdownViewer markdown={desc}/>))}
+            {spell.desc.map(desc => (<MarkdownViewer markdown={desc} />))}
             {spell.higher_level.map(pf => {
                 if (pf) {
                     return <p><b>At higher Levels.</b> {pf}</p>
@@ -270,7 +279,7 @@ function Spell() {
                     <Link to={`/SRD/spells/${clase}`}>{clase}</Link>
                     {spell.classes[spell.classes.length - 1] !== clase ? ", " : ""}
                 </>
-                ))} </p>
+            ))} </p>
         </div>
     )
 }
