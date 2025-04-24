@@ -45,7 +45,7 @@ function Login() {
                 {error ? (<div className="error">{error}</div>) : ""}
                 <button type="submit" onClick={btnLogin}>Login</button>
             </form>
-            <p>Don't have an account? <a href="/signup">Register</a></p>
+            <p>Don't have an account? <a href="/signup">Sign Up</a></p>
         </div>
     )
 }
