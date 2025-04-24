@@ -28,7 +28,7 @@ dist-ssr
 
 # Directorios y archivos de apoyo
 BBDD/*
-docs
+
 firebaseCommands.md
 
 
