@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { browserSessionPersistence, setPersistence, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/config";
 import { useNavigate } from "react-router-dom";
-import Logout from "./Logout";
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -14,15 +13,12 @@ function Login() {
     const btnLogin = async (event) => {
         event.preventDefault();
         if (email && password) {
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Signed in 
-                    const user = userCredential.user;
-                    console.log(user);
-                    navigate("/SRD  ");
-
-                })
-                .catch((error) => {
+            setPersistence(auth, browserSessionPersistence)
+            .then(() => {
+                return signInWithEmailAndPassword(auth, email, password)
+                .then(() =>{
+                    navigate("/")
+                }).catch((error) =>{
                     const errorMessage = error.message;
 
                     if(errorMessage.includes("auth/user-not-found")) {
@@ -31,9 +27,12 @@ function Login() {
                     if(errorMessage.includes("auth/invalid-credential")){
                         setError("Invalid credentials. Please check your email and password.");
                     }
-                });
+                })
+            }).catch((error) => {
+                console.log(error)
+            })
         }
-    }
+    };
 
     return (
         <div>
@@ -47,7 +46,6 @@ function Login() {
                 <button type="submit" onClick={btnLogin}>Login</button>
             </form>
             <p>Don't have an account? <a href="/signup">Register</a></p>
-            <Logout />
         </div>
     )
 }

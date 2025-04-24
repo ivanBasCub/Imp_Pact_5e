@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 
-export default function Logout() {
+function Logout() {
     const [error, setError] = useState(null)
     const navigate = useNavigate()
 
@@ -26,7 +26,9 @@ export default function Logout() {
 
     return (
         <div>
-            <button onClick={btnLogout}>Logout</button>
+            <button onClick={btnLogout} className="btn btn-outline-danger mx-md-2 my-sm-0">Logout</button>
         </div>
     )
 }
+
+export default Logout;
