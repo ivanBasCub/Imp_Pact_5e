@@ -2,7 +2,9 @@ import { useEffect, useState } from "react"
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import { useParams } from "react-router-dom";
-import RaceTraits from '../Race_Traits/Race_Traits'
+import RaceTraits from '../Race_Traits/Race_Traits';
+import Header from "../../Header";
+import Footer from "../../Footer";
 
 {/*
     Constantes Generales del componente    
@@ -80,20 +82,29 @@ export default function SubRace(){
     }
 
     return (
-        <div>
-            <RaceTraits/>
-            <h2>{subrace.name}</h2>
-            <p>{subrace.desc}</p>
-            {console.log(raceTraits)}
-            <ul>
-                <li><b>Ability Bonuses:</b> {subrace.ability_bonuses.map(ab => (<>Increases by {ab.bonus} in {ab.index} stat. </>))}</li>
-                <li><b>Starting Proficiencies:</b> {subrace.starting_proficiencies.join(", ")}</li>
-                {raceTraits.map((trait, index) => (
-                    <li key={index}>
-                        <b>{trait.name}</b>: {trait.desc}
-                    </li>
-                ))}
-            </ul>
-        </div>
-    )
+        <>
+            <Header />
+            <div className="d-flex flex-column min-vh-100">
+                {/* Contenedor principal que ocupa todo el alto disponible */}
+                <main className="flex-grow-1 container my-4">
+                    <div className="border rounded p-4 bg-light mb-4">
+                        <h1 className="h3 mb-3">{subrace.name}</h1>
+                        <p>{subrace.desc}</p>
+    
+                        <ul>
+                            <li><b>Ability Bonuses:</b> {subrace.ability_bonuses.map(ab => (<>Increases by {ab.bonus} in {ab.index} stat. </>))}</li>
+                            <li><b>Starting Proficiencies:</b> {subrace.starting_proficiencies.join(", ")}</li>
+                            {raceTraits.map((trait, index) => (
+                                <li key={index}>
+                                    <b>{trait.name}</b>: {trait.desc}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </main>
+                <Footer />
+            </div>
+        </>
+    );
+    
 }

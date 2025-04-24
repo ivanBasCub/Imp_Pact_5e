@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
+import Header from "../../Header";
+import Footer from "../../Footer";
 
 {/*
     Constantes Generales del componente    
@@ -223,17 +225,32 @@ function ClassesList() {
     }, [])
 
     return (
-        <div>
-            {classesList.map(clase => (
-                <div>
-                    <div>
-                        <h5>{clase.name}</h5>
-                        <Link to={`/SRD/class/${clase.index}`}>More Info</Link>
+        <>
+          <Header />
+          <div className="d-flex flex-column min-vh-100">
+            {/* Contenedor principal que ocupa todo el alto disponible */}
+            <main className="flex-grow-1 container my-4">
+              <div className="row g-4">
+                {classesList.map((clase, i) => (
+                  <div key={i} className="col-12 col-md-6 col-lg-4">
+                    <div className="border rounded p-3 bg-light h-100 d-flex flex-column justify-content-between">
+                      <h5 className="mb-1 text-center">{clase.name}</h5>
+                      <Link to={`/SRD/class/${clase.index}`} className="btn btn-primary mt-auto btn-sm">
+                        More Info
+                      </Link>
                     </div>
-                </div>
-            ))}
-        </div>
-    )
+                  </div>
+                ))}
+              </div>
+            </main>
+            <Footer />
+          </div>
+        </>
+      );
+      
+      
+      
+      
 }
 
 function Clase() {
@@ -257,72 +274,86 @@ function Clase() {
     }
 
     return (
-        <div>
-            <h1>{clase.name}</h1>
-            {table(clase.index, clase.levels)}
-            <div>
-                <h2>Class Features</h2>
-                <p>As a {clase.index.split("-").join(" ")}, you gain the following class features.</p>
-                <div>
-                    <h3>Hit points</h3>
-                    <p><b>Hit dice: </b> 1d{clase.hit_dice} per {clase.index.split("-").join(" ")} level</p>
-                    <p><b>Hit Points at 1st level: </b> {clase.hit_dice} + your Constitution modifier</p>
-                    <p><b>Hit Points at Higher Levels: </b>1d{clase.hit_dice} (or {(clase.hit_dice / 2) + 1}) + your Constitution modifier</p>
-                </div>
-                <div>
-                    <h3>Proficiencies</h3>
-                    <p><b>Armor:</b>{clase.proficiencies.armor.length != 0 ? (<> {clase.proficiencies.armor.map(ar => ar.name).join(", ")} </>) : (<>None</>)}</p>
-                    <p><b>Weapons:</b>{clase.proficiencies.weapons.length != 0 ? (<> {clase.proficiencies.weapons.map(wp => wp.name).join(", ")} </>) : (<>None</>)}</p>
-                    <p><b>Tools:</b> {Object.keys(clase.proficiencies.tools_choices).length != 0 ? (<>{clase.proficiencies.tools_choices.desc}</>) : (<>None</>)} </p>
-                    <p><b>Saving Throws:</b> {clase.proficiencies.saving_throws.join(", ")}</p>
-                    <p><b>Skills:</b> {clase.proficiencies.skills_choices != undefined ? (<>{clase.proficiencies.skills_choices.desc}</>) : (<>None</>)}  </p>
-                </div>
-                <div>
-                    <h3>Equipment</h3>
-                    <p>You start with the following equipment, in addition to the equipment granted by your background:</p>
-                    <ul>
-                        {clase.equipments.options.map(opt => (
-                            <li>{opt}</li>
-                        ))}
-                        <li>{clase.equipments.starting.map(start => (<>{start.quantity} {start.equipment}, </>))}</li>
-                    </ul>
-                </div>
-                <div>
-                    {/* Ver la lista de habilidades en el caso de que sea un spellcaster */}
-                    {clase.spellcasting ? (
-                        <>
-                            {clase.spellcasting.info.map(inf => (
-                                <>
-                                    <h3>{inf.name}</h3>
-                                    <p>{inf.desc.join(" ")}</p>
-                                </>
-                            ))}
-                        </>
-                    ) : ""}
-
-                    {/* Ver la lista de habilidades de la clase */}
-                    {featureList(clase)}
-
-                    {/* Tabla con las subclasses que hay en el SRD */}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Subclasses</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {clase.subclasses.map(sb => (
-                                <tr>
-                                    <td> <Link to={`/SRD/subclass/${sb.index}`}>{sb.name}</Link> </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+        <>
+            <Header />
+            <div className="container my-4">
+                <div className="border rounded p-4 bg-light mb-4">
+                    <h1 className="h3 mb-3">{clase.name}</h1>
+                    {table(clase.index, clase.levels)}
+    
+                    <div className="mt-4">
+                        <h2>Class Features</h2>
+                        <p>As a {clase.index.split("-").join(" ")}, you gain the following class features.</p>
+    
+                        <div className="border rounded p-3 bg-light mb-4">
+                            <h3>Hit points</h3>
+                            <p><b>Hit dice:</b> 1d{clase.hit_dice} per {clase.index.split("-").join(" ")} level</p>
+                            <p><b>Hit Points at 1st level:</b> {clase.hit_dice} + your Constitution modifier</p>
+                            <p><b>Hit Points at Higher Levels:</b> 1d{clase.hit_dice} (or {(clase.hit_dice / 2) + 1}) + your Constitution modifier</p>
+                        </div>
+    
+                        <div className="border rounded p-3 bg-light mb-4">
+                            <h3>Proficiencies</h3>
+                            <p><b>Armor:</b>{clase.proficiencies.armor.length !== 0 ? (<> {clase.proficiencies.armor.map(ar => ar.name).join(", ")} </>) : (<>None</>)}</p>
+                            <p><b>Weapons:</b>{clase.proficiencies.weapons.length !== 0 ? (<> {clase.proficiencies.weapons.map(wp => wp.name).join(", ")} </>) : (<>None</>)}</p>
+                            <p><b>Tools:</b> {Object.keys(clase.proficiencies.tools_choices).length !== 0 ? (<>{clase.proficiencies.tools_choices.desc}</>) : (<>None</>)} </p>
+                            <p><b>Saving Throws:</b> {clase.proficiencies.saving_throws.join(", ")}</p>
+                            <p><b>Skills:</b> {clase.proficiencies.skills_choices !== undefined ? (<>{clase.proficiencies.skills_choices.desc}</>) : (<>None</>)}  </p>
+                        </div>
+    
+                        <div className="border rounded p-3 bg-light mb-4">
+                            <h3>Equipment</h3>
+                            <p>You start with the following equipment, in addition to the equipment granted by your background:</p>
+                            <ul>
+                                {clase.equipments.options.map(opt => (
+                                    <li key={opt}>{opt}</li>
+                                ))}
+                                <li>{clase.equipments.starting.map((start, i) => (<>{start.quantity} {start.equipment}{i < clase.equipments.starting.length - 1 && ", "}</>))}</li>
+                            </ul>
+                        </div>
+    
+                        {/* Ver la lista de habilidades en el caso de que sea un spellcaster */}
+                        {clase.spellcasting ? (
+                            <>
+                                {clase.spellcasting.info.map((inf, idx) => (
+                                    <div key={idx} className="border rounded p-3 bg-light mb-4">
+                                        <h3>{inf.name}</h3>
+                                        <p>{inf.desc.join(" ")}</p>
+                                    </div>
+                                ))}
+                            </>
+                        ) : ""}
+    
+                        {/* Ver la lista de habilidades de la clase */}
+                        {featureList(clase)}
+    
+                        {/* Tabla con las subclasses que hay en el SRD */}
+                        <div className="border rounded p-4 bg-light mb-4">
+                            <h3>Subclasses</h3>
+                            <table className="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Subclass Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {clase.subclasses.map(sb => (
+                                        <tr key={sb.index}>
+                                            <td>
+                                                <Link to={`/SRD/subclass/${sb.index}`}>{sb.name}</Link>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    )
-}
+            <Footer />
+        </>
+    );
+}    
 
 // Ver la lista de habilidades de la clase con un filtro para que no se repitan
 function featureList(data) {
@@ -368,71 +399,84 @@ function table(clase, data) {
     const subClassFeatureLevel = [2, 3, 6, 10, 14, 18]; 
 
     return (
-        <table>
-            <thead>
-                <tr>
-                    <th>Level</th>
-                    <th>Proficiency Bonus</th>
-                    <th>Features</th>
-                    {data[0].spellcasting ? (
-                        <>
-                            {fullCasters.includes(clase) ? (
-                                <>
-                                    <th>Cantrips know</th>
-                                    {data[0].spellcasting.spells_known ? (<th>Spells know</th>) : ""}
-                                </>
-                            ) : ""}
-                            <th>1st</th>
-                            <th>2nd</th>
-                            <th>3rd</th>
-                            <th>4th</th>
-                            <th>5th</th>
-                            {fullCasters.includes(clase) ? (
-                                <>
-                                    <th>6th</th>
-                                    <th>7th</th>
-                                    <th>8th</th>
-                                    <th>9th</th>
-                                </>
-                            ) : ""}
-                        </>
-                    ) : ""}
-                </tr>
+        <div className="table-responsive my-4">
+          <table className="table table-striped table-bordered table-hover align-middle text-center">
+            <thead className="table-dark">
+              <tr>
+                <th scope="col">Level</th>
+                <th scope="col">Proficiency Bonus</th>
+                <th scope="col">Features</th>
+      
+                {/* Mostrar columnas de hechizos si es spellcaster */}
+                {data[0].spellcasting && (
+                  <>
+                    {fullCasters.includes(clase) && (
+                      <>
+                        <th scope="col">Cantrips Known</th>
+                        {data[0].spellcasting.spells_known && <th scope="col">Spells Known</th>}
+                      </>
+                    )}
+                    <th scope="col">1st</th>
+                    <th scope="col">2nd</th>
+                    <th scope="col">3rd</th>
+                    <th scope="col">4th</th>
+                    <th scope="col">5th</th>
+                    {fullCasters.includes(clase) && (
+                      <>
+                        <th scope="col">6th</th>
+                        <th scope="col">7th</th>
+                        <th scope="col">8th</th>
+                        <th scope="col">9th</th>
+                      </>
+                    )}
+                  </>
+                )}
+              </tr>
             </thead>
             <tbody>
-                {data.map(level => (
-                    <tr>
-                        <td>{level.level}</td>
-                        <td> +{level.prof_bonus}</td>
-                        <td>{level.features.length === 0 && subClassFeatureLevel.includes(level.level) ? (<>SubClass Feature</>) : (<>{level.features.map(ft => ft.name).join(", ")}</>)}</td>
-                        {level.spellcasting ? (
-                            <>
-                                {fullCasters.includes(clase) ? (
-                                    <>
-                                        <td>{level.spellcasting.cantrips_known}</td>
-                                        {level.spellcasting.spells_known ? (<td>{level.spellcasting.spells_known}</td>) : ""}   
-                                    </>
-                                ) : ""}
-                                <td>{level.spellcasting.spell_slots_level_1}</td>
-                                <td>{level.spellcasting.spell_slots_level_2}</td>
-                                <td>{level.spellcasting.spell_slots_level_3}</td>
-                                <td>{level.spellcasting.spell_slots_level_4}</td>
-                                <td>{level.spellcasting.spell_slots_level_5}</td>
-                                {fullCasters.includes(clase) ? (
-                                    <>
-                                        <td>{level.spellcasting.spell_slots_level_6}</td>
-                                        <td>{level.spellcasting.spell_slots_level_7}</td>
-                                        <td>{level.spellcasting.spell_slots_level_8}</td>
-                                        <td>{level.spellcasting.spell_slots_level_9}</td>
-                                    </>
-                                ) : ""}
-                            </>
-                        ) : ""}
-                    </tr>
-                ))}
+              {data.map((level) => (
+                <tr key={level.level}>
+                  <td>{level.level}</td>
+                  <td>+{level.prof_bonus}</td>
+                  <td>
+                    {level.features.length === 0 && subClassFeatureLevel.includes(level.level)
+                      ? "SubClass Feature"
+                      : level.features.map((ft) => ft.name).join(", ")}
+                  </td>
+      
+                  {/* Mostrar datos de spellcasting si aplica */}
+                  {level.spellcasting && (
+                    <>
+                      {fullCasters.includes(clase) && (
+                        <>
+                          <td>{level.spellcasting.cantrips_known}</td>
+                          {level.spellcasting.spells_known && (
+                            <td>{level.spellcasting.spells_known}</td>
+                          )}
+                        </>
+                      )}
+                      <td>{level.spellcasting.spell_slots_level_1}</td>
+                      <td>{level.spellcasting.spell_slots_level_2}</td>
+                      <td>{level.spellcasting.spell_slots_level_3}</td>
+                      <td>{level.spellcasting.spell_slots_level_4}</td>
+                      <td>{level.spellcasting.spell_slots_level_5}</td>
+                      {fullCasters.includes(clase) && (
+                        <>
+                          <td>{level.spellcasting.spell_slots_level_6}</td>
+                          <td>{level.spellcasting.spell_slots_level_7}</td>
+                          <td>{level.spellcasting.spell_slots_level_8}</td>
+                          <td>{level.spellcasting.spell_slots_level_9}</td>
+                        </>
+                      )}
+                    </>
+                  )}
+                </tr>
+              ))}
             </tbody>
-        </table>
-    )
+          </table>
+        </div>
+      );
+      
 }
 
 export { ClassesList, Clase }

@@ -2,7 +2,8 @@ import { useEffect, useState } from "react"
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import MarkdownViewer from "../../Extras/MarkDownViewer";
-
+import Footer from "../../Footer";
+import Header from "../../Header";
 
 {/*
     Constantes Generales del componente    
@@ -72,6 +73,8 @@ export default function Rules() {
 
 
     return (
+        <>
+        <Header></Header>
         <div className="container my-4" style={{ display: 'block' }}>
           {ruleList.map((rule, i) => (
             <div key={i} className="border rounded p-4 bg-light mb-5">
@@ -87,6 +90,8 @@ export default function Rules() {
             </div>
           ))}
         </div>
+        <Footer></Footer>
+        </>
       );
       
       
