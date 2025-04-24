@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
+import Header from "../../Header";
+import Footer from "../../Footer";
 
 {/*
     Constantes Generales del componente    
@@ -132,33 +134,50 @@ function EquipmentList() {
     }, [])
 
     return (
-        <div>
-            <h1>Equiments Types</h1>
-            <div>
-                <h4>Weapons</h4>
-                <Link to={`/SRD/equipment/${equiemntsTypes[0]}`}>More Info</Link>
+        <>
+            <Header />
+            <div className="d-flex flex-row flex-wrap justify-content-between min-vh-100">
+                <main className="flex-grow-1 container my-4">
+                    <div className="d-flex flex-row flex-wrap justify-content-between">
+                        <div className="border rounded p-4 bg-light mb-4 w-100 w-md-48">
+                            <h2>Weapons</h2>
+                            <p>Select a weapon type for more details:</p>
+                            <Link to={`/SRD/equipment/${equiemntsTypes[0]}`} className="d-block">More Info</Link>
+                        </div>
+    
+                        <div className="border rounded p-4 bg-light mb-4 w-100 w-md-48">
+                            <h2>Armors</h2>
+                            <p>Select an armor type for more details:</p>
+                            <Link to={`/SRD/equipment/${equiemntsTypes[1]}`} className="d-block">More Info</Link>
+                        </div>
+    
+                        <div className="border rounded p-4 bg-light mb-4 w-100 w-md-48">
+                            <h2>Adventuring Gear</h2>
+                            <p>Select a gear type for more details:</p>
+                            <Link to={`/SRD/equipment/${equiemntsTypes[2]}`} className="d-block">More Info</Link>
+                        </div>
+    
+                        <div className="border rounded p-4 bg-light mb-4 w-100 w-md-48">
+                            <h2>Mounts and Vehicles</h2>
+                            <p>Select a mount or vehicle for more details:</p>
+                            <Link to={`/SRD/equipment/${equiemntsTypes[3]}`} className="d-block">More Info</Link>
+                        </div>
+    
+                        <div className="border rounded p-4 bg-light mb-4 w-100 w-md-48">
+                            <h2>Tools</h2>
+                            <p>Select a tool type for more details:</p>
+                            <Link to={`/SRD/equipment/${equiemntsTypes[4]}`} className="d-block">More Info</Link>
+                        </div>
+                    </div>
+                </main>
+                
             </div>
-            <div>
-                <h4>Armors</h4>
-                <Link to={`/SRD/equipment/${equiemntsTypes[1]}`}>More Info</Link>
-            </div>
-
-            <div>
-                <h4>Adventuring gear</h4>
-                <Link to={`/SRD/equipment/${equiemntsTypes[2]}`}>More Info</Link>
-            </div>
-
-            <div>
-                <h4>Mounts and Vehicules</h4>
-                <Link to={`/SRD/equipment/${equiemntsTypes[3]}`}>More Info</Link>
-            </div>
-
-            <div>
-                <h4>Tools</h4>
-                <Link to={`/SRD/equipment/${equiemntsTypes[4]}`}>More Info</Link>
-            </div>
-        </div>
-    )
+            <Footer />
+        </>
+    );
+    
+    
+    
 
 }
 
@@ -189,108 +208,122 @@ function Equipments() {
 
 
     return (
-        <div>
-            <h1>
-                {id.id === "weapon" ? (<>Weapons</>) : ""}
-                {id.id === "armor" ? (<>Armors</>) : ""}
-                {id.id === "adventuring-gear" ? (<>Adventuring gear</>) : ""}
-                {id.id === "mounts-and-vehicles" ? (<>Mounts and Vehicules</>) : ""}
-                {id.id === "tools" ? (<>Tools</>) : ""}
-            </h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        {id.id === "weapon" ? (
-                            <>
-                                <th>Weapon Category</th>
-                                <th>Attack Type</th>
-                                <th>Damage</th>
-                                <th>Properties</th>
-                                <th>Weight</th>
-                            </>
-                        ) : ""}
-                        {id.id === "armor" ? (
-                            <>
-                                <th>Armor type</th>
-                                <th>AC</th>
-                                <th>Strength</th>
-                                <th>Stealth</th>
-                                <th>Weight</th>
-                            </>
-                        ) : ""}
-                        {id.id === "adventuring-gear" ? (
-                            <>
-                                <th>Description</th>
-                                <th>Weight</th>
-                            </>
-                        ): ""}
-                        {id.id === "mounts-and-vehicles" ? (
-                            <>
-                                <th>Speed</th>
-                                <th>Weight</th>
-                            </>
-                        ) : ""} 
-                        {id.id === "tools" ? (
-                            <>
-                                <th>Category</th>
-                                <th>Description</th>
-                                <th>Weight</th>
-                            </>
-                        ) : ""}                       
-
-                        <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {console.log(equipmentCategoryList)}
-                    {equipmentCategoryList.map(equipment => (
-                        <tr>
-                            <td>{equipment.name}</td>
-                            {equipment.equipment_category === "weapon" ? (
-                                <>
-                                    <td>{equipment.weapon_category}</td>
-                                    <td>{equipment.weapon_range}</td>
-                                    <td>{equipment.weapon_range === "Ranged" ? (<>{equipment.damage.dice} {equipment.damage.type} ({equipment.range.normal} ft / {equipment.range.long}ft)</>) : (<>{equipment.damage.dice} {equipment.damage.type}</>)}</td>
-                                    <td>{equipment.properties.join(", ")}</td>
-                                    <td>{equipment.weight} lb</td>
-                                </>
-                            ) : ""}
-                            {equipment.equipment_category === "armor" ? (
-                                <>
-                                    <td>{equipment.armor_category}</td>
-                                    <td>{equipment.armor_class.base} {equipment.armor_class.dex_bonus === true ? (<>+ Dex modifier {equipment.armor_class.max_bonus ? (<>(max {equipment.armor_class.max_bonus})</>) : ""} </>) : ""}</td>
-                                    <td>{equipment.str_minimun != 0 ? (<>{equipment.str_minimun}</>): (<> - </>)}</td>
-                                    <td>{equipment.stealth_disadvantage === true ? (<>Disadvantage</>): (<> - </>)}</td>
-                                    <td>{equipment.weight} lb</td>
-
-                                </>
-                            ) : ""}
-                            {equipment.equipment_category === "adventuring-gear" ? (
-                                <>
-                                    <td>{equipment.desc.join(" ")}</td>
-                                    <td>{equipment.weight} lb</td>
-                                </>
-                            ) : ""}
-                            {equipment.equipment_category === "mounts-and-vehicles" ? (
-                                <>
-                                    <td>{equipment.speed != null ? (<> {equipment.speed.quantity} {equipment.speed.unit}</>) : (<> - </>) }</td>
-                                    <td>{equipment.weight} lb</td>
-                                </>
-                            ) :""}
-                            {equipment.equipment_category === "tools" ?(
-                                <>
-                                    <td>{equipment.tool_category}</td>
-                                    <td>{equipment.desc.join(" ")}</td>
-                                    <td>{equipment.weight} lb</td>
-                                </>
-                            ) : ""}
-                            <td>{equipment.cost.quantity}{equipment.cost.unit}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    )
+        <>
+            <Header />
+            <div className="container my-4">
+                <div className="border rounded p-4 bg-light">
+                    <h1>
+                        {id.id === "weapon" ? <>Weapons</> : ""}
+                        {id.id === "armor" ? <>Armors</> : ""}
+                        {id.id === "adventuring-gear" ? <>Adventuring Gear</> : ""}
+                        {id.id === "mounts-and-vehicles" ? <>Mounts and Vehicles</> : ""}
+                        {id.id === "tools" ? <>Tools</> : ""}
+                    </h1>
+                    <table className="table table-striped table-bordered">
+                        <thead className="thead-dark">
+                            <tr>
+                                <th>Name</th>
+                                {id.id === "weapon" && (
+                                    <>
+                                        <th>Weapon Category</th>
+                                        <th>Attack Type</th>
+                                        <th>Damage</th>
+                                        <th>Properties</th>
+                                        <th>Weight</th>
+                                    </>
+                                )}
+                                {id.id === "armor" && (
+                                    <>
+                                        <th>Armor Type</th>
+                                        <th>AC</th>
+                                        <th>Strength</th>
+                                        <th>Stealth</th>
+                                        <th>Weight</th>
+                                    </>
+                                )}
+                                {id.id === "adventuring-gear" && (
+                                    <>
+                                        <th>Description</th>
+                                        <th>Weight</th>
+                                    </>
+                                )}
+                                {id.id === "mounts-and-vehicles" && (
+                                    <>
+                                        <th>Speed</th>
+                                        <th>Weight</th>
+                                    </>
+                                )}
+                                {id.id === "tools" && (
+                                    <>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Weight</th>
+                                    </>
+                                )}
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {equipmentCategoryList.map((equipment, index) => (
+                                <tr key={index}>
+                                    <td>{equipment.name}</td>
+                                    {equipment.equipment_category === "weapon" && (
+                                        <>
+                                            <td>{equipment.weapon_category}</td>
+                                            <td>{equipment.weapon_range}</td>
+                                            <td>
+                                                {equipment.weapon_range === "Ranged"
+                                                    ? `${equipment.damage.dice} ${equipment.damage.type} (${equipment.range.normal} ft / ${equipment.range.long}ft)`
+                                                    : `${equipment.damage.dice} ${equipment.damage.type}`}
+                                            </td>
+                                            <td>{equipment.properties.join(", ")}</td>
+                                            <td>{equipment.weight} lb</td>
+                                        </>
+                                    )}
+                                    {equipment.equipment_category === "armor" && (
+                                        <>
+                                            <td>{equipment.armor_category}</td>
+                                            <td>
+                                                {equipment.armor_class.base}{" "}
+                                                {equipment.armor_class.dex_bonus && (
+                                                    <>+ Dex modifier {equipment.armor_class.max_bonus && `(max ${equipment.armor_class.max_bonus})`} </>
+                                                )}
+                                            </td>
+                                            <td>{equipment.str_minimun !== 0 ? equipment.str_minimun : " - "}</td>
+                                            <td>{equipment.stealth_disadvantage ? "Disadvantage" : " - "}</td>
+                                            <td>{equipment.weight} lb</td>
+                                        </>
+                                    )}
+                                    {equipment.equipment_category === "adventuring-gear" && (
+                                        <>
+                                            <td>{equipment.desc.join(" ")}</td>
+                                            <td>{equipment.weight} lb</td>
+                                        </>
+                                    )}
+                                    {equipment.equipment_category === "mounts-and-vehicles" && (
+                                        <>
+                                            <td>{equipment.speed ? `${equipment.speed.quantity} ${equipment.speed.unit}` : " - "}</td>
+                                            <td>{equipment.weight} lb</td>
+                                        </>
+                                    )}
+                                    {equipment.equipment_category === "tools" && (
+                                        <>
+                                            <td>{equipment.tool_category}</td>
+                                            <td>{equipment.desc.join(" ")}</td>
+                                            <td>{equipment.weight} lb</td>
+                                        </>
+                                    )}
+                                    <td>{equipment.cost.quantity}{equipment.cost.unit}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <Footer />
+        </>
+    );
+    
+    
 }
 export { EquipmentList, Equipments }; 
