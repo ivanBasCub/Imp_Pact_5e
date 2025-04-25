@@ -2,6 +2,8 @@ import { use, useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
+import Header from "../../Header";
+import Footer from "../../Footer";
 
 {/*
     Constantes Generales del componente    
@@ -86,46 +88,68 @@ function SubClass() {
     var filteredLevels = [...new Set(levels)]
 
     return (
-        <div>
-            <h2>{subClass.subclass_flavor}: {subClass.name}</h2>
-            <p>{subClass.desc.join(" ")}</p>
-            {subClass.spells.length > 0 ? (
-                <table>
+        <div className="d-flex flex-column min-vh-100">
+          <Header />
+          <main className="flex-grow-1 flex-column container my-4">
+            <div className="border rounded p-4 bg-white">
+              {/* Información principal de la subclase */}
+              <div className="border rounded p-3 shadow-sm bg-light mb-4">
+                <h2>{subClass.subclass_flavor}: {subClass.name}</h2>
+                <p>{subClass.desc.join(" ")}</p>
+              </div>
+      
+              {/* Tabla de hechizos si existen */}
+              {subClass.spells.length > 0 && (
+                <div className="border rounded p-3 shadow-sm bg-light mb-4">
+                  <table className="table table-bordered">
                     <thead>
-                        <tr>
-                            <th colSpan={2}>{subClass.subclass_flavor} {subClass.name} Spells</th>
-                        </tr>
-                        <tr>
-                            <th>Level</th>
-                            <th>Spells</th>
-                        </tr>
+                      <tr>
+                        <th colSpan={2} className="text-center">{subClass.subclass_flavor} {subClass.name} Spells</th>
+                      </tr>
+                      <tr>
+                        <th>Level</th>
+                        <th>Spells</th>
+                      </tr>
                     </thead>
                     <tbody>
-                        {filteredLevels.map(level => (
-                            <tr>
-                                <td>{level}</td>
-                                <td>{subClass.spells.map(spell => (
-                                    <>
-                                        {spell.level == level ? <Link to={`/SRD/spell/${spell.index}`}>{spell.name}, </Link> : ""}
-                                    </>
-                                ))}</td>
-                            </tr>
-                        ))}
+                      {filteredLevels.map((level) => (
+                        <tr key={level}>
+                          <td>{level}</td>
+                          <td>
+                            {subClass.spells
+                              .filter((spell) => spell.level === level)
+                              .map((spell, idx) => (
+                                <span key={spell.index}>
+                                  <Link to={`/SRD/spell/${spell.index}`}>{spell.name}</Link>
+                                  {idx < subClass.spells.filter(s => s.level === level).length - 1 ? ', ' : ''}
+                                </span>
+                              ))}
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
-                </table>
-            ) : ""}
-            {subClass.levels.map(levels => (
-                <>
-                    {levels.features.map(feature => (
-                        <div key={feature.index}>
-                            <h4>{feature.name}</h4>
-                            <p>{feature.desc.join(" ")}</p>
-                        </div>
-                    ))}
-                </>
-            ))}
+                  </table>
+                </div>
+              )}
+      
+              {/* Características de la subclase */}
+              {subClass.levels.map((level, index) => (
+                <div key={index} className="border rounded p-3 shadow-sm bg-light mb-4">
+                  {level.features.map((feature) => (
+                    <div key={feature.index} className="mb-3">
+                      <h4>{feature.name}</h4>
+                      <p>{feature.desc.join(" ")}</p>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </main>
+          <Footer />
         </div>
-    )
+      );
+      
+      
 }
 
 export default SubClass;

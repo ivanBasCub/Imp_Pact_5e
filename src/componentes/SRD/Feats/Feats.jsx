@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
+import Header from "../../Header";
+import Footer from "../../Footer";
 
 {/*
     Constantes Generales del componente    
@@ -69,18 +71,27 @@ function FeatsList() {
     }, []);
 
     return (
-        <div>
-            <h1>Feats</h1>
-            {featsList.map(feat =>(
-                <div>
-                    <div>
-                        <h5>{feat.name}</h5>
-                        <Link to={`/SRD/Feat/${feat.index}`}>More Info</Link>
-                    </div>
+        <div className="d-flex flex-column min-vh-100">
+            <Header />
+            <main className="flex-grow-1 container my-4">
+                <div className="row g-3">
+                    {featsList.map(feat => (
+                        <div className="col-12" key={feat.index}>
+                            <div className="border rounded p-3 shadow-sm bg-light">
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <h5 className="mb-0 me-3">{feat.name}</h5>
+                                    <Link to={`/SRD/Feat/${feat.index}`} className="btn btn-sm btn-primary">
+                                        More Info
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            ))}
+            </main>
+            <Footer />
         </div>
-    )
+    );
 
 }
 
@@ -108,13 +119,35 @@ function Feat(){
     }
 
     return (
-        <div>
-            <h1>{feat.name}</h1>
-            {console.log(feat.prerequisites)}
-            <p>Prerequisites: {feat.prerequisites.map(data => (<>Minimum {data.minimun} in {data.name} </>))}</p>
-            {feat.desc.map(p => (<p>{p}</p>))}            
-        </div>
-    )
+        <>
+          <Header />
+          <div className="d-flex flex-column min-vh-100">
+            <main className="flex-grow-1 container my-4">
+              <div className="bg-white border rounded shadow-sm p-4">
+                <h1>{feat.name}</h1>
+                {feat.prerequisites.length > 0 && (
+                  <p>
+                    <strong>Prerequisites:</strong>{" "}
+                    {feat.prerequisites.map((data, i) => (
+                      <span key={i}>
+                        Minimum {data.minimum} in {data.name}
+                        {i < feat.prerequisites.length - 1 && ", "}
+                      </span>
+                    ))}
+                  </p>
+                )}
+                {feat.desc.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
+            </main>
+            <Footer />
+          </div>
+        </>
+      );
+      
+    
+    
 }
 
 export { FeatsList, Feat }

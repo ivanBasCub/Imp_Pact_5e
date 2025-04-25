@@ -3,6 +3,8 @@ import { useParams, Link } from "react-router-dom";
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import MarkdownViewer from "../../Extras/MarkDownViewer";
+import Header from "../../Header";
+import Footer from "../../Footer";
 
 {/*
     Constantes Generales del componente    
@@ -121,118 +123,152 @@ function SpellList() {
     }, [infoForm]);
 
     return (
-        <div>
-            <form method="post">
-                <h2>{clase === undefined ? "Spell List" : `${clase} Spell List`}</h2>
-                <div>
-                    <label>Spell Level</label>
-                    <select name="level" onChange={formEvent} value={infoForm.level}>
-                        {infoForm.class === "all" ? (
-                            <>
-                                <option value="0">Cantrips</option>
-                                <option value="1">Level 1</option>
-                                <option value="2">Level 2</option>
-                                <option value="3">Level 3</option>
-                                <option value="4">Level 4</option>
-                                <option value="5">Level 5</option>
-                                <option value="6">Level 6</option>
-                                <option value="7">Level 7</option>
-                                <option value="8">Level 8</option>
-                                <option value="9">Level 9</option>
-                            </>
-                        ) : (
-                            <>
-                                {fullCasters.includes(infoForm.class) ? (
-                                    <>
-                                        <option value="0">Cantrips</option>
-                                        <option value="1">Level 1</option>
-                                    </>
-                                ) : (
-                                    <option value="1">Level 1</option>
-                                )}
-                                <option value="2">Level 2</option>
-                                <option value="3">Level 3</option>
-                                <option value="4">Level 4</option>
-                                <option value="5">Level 5</option>
-                                {fullCasters.includes(infoForm.class) ? (
-                                    <>
-                                        <option value="6">Level 6</option>
-                                        <option value="7">Level 7</option>
-                                        <option value="8">Level 8</option>
-                                        <option value="9">Level 9</option>
-                                    </>
-                                ) : ""}
-                            </>
-                        )}
-                    </select>
+        <>
+            <Header></Header>
+            <main className="flex-grow-1 flex-column container my-4">
+                <div className="card p-4 mb-4 shadow-sm">
+                    <h2 className="mb-3">Spell List</h2>
+                    <form method="post">
+                        <div className="row g-3">
+                            <div className="col-md-4">
+                                <label htmlFor="level" className="form-label">Spell Level</label>
+                                <select
+                                    id="level"
+                                    name="level"
+                                    className="form-select"
+                                    onChange={formEvent}
+                                    value={infoForm.level}
+                                >
+                                    {infoForm.class === "all" ? (
+                                        <>
+                                            <option value="0">Cantrips</option>
+                                            <option value="1">Level 1</option>
+                                            <option value="2">Level 2</option>
+                                            <option value="3">Level 3</option>
+                                            <option value="4">Level 4</option>
+                                            <option value="5">Level 5</option>
+                                            <option value="6">Level 6</option>
+                                            <option value="7">Level 7</option>
+                                            <option value="8">Level 8</option>
+                                            <option value="9">Level 9</option>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {fullCasters.includes(infoForm.class) ? (
+                                                <>
+                                                    <option value="0">Cantrips</option>
+                                                    <option value="1">Level 1</option>
+                                                </>
+                                            ) : (
+                                                <option value="1">Level 1</option>
+                                            )}
+                                            <option value="2">Level 2</option>
+                                            <option value="3">Level 3</option>
+                                            <option value="4">Level 4</option>
+                                            <option value="5">Level 5</option>
+                                            {fullCasters.includes(infoForm.class) && (
+                                                <>
+                                                    <option value="6">Level 6</option>
+                                                    <option value="7">Level 7</option>
+                                                    <option value="8">Level 8</option>
+                                                    <option value="9">Level 9</option>
+                                                </>
+                                            )}
+                                        </>
+                                    )}
+                                </select>
+                            </div>
+    
+                            <div className="col-md-4">
+                                <label htmlFor="school" className="form-label">Spell School</label>
+                                <select
+                                    id="school"
+                                    name="school"
+                                    className="form-select"
+                                    onChange={formEvent}
+                                    value={infoForm.school}
+                                >
+                                    <option value="all">All Schools</option>
+                                    <option value="abjuration">Abjuration</option>
+                                    <option value="conjuration">Conjuration</option>
+                                    <option value="divination">Divination</option>
+                                    <option value="enchantment">Enchantment</option>
+                                    <option value="evocation">Evocation</option>
+                                    <option value="illusion">Illusion</option>
+                                    <option value="necromancy">Necromancy</option>
+                                    <option value="transmutation">Transmutation</option>
+                                </select>
+                            </div>
+    
+                            {clase === undefined && (
+                                <div className="col-md-4">
+                                    <label htmlFor="class" className="form-label">Class Spell List</label>
+                                    <select
+                                        id="class"
+                                        name="class"
+                                        className="form-select"
+                                        onChange={formEvent}
+                                        value={infoForm.class}
+                                    >
+                                        <option value="all">All Classes</option>
+                                        <option value="bard">Bard</option>
+                                        <option value="cleric">Cleric</option>
+                                        <option value="druid">Druid</option>
+                                        <option value="paladin">Paladin</option>
+                                        <option value="ranger">Ranger</option>
+                                        <option value="sorcerer">Sorcerer</option>
+                                        <option value="warlock">Warlock</option>
+                                        <option value="wizard">Wizard</option>
+                                    </select>
+                                </div>
+                            )}
+                        </div>
+                    </form>
                 </div>
-                <div>
-                    <label >Spell School</label>
-                    <select name="school" onChange={formEvent} value={infoForm.school}>
-                        <option value="all">All Schools</option>
-                        <option value="abjuration">Abjuration</option>
-                        <option value="conjuration">Conjuration</option>
-                        <option value="divination">Divination</option>
-                        <option value="enchantment">Enchantment</option>
-                        <option value="evocation">Evocation</option>
-                        <option value="illusion">Illusion</option>
-                        <option value="necromancy">Necromancy</option>
-                        <option value="transmutation">Transmutation</option>
-                    </select>
-                </div>
-                {clase === undefined ? (
-                    <div>
-                        <label>Class Spell List</label>
-                        <select name="class" id="class" onChange={formEvent} value={infoForm.class}>
-                            <option value="all">All Classes</option>
-                            <option value="bard">Bard</option>
-                            <option value="cleric">Cleric</option>
-                            <option value="druid">Druid</option>
-                            <option value="paladin">Paladin</option>
-                            <option value="ranger">Ranger</option>
-                            <option value="sorcerer">Sorcerer</option>
-                            <option value="warlock">Warlock</option>
-                            <option value="wizard">Wizard</option>
-                        </select>
-                    </div>
-                ) : ""}
-
-            </form>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>School</th>
-                        <th>Casting Time</th>
-                        <th>Range</th>
-                        <th>Duration</th>
-                        <th>Components</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {list.length != 0 ? (
-                        <>
-                            {list.map(spell => (
-                                <tr key={spell.index}>
-                                    <td><Link to={`/SRD/spell/${spell.index}`}>{spell.name}</Link></td>
-                                    <td>{spell.school}</td>
-                                    <td>{spell.casting_time} {spell.ritual ? "R" : ""}</td>
-                                    <td>{spell.range}</td>
-                                    <td>{spell.duration}</td>
-                                    <td>{spell.components.join(', ')}</td>
+    
+                <div className="card p-3 shadow-sm">
+                    <div className="table-responsive">
+                        <table className="table table-striped table-hover align-middle">
+                            <thead className="table-dark">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>School</th>
+                                    <th>Casting Time</th>
+                                    <th>Range</th>
+                                    <th>Duration</th>
+                                    <th>Components</th>
                                 </tr>
-                            ))}
-                        </>
-                    ) : (
-                        <tr>
-                            <td colSpan={6}>Spells not found</td>
-                        </tr>
-                    )}
-
-                </tbody>
-            </table>
-        </div>
-    )
+                            </thead>
+                            <tbody>
+                                {list.length !== 0 ? (
+                                    list.map(spell => (
+                                        <tr key={spell.index}>
+                                            <td>
+                                                <Link to={`/SRD/spell/${spell.index}`}>{spell.name}</Link>
+                                            </td>
+                                            <td>{spell.school}</td>
+                                            <td>{spell.casting_time} {spell.ritual ? "R" : ""}</td>
+                                            <td>{spell.range}</td>
+                                            <td>{spell.duration}</td>
+                                            <td>{spell.components.join(', ')}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={6}>Spells not found</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+            <Footer></Footer>
+        </>
+    );
+    
+    
+    
 }
 
 {/*
@@ -261,27 +297,44 @@ function Spell() {
 
     // Imprimimos la información por pantalla
     return (
-        <div key={id}>
-            <h2>{spell.name}</h2>
-            <p>{spell.level === 0 ? `${spell.school} Cantrip` : spell.ritual ? `${spell.school} Level ${spell.level} (Ritual)` : `${spell.school} Level ${spell.level}`}</p>
-            <p><b>Casting Time: </b> {spell.casting_time}</p>
-            <p><b>Range: </b>{spell.range}</p>
-            <p><b>Duration: </b>{spell.concentration ? 'Concentration,' : spell.duration}</p>
-            <p><b>Components: </b>{spell.components.join(', ')} {spell.material ? `(${spell.material})` : ""}</p>
-            {spell.desc.map(desc => (<MarkdownViewer markdown={desc} />))}
-            {spell.higher_level.map(pf => {
-                if (pf) {
-                    return <p><b>At higher Levels.</b> {pf}</p>
-                }
-            })}
-            <p><b>Spell Lists. </b> {spell.classes.map(clase => (
-                <>
-                    <Link to={`/SRD/spells/${clase}`}>{clase}</Link>
-                    {spell.classes[spell.classes.length - 1] !== clase ? ", " : ""}
-                </>
-            ))} </p>
+        <div className="d-flex flex-column min-vh-100">
+          <Header />
+          <main className="flex-grow-1 container my-4">
+            <div className="border rounded p-4 shadow-sm bg-light" key={id}>
+              <h2 className="mb-3">{spell.name}</h2>
+              <p>
+                {spell.level === 0
+                  ? `${spell.school} Cantrip`
+                  : spell.ritual
+                  ? `${spell.school} Level ${spell.level} (Ritual)`
+                  : `${spell.school} Level ${spell.level}`}
+              </p>
+              <p><b>Casting Time:</b> {spell.casting_time}</p>
+              <p><b>Range:</b> {spell.range}</p>
+              <p><b>Duration:</b> {spell.concentration ? 'Concentration, ' : ''}{spell.duration}</p>
+              <p>
+                <b>Components:</b> {spell.components.join(', ')} {spell.material ? `(${spell.material})` : ''}
+              </p>
+      
+              {spell.desc.map((desc, i) => (
+                <MarkdownViewer key={i} markdown={desc} />
+              ))}
+      
+              {spell.higher_level.map((pf, i) => (
+                pf ? <p key={i}><b>At Higher Levels.</b> {pf}</p> : null
+              ))}
+      
+              <p><b>Spell Lists:</b> {spell.classes.map((clase, i) => (
+                <span key={i}>
+                  <Link to={`/SRD/spells/${clase}`}>{clase}</Link>{i < spell.classes.length - 1 && ', '}
+                </span>
+              ))}</p>
+            </div>
+          </main>
+          <Footer />
         </div>
-    )
+      );
+      
 }
 
 export { SpellList, Spell }

@@ -225,28 +225,29 @@ function ClassesList() {
     }, [])
 
     return (
-        <>
+        <div className="d-flex flex-column min-vh-100">
           <Header />
-          <div className="d-flex flex-column min-vh-100">
-            {/* Contenedor principal que ocupa todo el alto disponible */}
-            <main className="flex-grow-1 container my-4">
-              <div className="row g-4">
-                {classesList.map((clase, i) => (
-                  <div key={i} className="col-12 col-md-6 col-lg-4">
-                    <div className="border rounded p-3 bg-light h-100 d-flex flex-column justify-content-between">
-                      <h5 className="mb-1 text-center">{clase.name}</h5>
-                      <Link to={`/SRD/class/${clase.index}`} className="btn btn-primary mt-auto btn-sm">
-                        More Info
-                      </Link>
-                    </div>
+          <main className="flex-grow-1 container my-4">
+            <div className="row g-3 mt-3">
+              {classesList.map((clase) => (
+                <div key={clase.index} className="col-12 col-md-6 col-lg-4">
+                  <div className="border rounded p-3 shadow-sm bg-light h-100 d-flex flex-column justify-content-between">
+                    <h5 className="mb-0 me-3 text-center">{clase.name}</h5>
+                    <Link
+                      to={`/SRD/class/${clase.index}`}
+                      className="btn btn-sm btn-primary mt-3"
+                    >
+                      More Info
+                    </Link>
                   </div>
-                ))}
-              </div>
-            </main>
-            <Footer />
-          </div>
-        </>
+                </div>
+              ))}
+            </div>
+          </main>
+          <Footer />
+        </div>
       );
+      
       
       
       

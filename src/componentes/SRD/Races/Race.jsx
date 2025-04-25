@@ -89,28 +89,30 @@ function RaceList() {
     }, []);
 
     return (
-        <>
+        <div className="d-flex flex-column min-vh-100">
           <Header />
-          <div className="d-flex flex-column min-vh-100">
-            <main className="flex-grow-1 container my-4">
-              <RaceTraits />
-              <div className="row g-4 mt-3">
-                {listRaces.map((race, i) => (
-                  <div key={i} className="col-12 col-md-6 col-lg-4">
-                    <div className="border rounded p-3 bg-light h-100 d-flex flex-column justify-content-between">
-                      <h5 className="mb-3 text-center">{race.name}</h5>
-                      <Link to={`/SRD/race/${race.index}`} className="btn btn-primary mt-auto btn-sm">
-                        More Info
-                      </Link>
-                    </div>
+          <main className="flex-grow-1 container my-4">
+            <RaceTraits />
+            <div className="row g-3 mt-3">
+              {listRaces.map((race) => (
+                <div key={race.index} className="col-12 col-md-6 col-lg-4">
+                  <div className="border rounded p-3 shadow-sm bg-light h-100 d-flex flex-column justify-content-between">
+                    <h5 className="mb-0 me-3 text-center">{race.name}</h5>
+                    <Link
+                      to={`/SRD/race/${race.index}`}
+                      className="btn btn-sm btn-primary mt-3"
+                    >
+                      More Info
+                    </Link>
                   </div>
-                ))}
-              </div>
-            </main>
-            <Footer />
-          </div>
-        </>
+                </div>
+              ))}
+            </div>
+          </main>
+          <Footer />
+        </div>
       );
+      
       
 }
 

@@ -35,19 +35,54 @@ function Login() {
     };
 
     return (
-        <div>
-            <h1>Login</h1>
-            <form method="post">
-                <label from="user_email">Email</label>
-                <input type="email" id="user_email" name="user_email" required onChange={(e) => setEmail(e.target.value)} /><br />
-                <label from="user_password">Password</label>
-                <input type="password" name="user_password" id="user_password" required onChange={(e) => setPassword(e.target.value)} /><br />
-                {error ? (<div className="error">{error}</div>) : ""}
-                <button type="submit" onClick={btnLogin}>Login</button>
-            </form>
-            <p>Don't have an account? <a href="/signup">Sign Up</a></p>
-        </div>
-    )
+        <>
+            <main className="d-flex justify-content-center align-items-center min-vh-100">
+                <div className="card p-4 shadow-sm" style={{ width: '100%', maxWidth: '400px' }}>
+                    <h1 className="text-center mb-4">Login</h1>
+                    <form method="post">
+                        <div className="mb-3">
+                            <label htmlFor="user_email" className="form-label">Email</label>
+                            <input
+                                type="email"
+                                id="user_email"
+                                name="user_email"
+                                className="form-control"
+                                required
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+    
+                        <div className="mb-3">
+                            <label htmlFor="user_password" className="form-label">Password</label>
+                            <input
+                                type="password"
+                                name="user_password"
+                                id="user_password"
+                                className="form-control"
+                                required
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </div>
+    
+                        {error && (
+                            <div className="alert alert-danger">
+                                {error}
+                            </div>
+                        )}
+    
+                        <button type="submit" className="btn btn-primary w-100" onClick={btnLogin}>
+                            Login
+                        </button>
+                    </form>
+    
+                    <p className="text-center mt-3">
+                        Don't have an account? <a href="/signup">Sign Up</a>
+                    </p>
+                </div>
+            </main>
+        </>
+    );
+    
 }
 
 export default Login;
