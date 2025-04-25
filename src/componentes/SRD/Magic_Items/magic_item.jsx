@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
+import Header from "../../Header";
+import Footer from "../../Footer";
 
 {/*
     Constantes Generales del componente    
@@ -88,60 +90,93 @@ function MagicItemList(){
         getMagicItems();
     }, [infoForm]);
 
-    return(
-        <div className="form">
-            <form method="post">
-                <h2>Magic Items List</h2>
-                <div>
-                    <label>Item Type</label>
-                    <select name="type" onChange={formEvent} value={infoForm.type}>
-                        <option value="all">All</option>
-                        <option value="armor">Armor</option>
-                        <option value="wondrous-items">Wondrous</option>
-                        <option value="weapon">Weapon</option>
-                        <option value="rod">Rod</option>
-                        <option value="staff">Staff</option>
-                        <option value="wand">Wand</option>
-                        <option value="ring">Ring</option>
-                        <option value="potion">Potion</option>
-                    </select>
+    return (
+        <>
+            <Header></Header>
+            <main className="flex-grow-1 flex-column container my-4">
+                <div className="card p-4 mb-4 shadow-sm">
+                    <h2 className="mb-3">Magic Items List</h2>
+                    <form method="post">
+                        <div className="row g-3">
+                            <div className="col-md-6">
+                                <label htmlFor="type" className="form-label">Item Type</label>
+                                <select
+                                    id="type"
+                                    name="type"
+                                    className="form-select"
+                                    onChange={formEvent}
+                                    value={infoForm.type}
+                                >
+                                    <option value="all">All</option>
+                                    <option value="armor">Armor</option>
+                                    <option value="wondrous-items">Wondrous</option>
+                                    <option value="weapon">Weapon</option>
+                                    <option value="rod">Rod</option>
+                                    <option value="staff">Staff</option>
+                                    <option value="wand">Wand</option>
+                                    <option value="ring">Ring</option>
+                                    <option value="potion">Potion</option>
+                                </select>
+                            </div>
+    
+                            <div className="col-md-6">
+                                <label htmlFor="rarity" className="form-label">Item Rarity</label>
+                                <select
+                                    id="rarity"
+                                    name="rarity"
+                                    className="form-select"
+                                    onChange={formEvent}
+                                    value={infoForm.rarity}
+                                >
+                                    <option value="all">All</option>
+                                    <option value="common">Common</option>
+                                    <option value="uncommon">Uncommon</option>
+                                    <option value="rare">Rare</option>
+                                    <option value="very rare">Very Rare</option>
+                                    <option value="legendary">Legendary</option>
+                                    <option value="artifact">Artifact</option>
+                                    <option value="varies">Varies</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <div>
-                    <label>Item Rarity</label>
-                    <select name="rarity" onChange={formEvent} value={infoForm.rarity}>
-                        <option value="all">All</option>
-                        <option value="common">Common</option>
-                        <option value="uncommon">Uncommon</option>
-                        <option value="rare">Rare</option>
-                        <option value="very rare">Very Rare</option>
-                        <option value="legendary">Legendary</option>
-                        <option value="artifact">Artifact</option>
-                        <option value="varies">Varies</option>
-                    </select>
+    
+                <div className="card p-3 shadow-sm">
+                    <div className="table-responsive">
+                        <table className="table table-striped table-hover align-middle">
+                            <thead className="table-dark">
+                                <tr>
+                                    <th>Item Name</th>
+                                    <th>Item Type</th>
+                                    <th>Item Rarity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {magicItems.length !== 0 ? (
+                                    magicItems.map(item => (
+                                        <tr key={item.index}>
+                                            <td>
+                                                <Link to={`/SRD/magic_item/${item.index}`}>{item.name}</Link>
+                                            </td>
+                                            <td>{item.equiment_category.split("-").join(" ")}</td>
+                                            <td>{item.rarity}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={3}>Magic items not found</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </form>
-            <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Item Name</th>
-                            <th>Item Type</th>
-                            <th>Item Rarity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {magicItems.map(item =>(
-                            <tr key={item.index}>
-                                <td><Link to={`/SRD/magic_item/${item.index}`}>{item.name}</Link></td>
-                                <td>{item.equiment_category.split("-").join(" ")}</td>
-                                <td>{item.rarity}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>   
-            </div>
-        </div>   
-    )
+            </main>
+            <Footer></Footer>
+        </>
+    );
+    
 }
 
 // Componente que recoge la información de un objeto mágico en concreto
@@ -173,22 +208,31 @@ function MagicItem(){
         )
     }
 
-    return(
-        <div key={magicItem.index}>
-            <h2>{magicItem.name}</h2>
-            <div>
-                <p><b>Item Type: </b> {magicItem.equiment_category}</p>
-                <p><b>Item Rarity: </b> {magicItem.rarity}</p>
-                {magicItem.variants.length > 0 ? (
-                    <p><b>Variants: </b> {magicItem.variants.map(v => (<><Link to={`/SRD/magic_item/${v}`}>{v}</Link>, </>))} </p>
-                ) : ""}
-                <p><b>Item Description: </b></p>
-                {magicItem.desc && magicItem.desc.map((desc, index) => (
-                    <p key={index}>{desc}</p>
-                ))}
+    return (
+        <div className="d-flex flex-column min-vh-100">
+          <Header />
+          <main className="flex-grow-1 container my-4">
+            <div className="border rounded p-4 shadow-sm bg-light">
+              <h2 className="mb-3">{magicItem.name}</h2>
+              <p><b>Item Type:</b> {magicItem.equiment_category}</p>
+              <p><b>Item Rarity:</b> {magicItem.rarity}</p>
+              {magicItem.variants.length > 0 && (
+                <p><b>Variants:</b> {magicItem.variants.map((v, i) => (
+                  <span key={i}>
+                    <Link to={`/SRD/magic_item/${v}`}>{v}</Link>{i < magicItem.variants.length - 1 && ', '}
+                  </span>
+                ))}</p>
+              )}
+              <p><b>Item Description:</b></p>
+              {magicItem.desc?.map((desc, index) => (
+                <p key={index}>{desc}</p>
+              ))}
             </div>
+          </main>
+          <Footer />
         </div>
-    )
+      );
+      
 
 }
 

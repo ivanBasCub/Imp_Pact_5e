@@ -2,6 +2,8 @@ import { use, useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
+import Header from "../../Header";
+import Footer from "../../Footer";
 
 {/*
     Constantes Generales del componente    
@@ -156,73 +158,109 @@ function MonsterList() {
     }, []);
 
     return (
-        <div>
+    <>
+        <Header></Header>
+        <main className="flex-grow-1 flex-column container my-4">
+            <div className="card p-4 mb-4 shadow-sm">
+            <h2 className="mb-3">Monster List</h2>
             <form method="post">
-                <h2>Monster List</h2>
-                <div>
-                    <label>Challenge Rating (CR)</label>
-                    <select name="cr" onChange={formEvent} value={infoForm.cr}>
-                        {difCR.map((cr, i) => (
-                            <option key={i} value={cr}>CR {cr}</option>
-                        ))}
+                <div className="row g-3">
+                <div className="col-md-4">
+                    <label htmlFor="cr" className="form-label">Challenge Rating (CR)</label>
+                    <select
+                    id="cr"
+                    name="cr"
+                    className="form-select"
+                    onChange={formEvent}
+                    value={infoForm.cr}
+                    >
+                    {difCR.map((cr, i) => (
+                        <option key={i} value={cr}>CR {cr}</option>
+                    ))}
                     </select>
                 </div>
-                <div>
-                    <label>Creature Type</label>
-                    <select name="type" onChange={formEvent} value={infoForm.type}>
-                        <option value="all">All Types</option>
-                        <option value="aberration">Aberration</option>
-                        <option value="beast">Beast</option>
-                        <option value="celestial">Celestial</option>
-                        <option value="construct">Construct</option>
-                        <option value="dragon">Dragon</option>
-                        <option value="elemental">Elemental</option>
-                        <option value="fey">Fey</option>
-                        <option value="fiend">Fiend</option>
-                        <option value="giant">Giant</option>
-                        <option value="humanoid">Humanoid</option>
-                        <option value="monstrosity">Monstrosity</option>
-                        <option value="ooze">Ooze</option>
-                        <option value="plant">Plant</option>
-                        <option value="undead">Undead</option>
+
+                <div className="col-md-4">
+                    <label htmlFor="type" className="form-label">Creature Type</label>
+                    <select
+                    id="type"
+                    name="type"
+                    className="form-select"
+                    onChange={formEvent}
+                    value={infoForm.type}
+                    >
+                    <option value="all">All Types</option>
+                    <option value="aberration">Aberration</option>
+                    <option value="beast">Beast</option>
+                    <option value="celestial">Celestial</option>
+                    <option value="construct">Construct</option>
+                    <option value="dragon">Dragon</option>
+                    <option value="elemental">Elemental</option>
+                    <option value="fey">Fey</option>
+                    <option value="fiend">Fiend</option>
+                    <option value="giant">Giant</option>
+                    <option value="humanoid">Humanoid</option>
+                    <option value="monstrosity">Monstrosity</option>
+                    <option value="ooze">Ooze</option>
+                    <option value="plant">Plant</option>
+                    <option value="undead">Undead</option>
                     </select>
                 </div>
-                <div>
-                    <label>Size</label>
-                    <select name="size" onChange={formEvent} value={infoForm.size}>
-                        <option value="all">All Sizes</option>
-                        <option value="Tiny">Tiny</option>
-                        <option value="Small">Small</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Large">Large</option>
-                        <option value="Gargatuan">Gargatuan</option>
+
+                <div className="col-md-4">
+                    <label htmlFor="size" className="form-label">Size</label>
+                    <select
+                    id="size"
+                    name="size"
+                    className="form-select"
+                    onChange={formEvent}
+                    value={infoForm.size}
+                    >
+                    <option value="all">All Sizes</option>
+                    <option value="Tiny">Tiny</option>
+                    <option value="Small">Small</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Large">Large</option>
+                    <option value="Gargatuan">Gargatuan</option>
                     </select>
+                </div>
                 </div>
             </form>
-            <table>
-                <thead>
+            </div>
+
+            <div className="card p-3 shadow-sm">
+            <div className="table-responsive">
+                <table className="table table-striped table-hover align-middle">
+                <thead className="table-dark">
                     <tr>
-                        <th>Name</th>
-                        <th>CR</th>
-                        <th>Type</th>
-                        <th>Size</th>
-                        <th>Alignment</th>
+                    <th>Name</th>
+                    <th>CR</th>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th>Alignment</th>
                     </tr>
                 </thead>
                 <tbody>
                     {list.map(monster => (
-                        <tr key={monster.index}>
-                            <td><Link to={`/SRD/monster/${monster.index}`}>{monster.name}</Link></td>
-                            <td>{monster.challenge_rating}</td>
-                            <td>{monster.type}</td>
-                            <td>{monster.size}</td>
-                            <td>{monster.alignment}</td>
-                        </tr>
+                    <tr key={monster.index}>
+                        <td>
+                        <Link to={`/SRD/monster/${monster.index}`}>{monster.name}</Link>
+                        </td>
+                        <td>{monster.challenge_rating}</td>
+                        <td>{monster.type}</td>
+                        <td>{monster.size}</td>
+                        <td>{monster.alignment}</td>
+                    </tr>
                     ))}
                 </tbody>
-            </table>
-        </div>
-    )
+                </table>
+            </div>
+            </div>
+        </main>
+        <Footer></Footer>
+    </>    
+    );
+
 }
 
 
@@ -256,65 +294,92 @@ function Monster() {
 
     // Imprimimos la infomración por pantalla
     return (
-        <div key={monster.index}>
-            <h2>{monster.name}</h2>
-            <div>
-                <p>{monster.size} {monster.type}, {monster.alignment}</p>
-                <p>AC {monster.armor_class[0].value} ({monster.armor_class[0].type} armor)  </p>
-                <p>HP {monster.hit_points} ({monster.hit_points_roll})</p>
-                <p>Speed: {Object.entries(monster.speed).map(([type, value]) => (
-                    <>{type} {value} </>
-                ))}</p>
-                <p>Initiative {(monster.dexterity / 2) - 5 > 0 ? `+${parseInt(monster.dexterity / 2) - 5}` : `${parseInt(monster.dexterity / 2) - 5}`}</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th colSpan={2}></th>
-                            <th>Mod</th>
-                            <th>Save</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {tableStats("str", monster.strength, monster.saving_throws.find(st => st.index === "str")?.value)}
-                        {tableStats("dex", monster.dexterity, monster.saving_throws.find(st => st.index === "dex")?.value)}
-                        {tableStats("con", monster.constitution, monster.saving_throws.find(st => st.index === "con")?.value)}
-                        {tableStats("int", monster.intelligence, monster.saving_throws.find(st => st.index === "int")?.value)}
-                        {tableStats("wis", monster.wisdom, monster.saving_throws.find(st => st.index === "wis")?.value)}
-                        {tableStats("cha", monster.charisma, monster.saving_throws.find(st => st.index === "cha")?.value)}
-                    </tbody>
-                </table>
-                <p>Damage Resistances: {monster.damage_resistances.length > 0 ? (<>{monster.damage_resistances.join(", ")}</>) : (<>--</>) }</p>
-                <p>Damage Inmunities: {monster.damage_immunities.length > 0 ? (<>{monster.damage_immunities.join(", ")}</>) : (<>--</>) }</p>
-                <p>Conditions Inmunities: {monster.condition_immunities.length > 0 ? (<>{monster.condition_immunities.map(c => (<>{c.name}, </>))}</>) : (<>--</>) }</p>
-                <p>Skills: { monster.skills.length > 0 ? (<>{monster.skills.map(skill => (<> {skill.index} +{skill.value}</>))}</>) : (<>--</>)} </p>
-                <p>Languages: {monster.languages ? (<>{monster.languages}</>) : (<>--</>)}</p>
-                <p>CR {monster.challenge_rating} (XP {monster.xp}; PB +{monster.proficiency_bonus})</p>
-            </div>
-            {monster.special_abilities.length != 0 ? (
-                <div>
-                    <h3>Traits</h3>
-                    {monster.special_abilities.map(trait => (
-                        <p><b>{trait.name}.</b> {trait.desc}</p>
-                    ))}
-                </div>
-            ) : ""}
-            <div>
-                <h3>Actions</h3>
-                {monster.actions.map(action => (
-                    <p><b>{action.name}.</b> {action.desc}</p>
+        <div className="d-flex flex-column min-vh-100">
+          <Header />
+          <main className="flex-grow-1 container my-4">
+            <div className="border rounded p-4 shadow-sm bg-light" key={monster.index}>
+              <h2 className="mb-3">{monster.name}</h2>
+              <hr></hr>
+              <p className="mb-1">{monster.size} {monster.type}, {monster.alignment}</p>
+              <p className="mb-1">AC {monster.armor_class[0].value} ({monster.armor_class[0].type} armor)</p>
+              <p className="mb-1">HP {monster.hit_points} ({monster.hit_points_roll})</p>
+              <p className="mb-1">
+                <b>Speed:</b>{" "}
+                {Object.entries(monster.speed).map(([type, value], i) => (
+                  <span key={i}>{type} {value}{' '}</span>
                 ))}
-            </div>
-
-            {monster.legendary_actions.length != 0 ? (
-                <div>
-                    <h3>Legendary Actions</h3>
-                    {monster.legendary_actions.map(la => (
-                        <p><b>{la.name}.</b> {la.desc}</p>
+              </p>
+              <p className="mb-1">
+                <b>Initiative:</b>{" "}
+                {(monster.dexterity / 2) - 5 >= 0 ? `+${parseInt(monster.dexterity / 2) - 5}` : `${parseInt(monster.dexterity / 2) - 5}`}
+              </p>
+      
+              <div className="table-responsive my-3">
+                <table className="table table-bordered table-sm text-center align-middle">
+                  <thead className="table-light">
+                    <tr>
+                      <th colSpan={2}>Stat</th>
+                      <th>Mod</th>
+                      <th>Save</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tableStats("str", monster.strength, monster.saving_throws.find(st => st.index === "str")?.value)}
+                    {tableStats("dex", monster.dexterity, monster.saving_throws.find(st => st.index === "dex")?.value)}
+                    {tableStats("con", monster.constitution, monster.saving_throws.find(st => st.index === "con")?.value)}
+                    {tableStats("int", monster.intelligence, monster.saving_throws.find(st => st.index === "int")?.value)}
+                    {tableStats("wis", monster.wisdom, monster.saving_throws.find(st => st.index === "wis")?.value)}
+                    {tableStats("cha", monster.charisma, monster.saving_throws.find(st => st.index === "cha")?.value)}
+                  </tbody>
+                </table>
+              </div>
+      
+              <p><b>Damage Resistances:</b> {monster.damage_resistances.length > 0 ? monster.damage_resistances.join(", ") : "--"}</p>
+              <p><b>Damage Immunities:</b> {monster.damage_immunities.length > 0 ? monster.damage_immunities.join(", ") : "--"}</p>
+              <p><b>Condition Immunities:</b> {
+                monster.condition_immunities.length > 0
+                  ? monster.condition_immunities.map((c, i) => <span key={i}>{c.name}{i < monster.condition_immunities.length - 1 && ', '}</span>)
+                  : "--"
+              }</p>
+              <p><b>Skills:</b> {
+                monster.skills.length > 0
+                  ? monster.skills.map((skill, i) => <span key={i}>{skill.index} +{skill.value}{i < monster.skills.length - 1 && ', '}</span>)
+                  : "--"
+              }</p>
+              <p><b>Languages:</b> {monster.languages || "--"}</p>
+              <p><b>CR:</b> {monster.challenge_rating} (XP {monster.xp}; PB +{monster.proficiency_bonus})</p>
+      
+              {monster.special_abilities.length !== 0 && (
+                <div className="mt-4 border rounded p-3 bg-white shadow-sm">
+                    <h4>Traits</h4>
+                    {monster.special_abilities.map((trait, i) => (
+                    <p key={i}><b>{trait.name}.</b> {trait.desc}</p>
                     ))}
                 </div>
-            ) : ""}
+                )}
+
+                <div className="mt-4 border rounded p-3 bg-white shadow-sm">
+                <h4>Actions</h4>
+                {monster.actions.map((action, i) => (
+                    <p key={i}><b>{action.name}.</b> {action.desc}</p>
+                ))}
+                </div>
+
+                {monster.legendary_actions.length !== 0 && (
+                <div className="mt-4 border rounded p-3 bg-white shadow-sm">
+                    <h4>Legendary Actions</h4>
+                    {monster.legendary_actions.map((la, i) => (
+                    <p key={i}><b>{la.name}.</b> {la.desc}</p>
+                    ))}
+                </div>
+                )}
+
+            </div>
+          </main>
+          <Footer />
         </div>
-    )
+      );
+      
 }
 {/* 
     Función para imprimir     

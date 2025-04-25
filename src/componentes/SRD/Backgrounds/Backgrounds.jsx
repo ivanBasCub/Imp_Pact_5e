@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
+import Header from "../../Header";
+import Footer from "../../Footer";
 
 {/*
     Constantes Generales del componente    
@@ -55,18 +57,30 @@ function BackgroundList() {
     }, [])
 
     return (
-        <div>
-            <h1>Backgrounds</h1>
-            {backgroundList.map(background => (
-                <div>
-                    <div>
-                        <h5>{background.name}</h5>
-                        <Link to={`/SRD/background/${background.index}`}>More Info</Link>
-                    </div>
+        <div className="d-flex flex-column min-vh-100">
+            <Header />
+            <main className="flex-grow-1 container my-4">
+                <div className="row g-3">
+                    {backgroundList.map(background => (
+                        <div className="col-12" key={background.index}>
+                            <div className="border rounded p-3 shadow-sm bg-light">
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <h5 className="mb-0 me-3">{background.name}</h5>
+                                    <Link to={`/SRD/background/${background.index}`} className="btn btn-sm btn-primary">
+                                        More Info
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            ))}
+            </main>
+            <Footer />
         </div>
-    )
+    );
+    
+    
+    
 }
 
 function Background() {
@@ -91,70 +105,94 @@ function Background() {
     }
 
     return (
-        <div>
-            <h2>{background.name}</h2>
-            <p><b>Skills Proficiencies:</b>{background.starting_proficiencies.map(proficiency => (
-                <>{proficiency.name.split(":")[0] === "Skill" ? (<>{proficiency.name.split(":")[1]}</>) : ""}</>
-            ))}</p>
-            <p><b>Tools Proficiencies:</b>{background.starting_proficiencies.map(proficiency => (
-                <>{proficiency.name.split(":")[0] != "Skill" ? (<>{proficiency.name.split(":")[1]}</>) : ""}</>
-            ))}</p>
-            <p><b>Languages:</b>{background.language_options ? (
-                <>
-                    {background.language_options.from.option_set_type === "resource_list" ? (
-                        <>{background.language_options.choose} of your choice</>
-                    ) : ""}
-                </>
-            ) : ""}</p>
-            <p><b>Equipment:</b> {background.starting_equipment ? (
-                <>
-                    {background.starting_equipment.map(equipment => (
-                        <> {equipment.quantity} of {equipment.equipment.name}</>
-                    ))}
-                </>
-            ) : ""}
-            </p>
-
-            {background.feature ? (
-                <>
-                    <h3>{background.feature.name}</h3>
-                    <p>{background.feature.desc.join(" ")}</p>
-                </>
-            ) : ""}
-            {table(background.personality_traits)}
-            {table(background.ideals)}
-            {table(background.bonds)}
-            {table(background.flaws)}
-
+        <div className="d-flex flex-column min-vh-100">
+          <Header />
+          <main className="flex-grow-1 flex-column container my-4">
+            <div className="border rounded p-4 bg-white">
+              {/* Nombre del background */}
+              <div className="border rounded p-3 shadow-sm bg-light mb-4">
+                <h2>{background.name}</h2>
+              </div>
+      
+              {/* Proficiencias y equipo */}
+              <div className="border rounded p-3 shadow-sm bg-light mb-4">
+                <p><strong>Skills Proficiencies:</strong> {
+                  background.starting_proficiencies
+                    .filter(proficiency => proficiency.name.startsWith("Skill:"))
+                    .map((proficiency, i) => (
+                      <span key={i} className="me-2">{proficiency.name.split(":")[1]}</span>
+                    ))
+                }</p>
+                <p><strong>Tools Proficiencies:</strong> {
+                  background.starting_proficiencies
+                    .filter(proficiency => !proficiency.name.startsWith("Skill:"))
+                    .map((proficiency, i) => (
+                      <span key={i} className="me-2">{proficiency.name.split(":")[1]}</span>
+                    ))
+                }</p>
+                <p><strong>Languages:</strong> {
+                  background.language_options?.from.option_set_type === "resource_list"
+                    ? `${background.language_options.choose} of your choice`
+                    : ""
+                }</p>
+                <p><strong>Equipment:</strong> {
+                  background.starting_equipment?.map((equipment, i) => (
+                    <span key={i} className="me-2">{equipment.quantity} of {equipment.equipment.name}</span>
+                  ))
+                }</p>
+              </div>
+      
+              {/* Feature */}
+              {background.feature && (
+                <div className="border rounded p-3 shadow-sm bg-light mb-4">
+                  <h4>{background.feature.name}</h4>
+                  <p>{background.feature.desc.join(" ")}</p>
+                </div>
+              )}
+      
+              {/* Tablas de rasgos */}
+              <div className="border rounded p-3 shadow-sm bg-light mb-4">
+                {table(background.personality_traits)}
+              </div>
+              <div className="border rounded p-3 shadow-sm bg-light mb-4">
+                {table(background.ideals)}
+              </div>
+              <div className="border rounded p-3 shadow-sm bg-light mb-4">
+                {table(background.bonds)}
+              </div>
+              <div className="border rounded p-3 shadow-sm bg-light">
+                {table(background.flaws)}
+              </div>
+            </div>
+          </main>
+          <Footer />
         </div>
-    )
+      );
+      
 }
 
 
 function table(data) {
-    var aux = 0;
-
     return (
-        <table>
-            <thead>
-                <tr>
-                    <th>d{data.from.options.length}</th>
-                    <th>{data.type.split("_").join(" ")}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {data.from.options.map(opt => {
-                    aux++;
-                    return (
-                        <tr>
-                            <td>{aux}</td>
-                            <td>{data.type === "ideals" ? (<>{opt.desc}  </>) : (<>{opt.string}</>) }</td>
+        <div className="table-responsive">
+            <table className="table table-bordered table-striped table-sm">
+                <thead className="table-light">
+                    <tr>
+                        <th>d{data.from.options.length}</th>
+                        <th>{data.type.split("_").join(" ")}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.from.options.map((opt, i) => (
+                        <tr key={i}>
+                            <td>{i + 1}</td>
+                            <td>{data.type === "ideals" ? opt.desc : opt.string}</td>
                         </tr>
-                    )
-                })}
-            </tbody>
-        </table>
-    )
-
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
 }
+
 export { BackgroundList, Background }
