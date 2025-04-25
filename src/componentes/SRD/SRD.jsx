@@ -1,5 +1,5 @@
 // Importación de modulos react
-import { Routes, Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 // Compomentes
 import App from './App';

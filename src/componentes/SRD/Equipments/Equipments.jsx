@@ -208,6 +208,7 @@ function Equipments() {
 
 
     return (
+
         <>
             <Header />
             <div className="container my-4">
@@ -323,7 +324,6 @@ function Equipments() {
             <Footer />
         </>
     );
-    
     
 }
 export { EquipmentList, Equipments }; 

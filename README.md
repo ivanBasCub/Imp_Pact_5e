@@ -1,12 +1,26 @@
-# React + Vite
+# Imp Pact 5e Backend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este proyecto se centra en todos los documentos relacionados con la conexión al backend, las configuraciones pertinentes y la creación de la Wiki.
 
-Currently, two official plugins are available:
+## Requisitos Mínimos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Para usar este proyecto, necesitas cumplir con los siguientes requisitos:
 
-## Expanding the ESLint configuration
+- **Node.js**: Versión 22.0.0 o superior.
+- **Firebase**: Crear un proyecto en Firebase para usarlo como servidor.
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Carpetas Importantes
+
+A continuación, se describen las carpetas más relevantes del proyecto:
+
+<img src="./docs/img/folders.png" width="300px" height="400px" alt="Estructura de carpetas">
+
+- **node_modules**: Contiene todos los módulos necesarios para que el proyecto funcione. Estos son gestionados automáticamente mediante el comando de *Node.js* `npm`.
+- **dist**: Contiene el proyecto listo para ser lanzado a producción. Esta carpeta se genera automáticamente usando el comando `npm run build`.
+- **src**: Almacena todos los componentes del desarrollo del proyecto. Dentro de esta carpeta, hay dos subcarpetas principales:
+    - **firebase**: Contiene toda la configuración relacionada con el servidor Firebase, así como las funciones principales del servidor. Además, incluye la configuración de rutas necesarias para la autenticación de usuarios.
+    - **componentes**: Contiene tres subcarpetas importantes:
+        - **SRD**: Almacena todos los componentes relacionados con la creación y mantenimiento de la información actualizada de la Wiki.
+        - **Users**: Incluye los componentes relacionados con la creación de cuentas de usuario, inicio de sesión, cierre de sesión y la configuración de la persistencia de la sesión.
+        - **Extras**: Contiene componentes utilizados de manera puntual en la aplicación web para mejorar la experiencia del usuario.
+

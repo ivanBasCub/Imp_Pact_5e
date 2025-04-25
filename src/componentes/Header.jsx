@@ -1,8 +1,12 @@
 // Header.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { auth } from "../firebase/config";
+import { onAuthStateChanged } from 'firebase/auth';
+import  Logout  from "./Users/Logout"
 
 const Header = () => {
+
   return (
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
@@ -35,9 +39,47 @@ const Header = () => {
             </li>
             </ul>
         </div>
+        <UserMenu auth={auth}/>
         </div>
     </nav>
   );
 };
+
+// Creación de un menu dinamo que se actualiza en caso del estado de usuario esta logeado o no
+function UserMenu({ auth }) {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const state = onAuthStateChanged(auth, (currentUser) => {
+            if(currentUser){
+                setUser(currentUser)
+            }else{
+                setUser(null)
+            }
+        })
+
+        return () => state();
+    }, [auth])
+
+    return (
+        <div>
+            {user ? (
+                <>
+                    <Logout/>
+                </>
+            ) : (
+                <>
+                    <Link to="/login">
+                        <button className="btn btn-outline-success mx-md-2 my-sm-0">Sign In</button>
+                    </Link>
+                    <Link to="/signup">
+                        <button className='btn btn-outline-primary mx-md-2 my-sm-0'>Sign Up</button>
+                    </Link>
+                </>
+
+            )}
+        </div>
+    )
+}
 
 export default Header;
