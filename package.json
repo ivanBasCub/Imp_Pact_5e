@@ -12,6 +12,7 @@
   "dependencies": {
     "firebase": "^11.4.0",
     "marked": "^15.0.7",
+    "prop-types": "^15.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.3.0"

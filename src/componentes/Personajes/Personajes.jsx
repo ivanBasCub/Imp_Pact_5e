@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { Link } from "react-router-dom"
+
 import { useNavigate } from "react-router-dom";
 import Footer from "../Footer";
 import Header from "../Header";
@@ -13,7 +14,10 @@ export default function Personajes() {
       <main>
         <h1>Personajes</h1>
         <p>Esta es la página principal de Personajes</p>
-        <button onClick={() => navigate('/Personajes/new')}>Nuevo Personaje</button>
+        <Link to="/Personajes/new" className="text-decoration-none">
+          <button>Nuevo Personaje</button>
+        </Link>
+        
         {/*Lista de personajes creados*/}
       </main>
       <Footer />

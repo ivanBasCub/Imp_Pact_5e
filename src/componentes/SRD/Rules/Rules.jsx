@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import MarkdownViewer from "../../Extras/MarkDownViewer";
+import Footer from "../../Footer";
+import Header from "../../Header";
 
 {/*
     Constantes Generales del componente    
@@ -71,19 +73,26 @@ export default function Rules() {
 
 
     return (
-        <div>
-            {ruleList.map(rule => {
-                return (
-                    <>
-                        <h1>{rule.name}</h1>
-                        {rule.sections.map(section => (
-                            <>
-                                <MarkdownViewer markdown={section.desc} />
-                            </>
-                        ))}
-                    </>
-                )
-            })}
+        <>
+        <Header></Header>
+        <div className="container my-4" style={{ display: 'block' }}>
+          {ruleList.map((rule, i) => (
+            <div key={i} className="border rounded p-4 bg-light mb-5">
+              <h1 className="h4 mb-4">{rule.name}</h1>
+              {rule.sections.map((section, j) => (
+                <div key={j}>
+                  <div className="border rounded p-3 bg-white">
+                    <MarkdownViewer markdown={section.desc} />
+                  </div>
+                  {j < rule.sections.length - 1 && <hr className="my-4" />}
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
-    )
+        <Footer></Footer>
+        </>
+      );
+      
+      
 }

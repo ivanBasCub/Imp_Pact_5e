@@ -3,6 +3,8 @@ import { useParams, Link } from "react-router-dom"
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import RaceTraits from "../Race_Traits/Race_Traits";
+import Header from "../../Header";
+import Footer from "../../Footer";
 
 {/*
     Constantes Generales del componente    
@@ -87,18 +89,29 @@ function RaceList() {
     }, []);
 
     return (
-        <div>
-            <RaceTraits />
-            {listRaces.map(race => (
-                <div>
-                    <div>
-                        <h5 >{race.name}</h5>
-                        <Link to={`/SRD/race/${race.index}`}>More Info</Link>
+        <>
+          <Header />
+          <div className="d-flex flex-column min-vh-100">
+            <main className="flex-grow-1 container my-4">
+              <RaceTraits />
+              <div className="row g-4 mt-3">
+                {listRaces.map((race, i) => (
+                  <div key={i} className="col-12 col-md-6 col-lg-4">
+                    <div className="border rounded p-3 bg-light h-100 d-flex flex-column justify-content-between">
+                      <h5 className="mb-3 text-center">{race.name}</h5>
+                      <Link to={`/SRD/race/${race.index}`} className="btn btn-primary mt-auto btn-sm">
+                        More Info
+                      </Link>
                     </div>
-                </div>
-            ))}
-        </div>
-    )
+                  </div>
+                ))}
+              </div>
+            </main>
+            <Footer />
+          </div>
+        </>
+      );
+      
 }
 
 function Race() {
@@ -153,53 +166,70 @@ function Race() {
     }
 
     return (
-        <div key={race.index}>
-            <h2>{race.name}</h2>
-            <ul>
-                <li><b>Ability Bonuses:</b> {race.ability_bonuses.map(ab => (<>Increases by {ab.bonus} in {ab.index} stat. </>))}</li>
-                <li><b>Alignment:</b> {race.alignment}</li>
-                <li><b>Age:</b> {race.age}</li>
-                <li><b>Size:</b> {race.size_description}</li>
-                <li><b>Languages:</b> {race.language_desc}</li>
-                {raceTraits.map((trait, index) => (
-                    <>
-                        <li key={index}>
-                            <b>{trait.name}</b>: {trait.desc}
-                        </li>
-                        {trait.index === "draconic-ancestry" ? (
-                            <>
-                               <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Dragon Color</th>
-                                            <th>Damage Type</th>
-                                            <th>Breath Weapon</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {draconicAscentry.map(color => (
-                                            <tr>
-                                                <td>{color.index.split("-")[2]}</td>
-                                                <td>{color.trait_specific.damage_type.name}</td>
-                                                <td>{color.trait_specific.breath_weapon.area_of_effect.size}ft {color.trait_specific.breath_weapon.area_of_effect.type} ({color.trait_specific.breath_weapon.dc.dc_type.name} save) </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                               </table>
-                            </>
-                        ) : ""}
-                    </>
-                ))}
-            </ul>
-            {race.subraces.length != 0 ? (
-                <>
-                    <h4>Subraces</h4>
-                    <p>{race.subraces.map(subrace => (<Link to={`/SRD/subrace/${subrace.index}`}>{subrace.name}</Link>))}</p>
-                </>
-            ) : ""}
-
-        </div>
+        <>
+            <Header />
+            <div className="d-flex flex-column min-vh-100">
+                {/* Contenedor principal que ocupa todo el alto disponible */}
+                <main className="flex-grow-1 container my-4">
+                    <div className="border rounded p-4 bg-light mb-4">
+                        <h1 className="h3 mb-3">{race.name}</h1>
+    
+                        <div className="mt-4">
+                            <h2>Race Details</h2>
+                            <ul>
+                                <li><b>Ability Bonuses:</b> {race.ability_bonuses.map(ab => (<>Increases by {ab.bonus} in {ab.index} stat. </>))}</li>
+                                <li><b>Alignment:</b> {race.alignment}</li>
+                                <li><b>Age:</b> {race.age}</li>
+                                <li><b>Size:</b> {race.size_description}</li>
+                                <li><b>Languages:</b> {race.language_desc}</li>
+                            </ul>
+                        </div>
+    
+                        <div className="mt-4">
+                            <h2>Race Traits</h2>
+                            {raceTraits.map((trait, index) => (
+                                <div key={index} className="border rounded p-3 bg-light mb-4">
+                                    <h3>{trait.name}</h3>
+                                    <p>{trait.desc}</p>
+                                    {trait.index === "draconic-ancestry" ? (
+                                        <table className="table mt-3">
+                                            <thead>
+                                                <tr>
+                                                    <th>Dragon Color</th>
+                                                    <th>Damage Type</th>
+                                                    <th>Breath Weapon</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {draconicAscentry.map(color => (
+                                                    <tr key={color.index}>
+                                                        <td>{color.index.split("-")[2]}</td>
+                                                        <td>{color.trait_specific.damage_type.name}</td>
+                                                        <td>{color.trait_specific.breath_weapon.area_of_effect.size}ft {color.trait_specific.breath_weapon.area_of_effect.type} ({color.trait_specific.breath_weapon.dc.dc_type.name} save)</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    ) : ""}
+                                </div>
+                            ))}
+                        </div>
+    
+                        {race.subraces.length !== 0 && (
+                            <div className="border rounded p-4 bg-light mb-4">
+                                <h3>Subraces</h3>
+                                <p>{race.subraces.map(subrace => (
+                                    <Link key={subrace.index} to={`/SRD/subrace/${subrace.index}`} className="d-block">{subrace.name}</Link>
+                                ))}</p>
+                            </div>
+                        )}
+                    </div>
+                </main>
+                <Footer />
+            </div>
+        </>
     );
+    
 }
 
 
