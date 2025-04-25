@@ -243,7 +243,6 @@ function Equipments() {
                     </tr>
                 </thead>
                 <tbody>
-                    {console.log(equipmentCategoryList)}
                     {equipmentCategoryList.map(equipment => (
                         <tr>
                             <td>{equipment.name}</td>

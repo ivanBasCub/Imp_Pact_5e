@@ -28,4 +28,13 @@ dist-ssr
 
 # Directorios y archivos de apoyo
 BBDD/*
+
 firebaseCommands.md
+
+
+## Archivo que hay que quitar el comentario para cuando acabe el proyecto
+# Archivo de configuración de firebase que se crean cuando realizas la implementación de firebase
+# firebase.json
+# .firebaserc
+# firestore.indexes.rules
+# firestore.rules

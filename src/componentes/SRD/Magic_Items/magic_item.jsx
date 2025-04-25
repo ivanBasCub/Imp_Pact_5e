@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
@@ -133,7 +133,7 @@ function MagicItemList(){
                         {magicItems.map(item =>(
                             <tr key={item.index}>
                                 <td><Link to={`/SRD/magic_item/${item.index}`}>{item.name}</Link></td>
-                                <td>{item.equiment_category}</td>
+                                <td>{item.equiment_category.split("-").join(" ")}</td>
                                 <td>{item.rarity}</td>
                             </tr>
                         ))}
@@ -151,17 +151,27 @@ function MagicItem(){
 
     // Efecto para recoger la información de un objeto mágico en concreto
     useEffect(()=>{
-        const nameCollection = "SRD_magic_items";
+        const nameCollection = "SRD_Magic_Items";
         async function getMagicItem(){
             const itemRef = doc(db, nameCollection, id);
             const itemDoc = await getDoc(itemRef);
-            console.log(itemDoc.data());
+
             if (itemDoc.exists()){
                 setMagicItem(itemDoc.data());
+            }else{
+                console.log("No existe el objeto mágico");
             }
         }
         getMagicItem();
     },[]);
+
+    if(Object.keys(magicItem).length === 0){
+        return(
+            <div className="loading">
+                <h2>Loading...</h2>
+            </div>
+        )
+    }
 
     return(
         <div key={magicItem.index}>
@@ -169,6 +179,9 @@ function MagicItem(){
             <div>
                 <p><b>Item Type: </b> {magicItem.equiment_category}</p>
                 <p><b>Item Rarity: </b> {magicItem.rarity}</p>
+                {magicItem.variants.length > 0 ? (
+                    <p><b>Variants: </b> {magicItem.variants.map(v => (<><Link to={`/SRD/magic_item/${v}`}>{v}</Link>, </>))} </p>
+                ) : ""}
                 <p><b>Item Description: </b></p>
                 {magicItem.desc && magicItem.desc.map((desc, index) => (
                     <p key={index}>{desc}</p>

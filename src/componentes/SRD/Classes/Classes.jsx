@@ -363,7 +363,6 @@ function featureList(data) {
 // Tabla de los niveles de la clase con sus habilidades principales y hechizos en el caso de que sea un lanzador de hechizos
 // Se le pasa el index de la clase y los niveles de la misma
 function table(clase, data) {
-    console.log(data);
     const fullCasters = ["bard", "cleric", "druid", "sorcerer", "warlock", "wizard"];
     const subClassFeatureLevel = [2, 3, 6, 10, 14, 18]; 
 
