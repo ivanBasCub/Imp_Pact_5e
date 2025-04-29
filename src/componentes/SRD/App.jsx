@@ -23,7 +23,7 @@ export default function App(){
                 <div className="col-12 col-sm-6 col-md-4">
                   <Link to="/SRD/classes" className="text-decoration-none">
                     <div className="card">
-                      <img src="images/classes.jpg" alt="classes" className="card-img-top" />
+                      <img src="images/classes.png" alt="classes" className="card-img-top" />
                       <div className="card-body">
                         <h2 className="card-title">Classes</h2>
                         <p className="card-text">Habilitado</p>
@@ -89,7 +89,7 @@ export default function App(){
                 <div className="col-12 col-sm-6 col-md-4">
                   <Link to="/SRD/feats" className="text-decoration-none">
                     <div className="card">
-                      <img src="/images/feat.jpg" alt="feats" className="card-img-top" />
+                      <img src="/images/feats.png" alt="feats" className="card-img-top" />
                       <div className="card-body">
                         <h2 className="card-title">Feats</h2>
                         <p className="card-text">Habilitado</p>
@@ -100,7 +100,7 @@ export default function App(){
                 <div className="col-12 col-sm-6 col-md-4">
                   <Link to="/SRD/backgrounds" className="text-decoration-none">
                     <div className="card">
-                      <img src="/images/backgrounds.jpg" alt="backgrounds" className="card-img-top" />
+                      <img src="/images/backgrounds.png" alt="backgrounds" className="card-img-top" />
                       <div className="card-body">
                         <h2 className="card-title">Backgrounds</h2>
                         <p className="card-text">Habilitado</p>

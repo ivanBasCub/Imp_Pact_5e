@@ -10,7 +10,7 @@ const MenuInicial = () => {
         <div className="col-12 col-sm-6">
           <Link to="/SRD" className="text-decoration-none">
             <div className="card">
-              <img src="images/dnd.png" alt="dnd logo" className="card-img-top" />
+              <img src="images/scroll.png" alt="scroll" className="card-img-top" />
               <div className="card-body">
                 <h2 className="card-title">SRD</h2>
                 <p className="card-text">Habilitado</p>
