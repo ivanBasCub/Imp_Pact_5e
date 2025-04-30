@@ -2,6 +2,7 @@ import { auth, db } from "../../firebase/config"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
 import { useState } from "react"
+import { Link } from 'react-router-dom';
 
 
 export default function Signup() {
@@ -89,6 +90,12 @@ export default function Signup() {
                     <p className="text-center mt-3">
                         Already have an account? <a href="/login">Login</a>
                     </p>
+
+                    <div className="text-center mt-2">
+                    <Link to="/" className="text-decoration-none">
+                        <p className="nav-link">Return to home page</p>
+                    </Link>
+                    </div>
                 </div>
             </main>
         </>

@@ -665,14 +665,12 @@ useEffect(() => {
     <>
       <Header />
       <main className="mx-4 my-4">
-        <h1>Personajes</h1>
-        <p>Esta es la página principal de creación de personajes</p>
-        <button onClick={() => jsonPersonaje()}>json</button>
+        <button class="btn btn-primary w-auto" onClick={() => jsonPersonaje()}>Crear Personaje</button>
 
           {/* Nombre del personaje */}
-            <div className="col-sm-6 col-md-4 my-4">
+            <div className="col-sm-6 col-md-4 my-4 shadow border rounded p-2 bg-light shadow">
               <div className="form-group">
-                <label htmlFor="characterName">Character Name</label>
+                <label htmlFor="characterName"><strong>Character Name</strong></label>
                 <input
                   type="text"
                   id="characterName"
@@ -690,14 +688,20 @@ useEffect(() => {
 
           return (
             <div key={statName} className="col-6 col-md-4 col-lg-2 mb-3">
-              <div className="border rounded p-2 shadow-sm text-center bg-light shadow">
+              <div className="border rounded p-2 text-center bg-light shadow">
                 <label htmlFor={statName} className="form-label fw-bold">{statName}</label>
                 <input
                   type="number"
                   id={statName}
                   className="form-control text-center mb-2"
                   value={stats[index]}
-                  onChange={(e) => handleInputChange(index, e.target.value)}
+                  min={1}
+                  max={30}
+                  onChange={(e) => {
+                    const rawValue = Number(e.target.value);
+                    const clampedValue = Math.max(1, Math.min(30, rawValue));
+                    handleInputChange(index, clampedValue);
+                  }}
                 />
                 <div className="small">
                   <div><strong>Bonus:</strong> {statBonus(stats[index])}</div>
@@ -737,7 +741,7 @@ useEffect(() => {
           </button>
         </div>
 
-        {/*Nivel Clase*/}
+        {/* Nivel Clase */}
         {selectedClass && (
           <div className="mb-3">
             <label htmlFor="level" className="form-label">Nivel Clase:</label>
@@ -747,24 +751,30 @@ useEffect(() => {
               min="1"
               max={20 - levelMulticlase}
               value={level}
-              onChange={(e) => setLevel(Number(e.target.value))}
+              onChange={(e) => {
+                const value = Math.max(1, Math.min(20 - levelMulticlase, Number(e.target.value)));
+                setLevel(value);
+              }}
               className="form-control"
               style={{ maxWidth: "150px" }}
             />
           </div>
         )}
 
-          {/*Nivel Multiclase*/}
-          {selectedMulticlass && (
+        {/* Nivel Multiclase */}
+        {selectedMulticlass && (
           <div className="mb-3">
             <label htmlFor="levelM" className="form-label">Nivel Multiclase:</label>
             <input
               type="number"
-              id="level"
+              id="levelM"
               min="1"
               max={20 - level}
               value={levelMulticlase}
-              onChange={(e) => setLevelMulticlase(Number(e.target.value))}
+              onChange={(e) => {
+                const value = Math.max(1, Math.min(20 - level, Number(e.target.value)));
+                setLevelMulticlase(value);
+              }}
               className="form-control"
               style={{ maxWidth: "150px" }}
             />
