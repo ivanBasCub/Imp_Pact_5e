@@ -4,6 +4,7 @@ import Header from "../Header";
 import "../../assets/css/App.css";
 import "../../assets/css/modal.css";
 import SpellSelector from "./SpellSelector";
+import { auth } from "../../firebase/config";
 
 
 export default function PersonajesNuevo() {
@@ -599,7 +600,7 @@ useEffect(() => {
         equipment: '',
         feature: ''
       },
-      creator: 'user' 
+      creator:  auth.currentUser.uid 
     };
   
     // Ahora imprimimos el JSON
