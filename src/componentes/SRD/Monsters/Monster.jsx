@@ -18,6 +18,7 @@ function MonsterList() {
     const [list, setList] = useState([]);
     const [difCR, setDifCR] = useState([]);
     const [infoForm, setInfoForm] = useState({
+        name: "",
         cr: 0,
         type: "all",
         size: "all"
@@ -123,18 +124,47 @@ function MonsterList() {
         async function fecthList() {
             const monstersRef = collection(db, nameCollection);
             const query = await getDocs(monstersRef);
+            var filterData = null;
+            if (infoForm.cr === "-1") {
+                filterData = query.docs.map(monster => monster.data());
 
-            var filterData = query.docs.filter(monster => monster.data().challenge_rating === parseFloat(infoForm.cr));
+                if(infoForm.type !== "all") {
+                    filterData = filterData.filter(monster => monster.type === infoForm.type);
+                }
+                if(infoForm.size !== "all") {
+                    filterData = filterData.filter(monster => monster.size === infoForm.size);
+                }
+                setList(filterData);
+            }else{
+                filterData = query.docs.filter(monster => monster.data().challenge_rating === parseFloat(infoForm.cr));
 
-            if (infoForm.type !== "all") {
-                filterData = filterData.filter(monster => monster.data().type === infoForm.type);
+                if (infoForm.type !== "all") {
+                    filterData = filterData.filter(monster => monster.data().type === infoForm.type);
+                }
+                if (infoForm.size !== "all") {
+                    filterData = filterData.filter(monster => monster.data().size === infoForm.size);
+                }
+                setList(filterData.map(monster => monster.data()));
             }
-            if (infoForm.size !== "all") {
-                filterData = filterData.filter(monster => monster.data().size === infoForm.size);
-            }
-            setList(filterData.map(monster => monster.data()));
         }
-        fecthList();
+
+        async function fecthListName(){
+            const MonsterName = infoForm.name.toLowerCase().split(" ").join("-");
+            const monsterDoc = await getDoc(doc(db, nameCollection, MonsterName));
+            if (monsterDoc.exists()) {
+                setList([monsterDoc.data()]);
+            } else {
+                setList([]);
+            }
+        }
+        function filter(){
+            if (infoForm.name !== "") {
+                fecthListName();
+            } else {
+                fecthList();
+            }
+        }
+        filter();
     }, [infoForm])
 
     // UseEffect para generar el apartado del Challenge Rating o CR
@@ -165,31 +195,24 @@ function MonsterList() {
             <h2 className="mb-3">Monster List</h2>
             <form method="post">
                 <div className="row g-3">
-                <div className="col-md-4">
+                <div className="col-md-3">
+                    <label htmlFor="name" className="form-label">Monster Name</label>
+                    <input type="text" id="name" name="name" className="form-control" onChange={formEvent} value={infoForm.name} placeholder="Monster Name" />
+                </div>
+                <div className="col-md-3">
                     <label htmlFor="cr" className="form-label">Challenge Rating (CR)</label>
-                    <select
-                    id="cr"
-                    name="cr"
-                    className="form-select"
-                    onChange={formEvent}
-                    value={infoForm.cr}
-                    >
-                    {difCR.map((cr, i) => (
-                        <option key={i} value={cr}>CR {cr}</option>
-                    ))}
+                    <select id="cr" name="cr" className="form-select" onChange={formEvent} value={infoForm.cr}>
+                        <option value="-1" selected>All CR</option>
+                        {difCR.map((cr, i) => (
+                            <option key={i} value={cr}>CR {cr}</option>
+                        ))}
                     </select>
                 </div>
 
-                <div className="col-md-4">
+                <div className="col-md-3">
                     <label htmlFor="type" className="form-label">Creature Type</label>
-                    <select
-                    id="type"
-                    name="type"
-                    className="form-select"
-                    onChange={formEvent}
-                    value={infoForm.type}
-                    >
-                    <option value="all">All Types</option>
+                    <select id="type" name="type" className="form-select" onChange={formEvent} value={infoForm.type}>
+                    <option value="all" selected>All Types</option>
                     <option value="aberration">Aberration</option>
                     <option value="beast">Beast</option>
                     <option value="celestial">Celestial</option>
@@ -207,21 +230,15 @@ function MonsterList() {
                     </select>
                 </div>
 
-                <div className="col-md-4">
+                <div className="col-md-3">
                     <label htmlFor="size" className="form-label">Size</label>
-                    <select
-                    id="size"
-                    name="size"
-                    className="form-select"
-                    onChange={formEvent}
-                    value={infoForm.size}
-                    >
-                    <option value="all">All Sizes</option>
+                    <select id="size" name="size" className="form-select" onChange={formEvent} value={infoForm.size}>
+                    <option value="all" selected>All Sizes</option>
                     <option value="Tiny">Tiny</option>
                     <option value="Small">Small</option>
                     <option value="Medium">Medium</option>
                     <option value="Large">Large</option>
-                    <option value="Gargatuan">Gargatuan</option>
+                    <option value="Gargantuan">Gargantuan</option>
                     </select>
                 </div>
                 </div>
