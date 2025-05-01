@@ -14,6 +14,7 @@ const URL = "https://www.dnd5eapi.co";
 function MagicItemList(){
     const [magicItems, setMagicItems] = useState([]);
     const [infoForm, setInfoForm] = useState({
+        name: "",
         type: "all",
         rarity: "all"
     });
@@ -87,7 +88,27 @@ function MagicItemList(){
             }
             setMagicItems(items);
         }
-        getMagicItems();
+
+        async function getMagicItem(){
+            const regex = /[ +]/;
+            const item = infoForm.name.toLowerCase().replace(" ","");
+            const itemName = item.split(regex).join("-");
+            const itemDoc = await getDoc(doc(db, nameCollection, itemName));
+            if (itemDoc.exists()){
+                const item = itemDoc.data();
+                setMagicItems([item]);
+            }
+        }
+
+        function filterItems(){
+            if (infoForm.name !== ""){
+                getMagicItem();
+            }else{
+                getMagicItems();
+            }
+        }
+        filterItems();
+        
     }, [infoForm]);
 
     return (
@@ -98,15 +119,13 @@ function MagicItemList(){
                     <h2 className="mb-3">Magic Items List</h2>
                     <form method="post">
                         <div className="row g-3">
-                            <div className="col-md-6">
+                            <div className="col-md-4">
+                                <label htmlFor="name" className="form-label">Item Name</label>
+                                <input text="text" className="form-control" id="name" name="name" placeholder="Item Name" onChange={formEvent} value={infoForm.name} />
+                            </div>
+                            <div className="col-md-4">
                                 <label htmlFor="type" className="form-label">Item Type</label>
-                                <select
-                                    id="type"
-                                    name="type"
-                                    className="form-select"
-                                    onChange={formEvent}
-                                    value={infoForm.type}
-                                >
+                                <select id="type" name="type" className="form-select" onChange={formEvent} value={infoForm.type}>
                                     <option value="all">All</option>
                                     <option value="armor">Armor</option>
                                     <option value="wondrous-items">Wondrous</option>
@@ -119,15 +138,9 @@ function MagicItemList(){
                                 </select>
                             </div>
     
-                            <div className="col-md-6">
+                            <div className="col-md-4">
                                 <label htmlFor="rarity" className="form-label">Item Rarity</label>
-                                <select
-                                    id="rarity"
-                                    name="rarity"
-                                    className="form-select"
-                                    onChange={formEvent}
-                                    value={infoForm.rarity}
-                                >
+                                <select id="rarity" name="rarity" className="form-select" onChange={formEvent} value={infoForm.rarity}>
                                     <option value="all">All</option>
                                     <option value="common">Common</option>
                                     <option value="uncommon">Uncommon</option>
