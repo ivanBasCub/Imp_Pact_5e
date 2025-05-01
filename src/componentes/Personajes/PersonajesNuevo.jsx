@@ -5,6 +5,9 @@ import "../../assets/css/App.css";
 import "../../assets/css/modal.css";
 import SpellSelector from "./SpellSelector";
 import { auth } from "../../firebase/config";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+
 
 
 export default function PersonajesNuevo() {
@@ -56,10 +59,10 @@ export default function PersonajesNuevo() {
   const [skillsBonus, setSkillsBonus] = useState([]);
   const [equipmentSections, setEquipmentSections] = useState(["", "", "", ""]);
   const [characterName, setCharacterName] = useState('');
+  const navigate = useNavigate();
 
 
 
-  
 
 
   // Obtén todas las habilidades posibles
@@ -504,7 +507,8 @@ useEffect(() => {
 
   //Genera un json apto para la base de datos del personaje creado
   function jsonPersonaje() {
-    let spellCaster,spellCasterMult = false;
+    let spellCaster = false;
+    let spellCasterMult = false;
     if(spellcastingAbility){
       spellCaster = true;
     }
@@ -518,6 +522,7 @@ useEffect(() => {
       armor_class: 10+statBonus(stats[2]),
       initiative: statBonus(stats[2]),
       speed: speed,
+      race: selectedRace,
       class: [
         {
           name: selectedClass,
@@ -605,8 +610,16 @@ useEffect(() => {
   
     // Ahora imprimimos el JSON
     console.log(personaje);
-  }
-  
+
+    let documentId = characterName+"_"+auth.currentUser.uid;
+    const db = getFirestore();
+    //  Subir a Firebase
+    setDoc(doc(db, "Characters", documentId), personaje);
+
+    //volvemos a la lista
+    navigate("/Personajes");
+    }
+      
   useEffect(() => {
     // Solo actualizamos el array de skillsBonus si los datos de stats, selectedClassSkills, selectedMulticlassSkills, o selectedSkills cambian
     const newSkillsBonus = skills.map((skill) => {
@@ -666,7 +679,7 @@ useEffect(() => {
     <>
       <Header />
       <main className="mx-4 my-4">
-        <button class="btn btn-primary w-auto" onClick={() => jsonPersonaje()}>Crear Personaje</button>
+        <button class="btn btn-primary w-auto" onClick={() => jsonPersonaje()}>Save Character</button>
 
           {/* Nombre del personaje */}
             <div className="col-sm-6 col-md-4 my-4 shadow border rounded p-2 bg-light shadow">
@@ -707,7 +720,7 @@ useEffect(() => {
                 <div className="small">
                   <div><strong>Bonus:</strong> {statBonus(stats[index])}</div>
                   <div><strong>Save:</strong> {calcularSavingThrow(index)}</div>
-                  <div><strong>Competencia:</strong> {savingThrowsBool[index] ? "✅" : "❌"}</div>
+                  <div><strong>Proficiency:</strong> {savingThrowsBool[index] ? "✅" : "❌"}</div>
                 </div>
               </div>
             </div>
@@ -717,7 +730,7 @@ useEffect(() => {
         <div className="col-12 mt-3">
           <div className="d-flex justify-content-center">
             <button className="btn btn-primary w-auto" onClick={handleRandomStats}>
-              Generar Atributos
+              Generate Random Stats
             </button>
           </div>
         </div>
@@ -725,27 +738,27 @@ useEffect(() => {
 
       <div className="bg-light p-3 rounded my-4 shadow">
         <div id="hp" className="mb-3">
-          <h3>Puntos de Golpe (HP): {hp !== null ? hp : "Cargando..."}</h3>
+          <h3>Hit Points (HP): {hp !== null ? hp : "Cargando..."}</h3>
         </div>
 
         <div className="d-flex flex-wrap gap-2 mb-3">
           <button className="btn btn-outline-primary" onClick={() => setShowModal(true)}>
-            Clase
+            Select Class
           </button>
           {selectedClass && (
             <button className="btn btn-outline-primary" onClick={() => setShowMulticlassModal(true)}>
-              Seleccionar Multiclase
+              Select Multiclass
             </button>
           )}
           <button className="btn btn-outline-primary" onClick={() => setShowRaceModal(true)}>
-            Raza
+            Select Race
           </button>
         </div>
 
         {/* Nivel Clase */}
         {selectedClass && (
           <div className="mb-3">
-            <label htmlFor="level" className="form-label">Nivel Clase:</label>
+            <label htmlFor="level" className="form-label">Class Level:</label>
             <input
               type="number"
               id="level"
@@ -765,7 +778,7 @@ useEffect(() => {
         {/* Nivel Multiclase */}
         {selectedMulticlass && (
           <div className="mb-3">
-            <label htmlFor="levelM" className="form-label">Nivel Multiclase:</label>
+            <label htmlFor="levelM" className="form-label">Multiclass Level:</label>
             <input
               type="number"
               id="levelM"

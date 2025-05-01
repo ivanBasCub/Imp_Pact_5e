@@ -20,7 +20,7 @@ const MenuInicial = () => {
         </div>
         <div className="col-12 col-sm-6">
           <div className="card">
-            <img src="/images/homebrew.jpg" alt="Imagen 2" className="card-img-top" />
+            <img src="/images/homebrew.png" alt="Imagen 2" className="card-img-top" />
             <div className="card-body">
               <h2 className="card-title">Homebrew</h2>
               <p className="card-text">Inhabilitado</p>
@@ -30,9 +30,9 @@ const MenuInicial = () => {
         <div className="col-12 col-sm-6">
           <Link to="/Personajes" className="text-decoration-none">
             <div className="card">
-              <img src="/images/personajes.jpg" alt="Personajes" className="card-img-top" />
+              <img src="/images/personajes.png" alt="Personajes" className="card-img-top" />
               <div className="card-body">
-                <h2 className="card-title">Personajes</h2>
+                <h2 className="card-title">Characters</h2>
                 <p className="card-text">Habilitado</p>
               </div>
             </div>

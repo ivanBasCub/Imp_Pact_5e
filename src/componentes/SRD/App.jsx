@@ -15,7 +15,6 @@ export default function App(){
                       <img src="images/rules.png" alt="rules" className="card-img-top" />
                       <div className="card-body">
                         <h2 className="card-title">Rules</h2>
-                        <p className="card-text">Habilitado</p>
                       </div>
                     </div>
                   </Link>
@@ -26,7 +25,6 @@ export default function App(){
                       <img src="images/classes.png" alt="classes" className="card-img-top" />
                       <div className="card-body">
                         <h2 className="card-title">Classes</h2>
-                        <p className="card-text">Habilitado</p>
                       </div>
                     </div>
                   </Link>
@@ -37,7 +35,6 @@ export default function App(){
                       <img src="/images/dwarf.png" alt="races" className="card-img-top" />
                       <div className="card-body">
                         <h2 className="card-title">Races</h2>
-                        <p className="card-text">Habilitado</p>
                       </div>
                     </div>
                   </Link>
@@ -48,7 +45,6 @@ export default function App(){
                       <img src="/images/monsters.png" alt="monstros" className="card-img-top" />
                       <div className="card-body">
                         <h2 className="card-title">Monsters</h2>
-                        <p className="card-text">Habilitado</p>
                       </div>
                     </div>
                   </Link>
@@ -59,7 +55,6 @@ export default function App(){
                       <img src="/images/spells.png" alt="spells" className="card-img-top" />
                       <div className="card-body">
                         <h2 className="card-title">Spells</h2>
-                        <p className="card-text">Habilitado</p>
                       </div>
                     </div>
                   </Link>
@@ -70,7 +65,6 @@ export default function App(){
                       <img src="/images/equipment.jpg" alt="equipment" className="card-img-top" />
                       <div className="card-body">
                         <h2 className="card-title">Equipment</h2>
-                        <p className="card-text">Habilitado</p>
                       </div>
                     </div>
                   </Link>
@@ -81,7 +75,6 @@ export default function App(){
                       <img src="/images/magicItem.jpg" alt="magic items" className="card-img-top" />
                       <div className="card-body">
                         <h2 className="card-title">Magic Items</h2>
-                        <p className="card-text">Habilitado</p>
                       </div>
                     </div>
                   </Link>
@@ -92,7 +85,6 @@ export default function App(){
                       <img src="/images/feats.png" alt="feats" className="card-img-top" />
                       <div className="card-body">
                         <h2 className="card-title">Feats</h2>
-                        <p className="card-text">Habilitado</p>
                       </div>
                     </div>
                   </Link>
@@ -103,7 +95,6 @@ export default function App(){
                       <img src="/images/backgrounds.png" alt="backgrounds" className="card-img-top" />
                       <div className="card-body">
                         <h2 className="card-title">Backgrounds</h2>
-                        <p className="card-text">Habilitado</p>
                       </div>
                     </div>
                   </Link>
