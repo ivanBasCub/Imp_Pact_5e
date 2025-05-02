@@ -17,7 +17,10 @@ function Login() {
             .then(() => {
                 return signInWithEmailAndPassword(auth, email, password)
                 .then(() =>{
-                    navigate("/")
+                    if(checkUser()){
+                        navigate("/")
+                    }
+                    
                 }).catch((error) =>{
                     const errorMessage = error.message;
 
@@ -33,6 +36,16 @@ function Login() {
             })
         }
     };
+
+    // Comprobamos si el usuario esta verificado
+    const checkUser = () =>{
+        const user = auth.currentUser;
+        if (user && !user.emailVerified) {
+            setError("Please verify your email before logging in.");
+            return false;
+        }
+        return true;
+    }
 
     return (
         <>
