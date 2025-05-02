@@ -1,5 +1,5 @@
 import { auth, db } from "../../firebase/config"
-import { createUserWithEmailAndPassword } from "firebase/auth"
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
 import { useState } from "react"
 import { Link } from 'react-router-dom';
@@ -16,21 +16,27 @@ export default function Signup() {
     const btnSignup = async (event) => {
         event.preventDefault()
         if (username && email && password) {
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                await setDoc(doc(db, "Users", user.uid), {
-                    username: username,
-                    email: email
-                });
-                navigate("/");
-            } catch (error) {
-                console.log(error.message);
-                if (error.message.includes("auth/email-already-in-use")) {
-                    setError("Email already in use. Please use another email.");
-                }
-            }
-            
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(async (userCredential) => {
+                    // Signed in 
+                    const user = userCredential.user
+                    await sendEmailVerification(user);
+                    alert("Email verification sent! Please check your inbox.")
+                    await setDoc(doc(db, "Users", user.uid), {
+                        username: username,
+                        email: email
+                    })
+                    navigate("/login")
+                    return auth.signOut(); // Cerrar sesión después de registrarse
+                })
+                .catch((error) => {
+                    const errorMessage = error.message
+                    console.log(errorMessage)
+                    if (errorMessage.includes("auth/email-already-in-use")) {
+                        setError("Email already in use. Please use another email.")
+                    }
+                })
+
         }
     }
 
@@ -92,9 +98,9 @@ export default function Signup() {
                     </p>
 
                     <div className="text-center mt-2">
-                    <Link to="/" className="text-decoration-none">
-                        <p className="nav-link">Return to home page</p>
-                    </Link>
+                        <Link to="/" className="text-decoration-none">
+                            <p className="nav-link">Return to home page</p>
+                        </Link>
                     </div>
                 </div>
             </main>
