@@ -4,6 +4,10 @@ import Header from "../Header";
 import "../../assets/css/App.css";
 import "../../assets/css/modal.css";
 import SpellSelector from "./SpellSelector";
+import { auth } from "../../firebase/config";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+
 
 
 export default function PersonajesNuevo() {
@@ -34,11 +38,9 @@ export default function PersonajesNuevo() {
   const [hitDie, setHitDie] = useState(null);
   const [hitDieMulticlass, setHitDieMulticlass] = useState(null);
   const [hp, setHp] = useState(null);
-  //const [savingThrows, setSavingThrows] = useState(null);
   const [savingThrowsBool, setSavingThrowsBool] = useState([false, false, false, false, false, false]);
   const [proficiencies, setProficiencies] = useState([]);
   const [proficienciesMulticlass, setProficienciesMulticlass] = useState([]);
-  //const [proficiencyChoicesMulticlass, setProficiencyChoicesMulticlass] = useState([]);
   const [pb, setPb] = useState(calcularProficiencyBonus(levelTotal));
   const [casterLevel, setCasterLevel] = useState(0);
   const [casterLevelMulticlass, setCasterLevelMulticlass] = useState(0);
@@ -55,9 +57,49 @@ export default function PersonajesNuevo() {
   const [skillsBonus, setSkillsBonus] = useState([]);
   const [equipmentSections, setEquipmentSections] = useState(["", "", "", ""]);
   const [characterName, setCharacterName] = useState('');
+  const navigate = useNavigate();
 
 
+  useEffect(() => {
+    const saved = localStorage.getItem("editCharacter");
+    if (saved) {
+      const personaje = JSON.parse(saved);
+  
+      // Asegúrate de acceder correctamente al primer objeto del array de clases
 
+      setCharacterName(personaje.name || "");
+  
+      setSelectedClass(personaje.class?.[0]?.name || "");        // Establecer clase
+      setLevel(personaje.class?.[0]?.level || "")
+      setSelectedMulticlass(personaje.class?.[1]?.name || "");        // Establecer Multiclase
+      setLevelMulticlase(personaje.class?.[1]?.level || "")
+
+      setSelectedRace(personaje.race || "");          // Raza
+      //console.log(personaje.spells.spellbook[0]);
+      //setSelectedSpells(personaje.spells.spellbook[0]); // Aquí usamos 'spellbook' como array
+      //console.log(selectedSpells)
+
+      setStats([
+        personaje.stats.strength || 10,
+        personaje.stats.dexterity || 10,
+        personaje.stats.constitution || 10,
+        personaje.stats.intelligence || 10,
+        personaje.stats.wisdom || 10,
+        personaje.stats.charisma || 10
+      ]);
+
+      setEquipmentSections([
+        personaje.equipment?.armor || "",  // Valor de armadura
+        personaje.equipment?.weapons || "", // Valor de armas
+        personaje.equipment?.tools || "",   // Valor de herramientas
+        personaje.equipment?.other || ""    // Valor de otros
+      ]);
+  
+      // Finalmente, limpia el almacenamiento después de cargar
+      localStorage.removeItem("editCharacter");
+    }
+  }, []);
+  
   
 
 
@@ -503,7 +545,8 @@ useEffect(() => {
 
   //Genera un json apto para la base de datos del personaje creado
   function jsonPersonaje() {
-    let spellCaster,spellCasterMult = false;
+    let spellCaster = false;
+    let spellCasterMult = false;
     if(spellcastingAbility){
       spellCaster = true;
     }
@@ -517,6 +560,7 @@ useEffect(() => {
       armor_class: 10+statBonus(stats[2]),
       initiative: statBonus(stats[2]),
       speed: speed,
+      race: selectedRace,
       class: [
         {
           name: selectedClass,
@@ -599,13 +643,23 @@ useEffect(() => {
         equipment: '',
         feature: ''
       },
-      creator: 'user' 
+      creator:  auth.currentUser.uid 
     };
   
     // Ahora imprimimos el JSON
     console.log(personaje);
-  }
-  
+    console.log(selectedSpells);
+
+
+    let documentId = characterName+"_"+auth.currentUser.uid;
+    const db = getFirestore();
+    //  Subir a Firebase
+    setDoc(doc(db, "Characters", documentId), personaje);
+
+    //volvemos a la lista
+    navigate("/Personajes");
+    }
+      
   useEffect(() => {
     // Solo actualizamos el array de skillsBonus si los datos de stats, selectedClassSkills, selectedMulticlassSkills, o selectedSkills cambian
     const newSkillsBonus = skills.map((skill) => {
@@ -665,14 +719,12 @@ useEffect(() => {
     <>
       <Header />
       <main className="mx-4 my-4">
-        <h1>Personajes</h1>
-        <p>Esta es la página principal de creación de personajes</p>
-        <button onClick={() => jsonPersonaje()}>json</button>
+        <button class="btn btn-primary w-auto" onClick={() => jsonPersonaje()}>Save Character</button>
 
           {/* Nombre del personaje */}
-            <div className="col-sm-6 col-md-4 my-4">
+            <div className="col-sm-6 col-md-4 my-4 shadow border rounded p-2 bg-light shadow">
               <div className="form-group">
-                <label htmlFor="characterName">Character Name</label>
+                <label htmlFor="characterName"><strong>Character Name</strong></label>
                 <input
                   type="text"
                   id="characterName"
@@ -690,19 +742,25 @@ useEffect(() => {
 
           return (
             <div key={statName} className="col-6 col-md-4 col-lg-2 mb-3">
-              <div className="border rounded p-2 shadow-sm text-center bg-light shadow">
+              <div className="border rounded p-2 text-center bg-light shadow">
                 <label htmlFor={statName} className="form-label fw-bold">{statName}</label>
                 <input
                   type="number"
                   id={statName}
                   className="form-control text-center mb-2"
                   value={stats[index]}
-                  onChange={(e) => handleInputChange(index, e.target.value)}
+                  min={1}
+                  max={30}
+                  onChange={(e) => {
+                    const rawValue = Number(e.target.value);
+                    const clampedValue = Math.max(1, Math.min(30, rawValue));
+                    handleInputChange(index, clampedValue);
+                  }}
                 />
                 <div className="small">
                   <div><strong>Bonus:</strong> {statBonus(stats[index])}</div>
                   <div><strong>Save:</strong> {calcularSavingThrow(index)}</div>
-                  <div><strong>Competencia:</strong> {savingThrowsBool[index] ? "✅" : "❌"}</div>
+                  <div><strong>Proficiency:</strong> {savingThrowsBool[index] ? "✅" : "❌"}</div>
                 </div>
               </div>
             </div>
@@ -712,7 +770,7 @@ useEffect(() => {
         <div className="col-12 mt-3">
           <div className="d-flex justify-content-center">
             <button className="btn btn-primary w-auto" onClick={handleRandomStats}>
-              Generar Atributos
+              Generate Random Stats
             </button>
           </div>
         </div>
@@ -720,51 +778,57 @@ useEffect(() => {
 
       <div className="bg-light p-3 rounded my-4 shadow">
         <div id="hp" className="mb-3">
-          <h3>Puntos de Golpe (HP): {hp !== null ? hp : "Cargando..."}</h3>
+          <h3>Hit Points (HP): {hp !== null ? hp : "Cargando..."}</h3>
         </div>
 
         <div className="d-flex flex-wrap gap-2 mb-3">
           <button className="btn btn-outline-primary" onClick={() => setShowModal(true)}>
-            Clase
+            Select Class
           </button>
           {selectedClass && (
             <button className="btn btn-outline-primary" onClick={() => setShowMulticlassModal(true)}>
-              Seleccionar Multiclase
+              Select Multiclass
             </button>
           )}
           <button className="btn btn-outline-primary" onClick={() => setShowRaceModal(true)}>
-            Raza
+            Select Race
           </button>
         </div>
 
-        {/*Nivel Clase*/}
+        {/* Nivel Clase */}
         {selectedClass && (
           <div className="mb-3">
-            <label htmlFor="level" className="form-label">Nivel Clase:</label>
+            <label htmlFor="level" className="form-label">Class Level:</label>
             <input
               type="number"
               id="level"
               min="1"
               max={20 - levelMulticlase}
               value={level}
-              onChange={(e) => setLevel(Number(e.target.value))}
+              onChange={(e) => {
+                const value = Math.max(1, Math.min(20 - levelMulticlase, Number(e.target.value)));
+                setLevel(value);
+              }}
               className="form-control"
               style={{ maxWidth: "150px" }}
             />
           </div>
         )}
 
-          {/*Nivel Multiclase*/}
-          {selectedMulticlass && (
+        {/* Nivel Multiclase */}
+        {selectedMulticlass && (
           <div className="mb-3">
-            <label htmlFor="levelM" className="form-label">Nivel Multiclase:</label>
+            <label htmlFor="levelM" className="form-label">Multiclass Level:</label>
             <input
               type="number"
-              id="level"
+              id="levelM"
               min="1"
               max={20 - level}
               value={levelMulticlase}
-              onChange={(e) => setLevelMulticlase(Number(e.target.value))}
+              onChange={(e) => {
+                const value = Math.max(1, Math.min(20 - level, Number(e.target.value)));
+                setLevelMulticlase(value);
+              }}
               className="form-control"
               style={{ maxWidth: "150px" }}
             />
@@ -817,7 +881,7 @@ useEffect(() => {
 
 
         <div className="card mb-4">
-  <div className="card-body text-start">
+      <div className="card-body text-start">
     <h3 className="mb-4">Skill Selection</h3>
 
     {skillsClassNumber > 0 && (
@@ -985,9 +1049,9 @@ useEffect(() => {
       />
 
       {/* Equipment */}
-      <div className="mb-4">
-        <div className="table-responsive">
-          <table className="table table-bordered">
+      <div className="mb-4 p-0">
+        <div className="table-responsive shadow-lg p-3 mb-0 bg-body rounded">
+          <table className="table table-bordered rounded-3 mb-0">
             <thead>
               <tr>
                 <th colSpan="4" className="text-center">Equipment</th>
@@ -1004,7 +1068,7 @@ useEffect(() => {
                 {["Weapons", "Armor", "Tools", "Other items"].map((label, index) => (
                   <td key={index}>
                     <textarea
-                      className="form-control"
+                      className="form-control rounded-3"
                       value={equipmentSections[index]}
                       onChange={(e) => handleSectionChange(index, e.target.value)}
                       rows={6}
@@ -1016,6 +1080,7 @@ useEffect(() => {
           </table>
         </div>
       </div>
+
 
 
       {/* Lista de Features de la Clase */}

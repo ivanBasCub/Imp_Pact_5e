@@ -2,6 +2,8 @@ import { auth, db } from "../../firebase/config"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
 import { useState } from "react"
+import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 
 export default function Signup() {
@@ -9,27 +11,26 @@ export default function Signup() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState(null)
+    const navigate = useNavigate();
 
     const btnSignup = async (event) => {
         event.preventDefault()
         if (username && email && password) {
-            createUserWithEmailAndPassword(auth, email, password)
-                .then(async (userCredential) => {
-                    // Signed in 
-                    const user = userCredential.user
-                    console.log(user)
-                    await setDoc(doc(db, "Users", user.uid), {
-                        username: username,
-                        email: email
-                    })
-                })
-                .catch((error) => {
-                    const errorMessage = error.message
-                    console.log(errorMessage)
-                    if (errorMessage.includes("auth/email-already-in-use")) {
-                        setError("Email already in use. Please use another email.")
-                    }
-                })
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                await setDoc(doc(db, "Users", user.uid), {
+                    username: username,
+                    email: email
+                });
+                navigate("/");
+            } catch (error) {
+                console.log(error.message);
+                if (error.message.includes("auth/email-already-in-use")) {
+                    setError("Email already in use. Please use another email.");
+                }
+            }
+            
         }
     }
 
@@ -50,7 +51,7 @@ export default function Signup() {
                                 onChange={(e) => setUsername(e.target.value)}
                             />
                         </div>
-    
+
                         <div className="mb-3">
                             <label htmlFor="user_email" className="form-label">Email</label>
                             <input
@@ -62,7 +63,7 @@ export default function Signup() {
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
-    
+
                         <div className="mb-3">
                             <label htmlFor="user_password" className="form-label">Password</label>
                             <input
@@ -74,24 +75,30 @@ export default function Signup() {
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
-    
+
                         {error && (
                             <div className="alert alert-danger">
                                 {error}
                             </div>
                         )}
-    
+
                         <button type="submit" className="btn btn-primary w-100" onClick={btnSignup}>
                             Register
                         </button>
                     </form>
-    
+
                     <p className="text-center mt-3">
                         Already have an account? <a href="/login">Login</a>
                     </p>
+
+                    <div className="text-center mt-2">
+                    <Link to="/" className="text-decoration-none">
+                        <p className="nav-link">Return to home page</p>
+                    </Link>
+                    </div>
                 </div>
             </main>
         </>
     );
-    
+
 }
