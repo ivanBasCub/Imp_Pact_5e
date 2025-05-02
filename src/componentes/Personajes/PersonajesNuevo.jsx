@@ -38,11 +38,9 @@ export default function PersonajesNuevo() {
   const [hitDie, setHitDie] = useState(null);
   const [hitDieMulticlass, setHitDieMulticlass] = useState(null);
   const [hp, setHp] = useState(null);
-  //const [savingThrows, setSavingThrows] = useState(null);
   const [savingThrowsBool, setSavingThrowsBool] = useState([false, false, false, false, false, false]);
   const [proficiencies, setProficiencies] = useState([]);
   const [proficienciesMulticlass, setProficienciesMulticlass] = useState([]);
-  //const [proficiencyChoicesMulticlass, setProficiencyChoicesMulticlass] = useState([]);
   const [pb, setPb] = useState(calcularProficiencyBonus(levelTotal));
   const [casterLevel, setCasterLevel] = useState(0);
   const [casterLevelMulticlass, setCasterLevelMulticlass] = useState(0);
@@ -62,7 +60,47 @@ export default function PersonajesNuevo() {
   const navigate = useNavigate();
 
 
+  useEffect(() => {
+    const saved = localStorage.getItem("editCharacter");
+    if (saved) {
+      const personaje = JSON.parse(saved);
+  
+      // Asegúrate de acceder correctamente al primer objeto del array de clases
 
+      setCharacterName(personaje.name || "");
+  
+      setSelectedClass(personaje.class?.[0]?.name || "");        // Establecer clase
+      setLevel(personaje.class?.[0]?.level || "")
+      setSelectedMulticlass(personaje.class?.[1]?.name || "");        // Establecer Multiclase
+      setLevelMulticlase(personaje.class?.[1]?.level || "")
+
+      setSelectedRace(personaje.race || "");          // Raza
+      //console.log(personaje.spells.spellbook[0]);
+      //setSelectedSpells(personaje.spells.spellbook[0]); // Aquí usamos 'spellbook' como array
+      //console.log(selectedSpells)
+
+      setStats([
+        personaje.stats.strength || 10,
+        personaje.stats.dexterity || 10,
+        personaje.stats.constitution || 10,
+        personaje.stats.intelligence || 10,
+        personaje.stats.wisdom || 10,
+        personaje.stats.charisma || 10
+      ]);
+
+      setEquipmentSections([
+        personaje.equipment?.armor || "",  // Valor de armadura
+        personaje.equipment?.weapons || "", // Valor de armas
+        personaje.equipment?.tools || "",   // Valor de herramientas
+        personaje.equipment?.other || ""    // Valor de otros
+      ]);
+  
+      // Finalmente, limpia el almacenamiento después de cargar
+      localStorage.removeItem("editCharacter");
+    }
+  }, []);
+  
+  
 
 
   // Obtén todas las habilidades posibles
@@ -610,6 +648,8 @@ useEffect(() => {
   
     // Ahora imprimimos el JSON
     console.log(personaje);
+    console.log(selectedSpells);
+
 
     let documentId = characterName+"_"+auth.currentUser.uid;
     const db = getFirestore();
@@ -841,7 +881,7 @@ useEffect(() => {
 
 
         <div className="card mb-4">
-  <div className="card-body text-start">
+      <div className="card-body text-start">
     <h3 className="mb-4">Skill Selection</h3>
 
     {skillsClassNumber > 0 && (
@@ -1009,9 +1049,9 @@ useEffect(() => {
       />
 
       {/* Equipment */}
-      <div className="mb-4">
-        <div className="table-responsive">
-          <table className="table table-bordered">
+      <div className="mb-4 p-0">
+        <div className="table-responsive shadow-lg p-3 mb-0 bg-body rounded">
+          <table className="table table-bordered rounded-3 mb-0">
             <thead>
               <tr>
                 <th colSpan="4" className="text-center">Equipment</th>
@@ -1028,7 +1068,7 @@ useEffect(() => {
                 {["Weapons", "Armor", "Tools", "Other items"].map((label, index) => (
                   <td key={index}>
                     <textarea
-                      className="form-control"
+                      className="form-control rounded-3"
                       value={equipmentSections[index]}
                       onChange={(e) => handleSectionChange(index, e.target.value)}
                       rows={6}
@@ -1040,6 +1080,7 @@ useEffect(() => {
           </table>
         </div>
       </div>
+
 
 
       {/* Lista de Features de la Clase */}
