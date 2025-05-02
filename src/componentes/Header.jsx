@@ -14,7 +14,7 @@ const Header = () => {
             <img src="/images/Logo.ico" class="d-block w-100" height="20"/>
         </a>
         <Link to="/" className="text-decoration-none mt-2">
-            <p class="nav-link">Inicio</p>
+            <p class="nav-link">Index</p>
         </Link>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
