@@ -12,12 +12,10 @@ function Logout() {
         event.preventDefault()
         signOut(auth).then(() => {
             // Sign-out successful.
-            console.log("Sign-out successful.")
             navigate("/")
         }).catch((error) => {
             // An error happened.
             const errorMessage = error.message
-            console.log(errorMessage)
             if (errorMessage.includes("auth/no-current-user")) {
                 setError("No user is currently signed in.")
             }

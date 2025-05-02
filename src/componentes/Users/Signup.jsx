@@ -2,8 +2,7 @@ import { auth, db } from "../../firebase/config"
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
 import { useState } from "react"
-import { Link } from 'react-router-dom';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
 
 
 export default function Signup() {
@@ -36,7 +35,6 @@ export default function Signup() {
                         setError("Email already in use. Please use another email.")
                     }
                 })
-
         }
     }
 
