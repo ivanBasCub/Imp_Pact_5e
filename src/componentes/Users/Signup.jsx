@@ -2,12 +2,8 @@ import { auth, db } from "../../firebase/config"
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
 import { useState } from "react"
-<<<<<<< HEAD
-import { useNavigate } from "react-router-dom"
-=======
 import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
->>>>>>> 89b604f1b5834024e6ac42b90bcd5978383a95f5
 
 
 export default function Signup() {
