@@ -2,18 +2,51 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Reglas de la parte del SRD
+    match /SRD_Backgrounds/{docId}{
+      allow read, write;
+    }
+    match /SRD_Classes/{docId}{
+      allow read, write;
+    }
+    match /SRD_Equipments/{docId}{
+      allow read, write;
+    }
+    match /SRD_Feats/{docId}{
+      allow read, write;
+    }
+    match /SRD_Magic_Items/{docId}{
+      allow read, write;
+    }
+    match /SRD_Monsters/{docId}{
+      allow read, write;
+    }
+    match /SRD_RaceTraits/{docId}{
+      allow read, write;
+    }
+    match /SRD_Races/{docId}{
+      allow read, write;
+    }
+    match /SRD_Rules/{docId}{
+      allow read, write;
+    }
+    match /SRD_Spells/{docId}{
+      allow read, write;
+    }
+    match /SRD_SubClasses/{docId}{
+      allow read, write;
+    }
+    match /SRD_SubRaces/{docId}{
+      allow read, write;
+    }
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
-    match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2025, 4, 21);
+    // Reglas de los Usuarios 
+    match /Users/{docId}{
+      allow read, write;
+    }
+    
+    match /Characters/{docId}{
+      allow read, write: if request.auth != null;
     }
   }
 }
