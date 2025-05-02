@@ -15,13 +15,16 @@ export default function Signup() {
     const btnSignup = async (event) => {
         event.preventDefault()
         if (username && email && password) {
-
+            // Funcion para crear un nuevo usuario con el email y la contraseña
+            // Si el usuario se crea correctamente, se envia un email de verificacion y se guarda el usuario en la base de datos
             createUserWithEmailAndPassword(auth, email, password)
                 .then(async (userCredential) => {
-                    // Signed in 
                     const user = userCredential.user
+                    // Enviamos un email de verificacion al usuario
+                    // Si el usuario no esta verificado, no podra iniciar sesion
                     await sendEmailVerification(user);
                     alert("Email verification sent! Please check your inbox.")
+                    // Guardamos el usuario en la base de datos
                     await setDoc(doc(db, "Users", user.uid), {
                         username: username,
                         email: email

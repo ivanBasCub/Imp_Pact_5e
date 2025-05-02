@@ -9,21 +9,26 @@ function Login() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    // Creamos una evento para cuando inserte el email y la contraseña no rompa
+    // Creamos una evento para cuando inserte el email y la contraseña comprobamos si existe el usuario y si la contraseña es correcta
+    // Si existe el usuario y la contraseña es correcta, redirigimos a la pagina de inicio
     const btnLogin = async (event) => {
         event.preventDefault();
         if (email && password) {
+            // Configuramos la persistencia de la sesion del usuario
             setPersistence(auth, browserSessionPersistence)
             .then(() => {
+                // Iniciamos sesion con el email y la contraseña
                 return signInWithEmailAndPassword(auth, email, password)
                 .then(() =>{
+                    // Comprobamos si el usuario esta verificado
+                    // Si el usuario esta verificado, redirigimos a la pagina de inicio
                     if(checkUser()){
                         navigate("/")
                     }
                     
                 }).catch((error) =>{
+                    // Lista de errores que pueden ocurrir
                     const errorMessage = error.message;
-
                     if(errorMessage.includes("auth/user-not-found")) {
                         setError("User not found. Please check your email or sign up.");
                     }
