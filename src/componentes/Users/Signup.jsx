@@ -29,6 +29,9 @@ export default function Signup() {
                         username: username,
                         email: email
                     })
+                    // Cerramos la sesion del usuario y lo redirigimos a la pagina de login
+                    // Esto es para que no pueda iniciar sesion sin verificar el email
+                    auth.signOut()
                     navigate("/login")
                 })
                 .catch((error) => {
