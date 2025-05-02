@@ -2,6 +2,7 @@ import { useState } from "react";
 import { browserSessionPersistence, setPersistence, signInWithEmailAndPassword, fetchSignInMethodsForEmail } from "firebase/auth";
 import { auth } from "../../firebase/config";
 import { useNavigate } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -86,6 +87,12 @@ function Login() {
                     <p className="text-center mt-3">
                         Don't have an account? <a href="/signup">Sign Up</a>
                     </p>
+
+                    <div className="text-center mt-2">
+                    <Link to="/" className="text-decoration-none">
+                        <p className="nav-link">Return to home page</p>
+                    </Link>
+                    </div>
                 </div>
             </main>
         </>

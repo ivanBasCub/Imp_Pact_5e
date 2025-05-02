@@ -25,13 +25,16 @@ dist-ssr
 *.sln
 *.sw?
 
-# Firebase configuration files
-# Estos archivos son generados por Firebase CLI y no deberían ser incluidos en el control de versiones.
-firebase.json
-.firebaserc
-firestore.indexes.json
-firestore.rules
 
-# Vite config files
-vite.config.js
-eslint.config.js
+# Directorios y archivos de apoyo
+BBDD/*
+
+firebaseCommands.md
+
+
+## Archivo que hay que quitar el comentario para cuando acabe el proyecto
+# Archivo de configuración de firebase que se crean cuando realizas la implementación de firebase
+# firebase.json
+# .firebaserc
+# firestore.indexes.rules
+# firestore.rules

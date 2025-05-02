@@ -2,7 +2,12 @@ import { auth, db } from "../../firebase/config"
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
 import { useState } from "react"
+<<<<<<< HEAD
 import { useNavigate } from "react-router-dom"
+=======
+import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+>>>>>>> 89b604f1b5834024e6ac42b90bcd5978383a95f5
 
 
 export default function Signup() {
@@ -100,6 +105,12 @@ export default function Signup() {
                     <p className="text-center mt-3">
                         Already have an account? <a href="/login">Login</a>
                     </p>
+
+                    <div className="text-center mt-2">
+                    <Link to="/" className="text-decoration-none">
+                        <p className="nav-link">Return to home page</p>
+                    </Link>
+                    </div>
                 </div>
             </main>
         </>

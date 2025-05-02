@@ -1,26 +1,26 @@
-/* Estilo para el fondo de los modales */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
 .custom-modal {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
-    min-width: 500px; /* ancho mínimo */
-    max-width: 90vw;   /* que no se pase del viewport */
-  }
-  
-  /* Overlay del modal */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  max-height: 90vh; /* limita el alto del modal */
+  overflow-y: auto; /* permite scroll en el modal */
+  width: 100%;
+  max-width: 600px;
+}
   
   /* Hover sobre elementos de lista */
   .list-group-item:hover {
