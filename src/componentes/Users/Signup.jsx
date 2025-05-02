@@ -1,9 +1,13 @@
 import { auth, db } from "../../firebase/config"
-import { createUserWithEmailAndPassword } from "firebase/auth"
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
 import { useState } from "react"
+<<<<<<< HEAD
+import { useNavigate } from "react-router-dom"
+=======
 import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
+>>>>>>> 89b604f1b5834024e6ac42b90bcd5978383a95f5
 
 
 export default function Signup() {
@@ -16,21 +20,32 @@ export default function Signup() {
     const btnSignup = async (event) => {
         event.preventDefault()
         if (username && email && password) {
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                await setDoc(doc(db, "Users", user.uid), {
-                    username: username,
-                    email: email
-                });
-                navigate("/");
-            } catch (error) {
-                console.log(error.message);
-                if (error.message.includes("auth/email-already-in-use")) {
-                    setError("Email already in use. Please use another email.");
-                }
-            }
-            
+            // Funcion para crear un nuevo usuario con el email y la contraseña
+            // Si el usuario se crea correctamente, se envia un email de verificacion y se guarda el usuario en la base de datos
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(async (userCredential) => {
+                    const user = userCredential.user
+                    // Enviamos un email de verificacion al usuario
+                    // Si el usuario no esta verificado, no podra iniciar sesion
+                    await sendEmailVerification(user);
+                    alert("Email verification sent! Please check your inbox.")
+                    // Guardamos el usuario en la base de datos
+                    await setDoc(doc(db, "Users", user.uid), {
+                        username: username,
+                        email: email
+                    })
+                    // Cerramos la sesion del usuario y lo redirigimos a la pagina de login
+                    // Esto es para que no pueda iniciar sesion sin verificar el email
+                    auth.signOut()
+                    navigate("/login")
+                })
+                .catch((error) => {
+                    const errorMessage = error.message
+                    console.log(errorMessage)
+                    if (errorMessage.includes("auth/email-already-in-use")) {
+                        setError("Email already in use. Please use another email.")
+                    }
+                })
         }
     }
 

@@ -23,6 +23,7 @@ function SpellList() {
 
     // Constante para recoger la información del formulario
     const [infoForm, setInfoForm] = useState({
+        name: "",
         level: 0 || 1,
         school: "all",
         class: clase || 'all'
@@ -109,17 +110,50 @@ function SpellList() {
         async function fetchList() {
             const collectionRef = collection(db, nanmeColeccion);
             const query = await getDocs(collectionRef);
-
-            var filterData = query.docs.filter(spell => spell.data().level === parseInt(infoForm.level));
-            if (infoForm.school !== "all") {
-                filterData = filterData.filter(spell => spell.data().school === infoForm.school);
+            var filterData = null;
+            if (infoForm.level === "-1") {
+                filterData = query.docs.map(spell => spell.data());
+                if (infoForm.school !== "all") {
+                    filterData = filterData.filter(spell => spell.school === infoForm.school);
+                }
+                if (infoForm.class !== "all") {
+                    filterData = filterData.filter(spell => spell.classes.includes(infoForm.class));
+                }
+                setList(filterData);
+            } else {
+                filterData = query.docs.filter(spell => spell.data().level === parseInt(infoForm.level));
+                if (infoForm.school !== "all") {
+                    filterData = filterData.filter(spell => spell.data().school === infoForm.school);
+                }
+                if (infoForm.class !== "all") {
+                    filterData = filterData.filter(spell => spell.data().classes.includes(infoForm.class));
+                }
+                setList(filterData.map(spell => spell.data()));
             }
-            if (infoForm.class !== "all") {
-                filterData = filterData.filter(spell => spell.data().classes.includes(infoForm.class));
-            }
-            setList(filterData.map(spell => spell.data()));
         }
-        fetchList();
+        
+        // Funcion para filtrar por el nombre del hechizo
+        async function filterListName(){
+            const spellName = infoForm.name.toLowerCase().split(" ").join("-");
+
+            const spell = await getDoc(doc(db, nanmeColeccion, spellName));
+            if (spell.exists()) {
+                setList([spell.data()]);
+            } else {
+                setList([]);
+            }
+        }
+        // Funcion que se encarga de recoger la información de la BBDD y filtrar la información
+        function fetchSpell() {
+            if (infoForm.name === "") {
+                fetchList();
+            } else {
+                filterListName();
+            }
+        }
+
+        fetchSpell();
+
     }, [infoForm]);
 
     return (
@@ -130,15 +164,14 @@ function SpellList() {
                     <h2 className="mb-3">Spell List</h2>
                     <form method="post">
                         <div className="row g-3">
-                            <div className="col-md-4">
+                            <div className="col-md-3">
+                                <label htmlFor="name" className="form-label">Spell Name</label>
+                                <input type="text" className="form-control" id="name" name="name" placeholder="Spell Name" onChange={formEvent} value={infoForm.name} />
+                            </div>
+                            <div className="col-md-3">
                                 <label htmlFor="level" className="form-label">Spell Level</label>
-                                <select
-                                    id="level"
-                                    name="level"
-                                    className="form-select"
-                                    onChange={formEvent}
-                                    value={infoForm.level}
-                                >
+                                <select id="level" name="level" className="form-select" onChange={formEvent} value={infoForm.level}>
+                                    <option value="-1" selected>All Levels</option>
                                     {infoForm.class === "all" ? (
                                         <>
                                             <option value="0">Cantrips</option>
@@ -178,16 +211,10 @@ function SpellList() {
                                     )}
                                 </select>
                             </div>
-    
-                            <div className="col-md-4">
+
+                            <div className="col-md-3">
                                 <label htmlFor="school" className="form-label">Spell School</label>
-                                <select
-                                    id="school"
-                                    name="school"
-                                    className="form-select"
-                                    onChange={formEvent}
-                                    value={infoForm.school}
-                                >
+                                <select id="school" name="school" className="form-select" onChange={formEvent} value={infoForm.school}>
                                     <option value="all">All Schools</option>
                                     <option value="abjuration">Abjuration</option>
                                     <option value="conjuration">Conjuration</option>
@@ -199,9 +226,9 @@ function SpellList() {
                                     <option value="transmutation">Transmutation</option>
                                 </select>
                             </div>
-    
+
                             {clase === undefined && (
-                                <div className="col-md-4">
+                                <div className="col-md-3">
                                     <label htmlFor="class" className="form-label">Class Spell List</label>
                                     <select
                                         id="class"
@@ -225,7 +252,7 @@ function SpellList() {
                         </div>
                     </form>
                 </div>
-    
+
                 <div className="card p-3 shadow-sm">
                     <div className="table-responsive">
                         <table className="table table-striped table-hover align-middle">
@@ -266,9 +293,9 @@ function SpellList() {
             <Footer></Footer>
         </>
     );
-    
-    
-    
+
+
+
 }
 
 {/*
@@ -298,43 +325,43 @@ function Spell() {
     // Imprimimos la información por pantalla
     return (
         <div className="d-flex flex-column min-vh-100">
-          <Header />
-          <main className="flex-grow-1 container my-4">
-            <div className="border rounded p-4 shadow-sm bg-light" key={id}>
-              <h2 className="mb-3">{spell.name}</h2>
-              <p>
-                {spell.level === 0
-                  ? `${spell.school} Cantrip`
-                  : spell.ritual
-                  ? `${spell.school} Level ${spell.level} (Ritual)`
-                  : `${spell.school} Level ${spell.level}`}
-              </p>
-              <p><b>Casting Time:</b> {spell.casting_time}</p>
-              <p><b>Range:</b> {spell.range}</p>
-              <p><b>Duration:</b> {spell.concentration ? 'Concentration, ' : ''}{spell.duration}</p>
-              <p>
-                <b>Components:</b> {spell.components.join(', ')} {spell.material ? `(${spell.material})` : ''}
-              </p>
-      
-              {spell.desc.map((desc, i) => (
-                <MarkdownViewer key={i} markdown={desc} />
-              ))}
-      
-              {spell.higher_level.map((pf, i) => (
-                pf ? <p key={i}><b>At Higher Levels.</b> {pf}</p> : null
-              ))}
-      
-              <p><b>Spell Lists:</b> {spell.classes.map((clase, i) => (
-                <span key={i}>
-                  <Link to={`/SRD/spells/${clase}`}>{clase}</Link>{i < spell.classes.length - 1 && ', '}
-                </span>
-              ))}</p>
-            </div>
-          </main>
-          <Footer />
+            <Header />
+            <main className="flex-grow-1 container my-4">
+                <div className="border rounded p-4 shadow-sm bg-light" key={id}>
+                    <h2 className="mb-3">{spell.name}</h2>
+                    <p>
+                        {spell.level === 0
+                            ? `${spell.school} Cantrip`
+                            : spell.ritual
+                                ? `${spell.school} Level ${spell.level} (Ritual)`
+                                : `${spell.school} Level ${spell.level}`}
+                    </p>
+                    <p><b>Casting Time:</b> {spell.casting_time}</p>
+                    <p><b>Range:</b> {spell.range}</p>
+                    <p><b>Duration:</b> {spell.concentration ? 'Concentration, ' : ''}{spell.duration}</p>
+                    <p>
+                        <b>Components:</b> {spell.components.join(', ')} {spell.material ? `(${spell.material})` : ''}
+                    </p>
+
+                    {spell.desc.map((desc, i) => (
+                        <MarkdownViewer key={i} markdown={desc} />
+                    ))}
+
+                    {spell.higher_level.map((pf, i) => (
+                        pf ? <p key={i}><b>At Higher Levels.</b> {pf}</p> : null
+                    ))}
+
+                    <p><b>Spell Lists:</b> {spell.classes.map((clase, i) => (
+                        <span key={i}>
+                            <Link to={`/SRD/spells/${clase}`}>{clase}</Link>{i < spell.classes.length - 1 && ', '}
+                        </span>
+                    ))}</p>
+                </div>
+            </main>
+            <Footer />
         </div>
-      );
-      
+    );
+
 }
 
 export { SpellList, Spell }
