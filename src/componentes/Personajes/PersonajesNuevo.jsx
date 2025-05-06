@@ -11,10 +11,13 @@ import { useNavigate } from "react-router-dom";
 
 
 export default function PersonajesNuevo() {
+  // Estados relacionados con hechizos y modales
   const [selectedSpells, setSelectedSpells] = useState([]);  
   const [showModal, setShowModal] = useState(false);
   const [showRaceModal, setShowRaceModal] = useState(false);
   const [showMulticlassModal, setShowMulticlassModal] = useState(false);
+  
+  // Estados para clases, razas y niveles
   const [classes, setClasses] = useState([]);
   const [races, setRaces] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
@@ -25,6 +28,8 @@ export default function PersonajesNuevo() {
   const [level, setLevel] = useState(1);
   const [levelMulticlase, setLevelMulticlase] = useState(0);
   const [levelTotal, setLevelTotal] = useState(1);
+  
+  // Estados para características y subclases
   const [features, setFeatures] = useState([]);
   const [featuresMulticlase, setFeaturesMulticlase] = useState([]);
   const [raceFeatures, setRaceFeatures] = useState([]);
@@ -33,19 +38,29 @@ export default function PersonajesNuevo() {
   const [subclassFeatures, setSubclassFeatures] = useState([]);
   const [subclassMulticlass, setSubclassMulticlass] = useState(null);
   const [subclassMulticlassFeatures, setSubclassMulticlassFeatures] = useState([]);
+  
+  // Estadísticas y modificadores
   const [stats, setStats] = useState([10, 10, 10, 10, 10, 10]);
   const [expandedFeatures, setExpandedFeatures] = useState({});
+  
+  // Dados de golpe y puntos de golpe
   const [hitDie, setHitDie] = useState(null);
   const [hitDieMulticlass, setHitDieMulticlass] = useState(null);
   const [hp, setHp] = useState(null);
+
+  // Competencias y bonificadores
   const [savingThrowsBool, setSavingThrowsBool] = useState([false, false, false, false, false, false]);
   const [proficiencies, setProficiencies] = useState([]);
   const [proficienciesMulticlass, setProficienciesMulticlass] = useState([]);
   const [pb, setPb] = useState(calcularProficiencyBonus(levelTotal));
+  
+  // Niveles de lanzador y ranuras de conjuro
   const [casterLevel, setCasterLevel] = useState(0);
   const [casterLevelMulticlass, setCasterLevelMulticlass] = useState(0);
   const [spellSlots, setSpellSlots] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0]);
   const [spellSlotsWarlock, setSpellSlotsWarlock] = useState([0, 0, 0, 0, 0]);
+  
+  // Habilidades y sus modificadores
   const [skillsClass, setSkillsClass] = useState([]);
   const [skillsClassNumber, setSkillsClassNumber] = useState(0);
   const [skillsMulticlass, setSkillsMulticlass] = useState([]);
@@ -55,30 +70,34 @@ export default function PersonajesNuevo() {
   const [allSkills, setAllSkills] = useState([]);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [skillsBonus, setSkillsBonus] = useState([]);
+  
+  // Equipamiento
   const [equipmentSections, setEquipmentSections] = useState(["", "", "", ""]);
+  
+  // Nombre del personaje
   const [characterName, setCharacterName] = useState('');
+  
+  // Hook para redirección de rutas
   const navigate = useNavigate();
 
-
+  // Carga los datos desde localStorage en caso de edición
   useEffect(() => {
     const saved = localStorage.getItem("editCharacter");
     if (saved) {
       const personaje = JSON.parse(saved);
   
-      // Asegúrate de acceder correctamente al primer objeto del array de clases
-
-      setCharacterName(personaje.name || "");
-  
-      setSelectedClass(personaje.class?.[0]?.name || "");        // Establecer clase
+      // Carga nombre, raza, clase principal y multiclase (y sus niveles correspondientes)
+      setCharacterName(personaje.name || "");                   // Nombre
+      setSelectedRace(personaje.race || "");                    // Raza
+      setSelectedClass(personaje.class?.[0]?.name || "");       // Establecer clase
       setLevel(personaje.class?.[0]?.level || "")
-      setSelectedMulticlass(personaje.class?.[1]?.name || "");        // Establecer Multiclase
+      setSelectedMulticlass(personaje.class?.[1]?.name || "");  // Establecer Multiclase
       setLevelMulticlase(personaje.class?.[1]?.level || "")
-
-      setSelectedRace(personaje.race || "");          // Raza
       //console.log(personaje.spells.spellbook[0]);
       //setSelectedSpells(personaje.spells.spellbook[0]); // Aquí usamos 'spellbook' como array
       //console.log(selectedSpells)
 
+      // Carga estadísticas
       setStats([
         personaje.stats.strength || 10,
         personaje.stats.dexterity || 10,
@@ -88,6 +107,7 @@ export default function PersonajesNuevo() {
         personaje.stats.charisma || 10
       ]);
 
+      // Carga equipo
       setEquipmentSections([
         personaje.equipment?.armor || "",  // Valor de armadura
         personaje.equipment?.weapons || "", // Valor de armas
@@ -101,9 +121,7 @@ export default function PersonajesNuevo() {
   }, []);
   
   
-
-
-  // Obtén todas las habilidades posibles
+  //  Carga las habilidades disponibles del API al cargar
   useEffect(() => {
     const fetchSkills = async () => {
       try {
@@ -121,10 +139,12 @@ export default function PersonajesNuevo() {
     fetchSkills();
   }, []);
 
+  // Actualiza el bonificador de competencia cuando cambia el nivel total
   useEffect(() => {
     setPb(calcularProficiencyBonus(levelTotal));
   }, [levelTotal]);
 
+  // Calcula el nivel total en función de clase y multiclase
   useEffect(() => {
     if(level>0 && levelMulticlase==0){
       setLevelTotal(level);
@@ -133,10 +153,12 @@ export default function PersonajesNuevo() {
     }
   }, [level, levelMulticlase]);
 
+  // Calcula las ranuras de conjuro (normales y de warlock) según niveles de clase y multiclase  
   useEffect(() => {
     if((casterLevel>0 && level>0) || (casterLevelMulticlass>0 && levelMulticlase>0)){
       let levelEfectivo = 0;
       let levelWarlock = 0;
+      // calcula el nivel de magia efectivo y el nivel de warlock
       if(casterLevelMulticlass==0 || levelMulticlase==0){
         if(selectedClass != "warlock"){
           levelEfectivo = level/casterLevel;
@@ -160,6 +182,7 @@ export default function PersonajesNuevo() {
           levelEfectivo = level/casterLevel+levelMulticlase/casterLevelMulticlass;
         }
       }
+      // Ranuras normales según el nivel efectivo de conjurador
       setSpellSlots([
         levelEfectivo>=1 ? (levelEfectivo>1 ? (levelEfectivo>2 ? 4 : 3) : 2) : 0,           //nivel 1
         levelEfectivo>2 ? (levelEfectivo>3 ? 3 : 2) : 0,                                    //nivel 2
@@ -170,7 +193,7 @@ export default function PersonajesNuevo() {
         levelEfectivo>12 ? (levelEfectivo>19 ? 2 : 1) : 0,                                  //nivel 7
         levelEfectivo>14 ? 1 : 0,                                                           //nivel 8
         levelEfectivo>16 ? 1 : 0]);                                                         //nivel 9
-      
+    // Ranuras especiales de warlock
       setSpellSlotsWarlock([
         levelWarlock==1 ? 1 : (levelWarlock==2 ? 2 : 0),                           //nivel 1
         levelWarlock>2 ? (levelWarlock>4 ? 0 : 2) : 0,                             //nivel 2
@@ -183,16 +206,18 @@ export default function PersonajesNuevo() {
     }
   }, [level, casterLevel, levelMulticlase, casterLevelMulticlass]);
 
-
+// Cuando se selecciona una clase principal, se obtienen todos sus datos relevantes
 useEffect(() => {
   if (selectedClass) {
+    // Obtener detalles generales de la clase de la api
     fetch(`https://www.dnd5eapi.co/api/classes/${selectedClass.toLowerCase()}`)
       .then((response) => response.json())
       .then((data) => {
         const savingThrowIndexes = data.saving_throws.map((st) => st.index); // ["str", "con", ...]
 
-        setHitDie(data.hit_die)
+        setHitDie(data.hit_die) // Dado de golpe de la clase
 
+        // Extrae la habilidad de conjuro si la clase puede lanzar hechizos
         if (data.spellcasting) {
           setSpellcastingAbility(data.spellcasting.spellcasting_ability.index);
           setCasterLevel(data.spellcasting.level);
@@ -208,7 +233,7 @@ useEffect(() => {
         );
         setSavingThrowsBool(newSavingThrowsBool);
 
-        // Obtener skills (proficiency_choices)
+      // Obtener skills (proficiency_choices)
       const proficiencyChoices = data.proficiency_choices?.[0]; // solo usamos el primero
       if (proficiencyChoices) {
         const skills = proficiencyChoices.from.options.map(option => ({
@@ -226,6 +251,7 @@ useEffect(() => {
       })
       .catch((error) => console.error("Error fetching saving throws:", error));
 
+      // Obtener proficiencias (excluyendo salvaciones)
       fetch(`https://www.dnd5eapi.co/api/classes/${selectedClass.toLowerCase()}/proficiencies`)
       .then((response) => response.json())
       .then((data) => {
@@ -238,8 +264,10 @@ useEffect(() => {
   }
 }, [selectedClass]);
 
+// Cuando se selecciona una multiclase, se obtienen sus datos igual que la principal
 useEffect(() => {
   if (selectedMulticlass) {
+    // Obtener información general de la multiclase
     fetch(`https://www.dnd5eapi.co/api/classes/${selectedMulticlass.toLowerCase()}`)
       .then((response) => response.json())
       .then((data) => {
@@ -271,8 +299,8 @@ useEffect(() => {
             name: option.item.name,   // "Skill: Acrobatics"
             index: option.item.index, // "skill-acrobatics"
           }));
-          setSkillsMulticlass(skills); // <-- crea este useState en tu componente
-          setSkillsMulticlassNumber(proficiencyChoices.choose); // <-- crea este useState si quieres mostrar cuántos elegir
+          setSkillsMulticlass(skills); 
+          setSkillsMulticlassNumber(proficiencyChoices.choose); 
           
         } else {
           setSkillsMulticlass([]);
@@ -286,17 +314,19 @@ useEffect(() => {
 }, [selectedMulticlass]);
 
 
-
+// Cada vez que se cambia el nivel, la CON o el dado de golpe, recalculamos el HP total
 useEffect(() => {
   if (hitDie && level) {
     const conBonus = statBonus(stats[2]); // Modificador de Constitución
     let calculatedHp = hitDie + conBonus; // HP de nivel 1
 
+    // HP de los siguientes niveles: media del dado + CON
     if (level > 1) {
       calculatedHp += (level - 1) * ((hitDie / 2) + conBonus);
       console.log(levelMulticlase);
     }
 
+    // Si hay multiclase, se suma su HP
     if(levelMulticlase > 0){
       calculatedHp = calculatedHp+((levelMulticlase) * ((hitDieMulticlass / 2) + conBonus));
     }
@@ -305,6 +335,7 @@ useEffect(() => {
   }
 }, [hitDie, level, stats, hitDieMulticlass, levelMulticlase]);
 
+  // Al montar el componente, se obtiene la lista completa de clases
   useEffect(() => {
     fetch("https://www.dnd5eapi.co/api/2014/classes/")
       .then((response) => response.json())
@@ -312,6 +343,7 @@ useEffect(() => {
       .catch((error) => console.error("Error fetching classes:", error));
   }, []);
 
+  // Cada vez que se cambia la clase principal o su nivel, se obtienen las características desbloqueadas
   useEffect(() => {
     if (selectedClass && level) {
       fetch(`https://www.dnd5eapi.co/api/2014/classes/${selectedClass.toLowerCase()}/levels/`)
@@ -320,7 +352,7 @@ useEffect(() => {
           const filteredFeatures = data
             .filter((lvl) => lvl.level <= level)
             .flatMap((lvl) => lvl.features);
-
+          // Cargar descripciones completas de las características
           const featuresWithDesc = await Promise.all(
             filteredFeatures.map(async (feature) => {
               const res = await fetch(`https://www.dnd5eapi.co/api/2014/features/${feature.index}`);
@@ -335,6 +367,7 @@ useEffect(() => {
     }
   }, [selectedClass, level]);
 
+  // Igual que el anterior, pero para la multiclase
   useEffect(() => {
     if (selectedMulticlass && levelMulticlase) {
       fetch(`https://www.dnd5eapi.co/api/2014/classes/${selectedMulticlass.toLowerCase()}/levels/`)
@@ -358,6 +391,7 @@ useEffect(() => {
     }
   }, [selectedMulticlass, levelMulticlase]);
 
+  // Al seleccionar clase, también se obtiene la subclase por defecto (la del SRD)
   useEffect(() => {
     if (selectedClass) {
       fetch(`https://www.dnd5eapi.co/api/2014/classes/${selectedClass.toLowerCase()}/subclasses/`)
@@ -370,7 +404,8 @@ useEffect(() => {
         .catch((error) => console.error("Error fetching subclass:", error));
     }
   }, [selectedClass]);
-
+  
+  // Cuando se selecciona una multiclase, se busca su subclase por defecto (la del SRD)
   useEffect(() => {
     if (selectedMulticlass) {
       fetch(`https://www.dnd5eapi.co/api/2014/classes/${selectedMulticlass.toLowerCase()}/subclasses/`)
@@ -384,29 +419,32 @@ useEffect(() => {
     }
   }, [selectedMulticlass]);
 
+  // Cuando hay subclase y nivel definidos, se buscan sus características desbloqueadas hasta ese nivel
   useEffect(() => {
     if (subclass && level) {
       fetch(`https://www.dnd5eapi.co/api/2014/subclasses/${subclass}/levels/`)
         .then((response) => response.json())
         .then(async (data) => {
+          // Filtra características de niveles menores o iguales al nivel del personaje
           const filteredSubclassFeatures = data
             .filter((lvl) => lvl.level <= level)
             .flatMap((lvl) => lvl.features);
-
+          // Obtiene las descripciones completas de cada característica
           const subclassFeaturesWithDesc = await Promise.all(
             filteredSubclassFeatures.map(async (feature) => {
               const res = await fetch(`https://www.dnd5eapi.co/api/2014/features/${feature.index}`);
               const featureData = await res.json();
-              return { ...feature, desc: featureData.desc };
+              return { ...feature, desc: featureData.desc };  // Añade la descripción al objeto feature
             })
           );
 
-          setSubclassFeatures(subclassFeaturesWithDesc);
+          setSubclassFeatures(subclassFeaturesWithDesc);  // Guarda las características completas
         })
         .catch((error) => console.error("Error fetching subclass features:", error));
     }
   }, [subclass, level]);
 
+  // Igual que el anterior, pero para la subclase asociada a la multiclase y su nivel correspondiente
   useEffect(() => {
     if (subclassMulticlass && levelMulticlase) {
       fetch(`https://www.dnd5eapi.co/api/2014/subclasses/${subclassMulticlass}/levels/`)
@@ -430,6 +468,7 @@ useEffect(() => {
     }
   }, [subclassMulticlass, levelMulticlase]);
 
+  // Al montar el componente, obtiene el listado de todas las razas disponibles
   useEffect(() => {
     fetch("https://www.dnd5eapi.co/api/2014/races/")
       .then((response) => response.json())
@@ -437,12 +476,14 @@ useEffect(() => {
       .catch((error) => console.error("Error fetching races:", error));
   }, []);
 
+  // Cuando se selecciona una raza, obtiene su velocidad y rasgos raciales detallados
   useEffect(() => {
     if (selectedRace) {
       fetch(`https://www.dnd5eapi.co/api/races/${selectedRace}`)
         .then((response) => response.json())
         .then(async (data) => {
           setSpeed(data.speed);
+          // Obtiene las descripciones de todos los rasgos raciales
           const traitsWithDesc = await Promise.all(
             data.traits.map(async (trait) => {
               const res = await fetch(`https://www.dnd5eapi.co/api/traits/${trait.index}`);
@@ -451,19 +492,31 @@ useEffect(() => {
             })
           );
   
-          setRaceFeatures(traitsWithDesc);
+          setRaceFeatures(traitsWithDesc);  // Guarda los rasgos con descripción
         })
         .catch((error) => console.error("Error fetching race features:", error));
     }
   }, [selectedRace]);
 
+/**
+ * Alterna si una característica está expandida o colapsada en la interfaz,
+ * para mostrar u ocultar su descripción.
+ *
+ * @param {*} featureIndex - Índice de la característica a alternar.
+ */
   const handleToggleFeature = (featureIndex) => {
     setExpandedFeatures((prev) => ({
       ...prev,
-      [featureIndex]: !prev[featureIndex],
+      [featureIndex]: !prev[featureIndex],  // Cambia el estado del índice específico
     }));
   };
 
+/**
+ * Genera 6 estadísticas aleatorias usando la regla estándar de 4d6,
+ * descartando el dado con menor valor en cada tirada.
+ *
+ * @returns {void}
+ */
   const handleRandomStats = () => {
     const newStats = Array.from({ length: 6 }, () => {
       let rolls = [
@@ -472,30 +525,53 @@ useEffect(() => {
         Math.floor(Math.random() * 6) + 1,
         Math.floor(Math.random() * 6) + 1,
       ];
-      rolls.sort((a, b) => a - b);
-      return rolls.slice(1).reduce((sum, val) => sum + val, 0);
+      rolls.sort((a, b) => a - b);  // Ordena los dados
+      return rolls.slice(1).reduce((sum, val) => sum + val, 0); // Suma los tres mayores
     });
 
     setStats(newStats);
   };
 
-  // Función para manejar los cambios en los inputs de estadísticas
+  /**
+   * Maneja los cambios en los inputs de estadísticas, asegurando que no sean negativos.
+   *
+   * @param {number} index - Índice de la estadística a modificar.
+   * @param {string|number} value - Valor ingresado por el usuario.
+   */
   const handleInputChange = (index, value) => {
     const newStats = [...stats];
     newStats[index] = Math.max(0, parseInt(value) || 0);  // Para asegurarte que no sea un valor negativo
     setStats(newStats);
   };
 
+  /**
+   * Calcula el modificador de una estadística según las reglas de D&D 5e.
+   *
+   * @param {number} stat - Valor de la estadística.
+   * @returns {number} - Modificador correspondiente.
+   */
   function statBonus(stat) {
     let bonus = Math.floor(stat/2 - 5);
     return bonus;
 
   }
 
+  /**
+   * Calcula el bonificador de competencia (proficiency bonus) según el nivel del personaje.
+   *
+   * @param {number} n - Nivel del personaje.
+   * @returns {number} - Bonificador de competencia.
+   */
   function calcularProficiencyBonus(n) {
     return Math.floor((n - 1) / 4) + 2;
   }
 
+  /**
+   * Calcula la tirada de salvación (saving throw) en base a la estadística y si se es competente.
+   *
+   * @param {number} statIndex - Índice de la estadística correspondiente.
+   * @returns {number} - Resultado de la tirada de salvación.
+   */
   const calcularSavingThrow = (statIndex) => {
     const bonus = statBonus(stats[statIndex]); // Modificador base
 
@@ -503,6 +579,12 @@ useEffect(() => {
     return savingThrowsBool[statIndex] ? bonus + proficiencyBonus : bonus;
   };
 
+  /**
+   * Alterna la selección de una habilidad de clase, respetando el máximo permitido.
+   *
+   * @param {number} skillIndex - Índice de la habilidad.
+   * @param {number} max - Máximo de habilidades seleccionables.
+   */
   const handleClassSkillToggle = (skillIndex, max) => {
     setSelectedClassSkills((prev) => {
       if (prev.includes(skillIndex)) {
@@ -516,7 +598,13 @@ useEffect(() => {
       return [...prev, skillIndex];
     });
   };
-  
+
+  /**
+   * Alterna la selección de una habilidad de multiclase, respetando el máximo permitido.
+   *
+   * @param {number} skillIndex - Índice de la habilidad.
+   * @param {number} max - Máximo de habilidades seleccionables.
+   */
   const handleMulticlassSkillToggle = (skillIndex, max) => {
     setSelectedMulticlassSkills((prev) => {
       if (prev.includes(skillIndex)) {
@@ -531,7 +619,11 @@ useEffect(() => {
     });
   };
 
-    // Función para manejar la selección de skills
+    /**
+     * Alterna la selección de una habilidad general del personaje.
+     *
+     * @param {string} skill - Nombre o índice de la habilidad.
+     */
     const handleSkillSelect = (skill) => {
       // Si la habilidad ya está seleccionada, la deseleccionamos
       if (selectedSkills.includes(skill)) {
@@ -542,7 +634,25 @@ useEffect(() => {
       }
     };
 
-  //Genera un json apto para la base de datos del personaje creado
+  /**
+   * Genera un objeto JSON representando un personaje de D&D 5e
+   * y lo sube a Firebase bajo la colección "Characters".
+   *
+   * Incluye información sobre:
+   * - nombre y nivel
+   * - clases y multiclases
+   * - estadísticas y modificadores
+   * - tiradas de salvación
+   * - habilidades
+   * - competencias, equipo y hechizos
+   * - velocidad, iniciativa y CA
+   * - creador (ID del usuario autenticado)
+   *
+   * Finalmente redirige a la lista de personajes.
+   *
+   * @function
+   * @returns {void}
+   */
   function jsonPersonaje() {
     let spellCaster = false;
     let spellCasterMult = false;
@@ -556,8 +666,8 @@ useEffect(() => {
       name:  characterName,
       level: levelTotal,
       hit_points: hp,
-      armor_class: 10+statBonus(stats[2]),
-      initiative: statBonus(stats[2]),
+      armor_class: 10+statBonus(stats[2]),  // CA base = Destreza
+      initiative: statBonus(stats[2]),  // Iniciativa = Destreza
       speed: speed,
       race: selectedRace,
       class: [
@@ -646,8 +756,8 @@ useEffect(() => {
     };
   
     // Ahora imprimimos el JSON
-    console.log(personaje);
-    console.log(selectedSpells);
+    //console.log(personaje);
+    //console.log(selectedSpells);
 
 
     let documentId = characterName+"_"+auth.currentUser.uid;
@@ -658,7 +768,12 @@ useEffect(() => {
     //volvemos a la lista
     navigate("/Personajes");
     }
-      
+   
+  /**
+   * Hook que actualiza el array `skillsBonus` en base a los atributos del personaje y las habilidades seleccionadas.
+   * Se recalcula cuando cambian las estadísticas base (`stats`), las habilidades de clase o multiclase seleccionadas,
+   * o el bonus de competencia (`pb`).
+   */
   useEffect(() => {
     // Solo actualizamos el array de skillsBonus si los datos de stats, selectedClassSkills, selectedMulticlassSkills, o selectedSkills cambian
     const newSkillsBonus = skills.map((skill) => {
@@ -683,13 +798,22 @@ useEffect(() => {
     });
   }, [stats, selectedClassSkills, selectedMulticlassSkills, selectedSkills, pb]);
 
-  //Para manejar los cambios en el equipment
+  
+  /**
+   * Maneja el cambio de una sección del equipo del personaje.
+   * @param {number} index - Índice de la sección a modificar (0: armas, 1: armadura, 2: herramientas, 3: otros).
+   * @param {string[]} value - Nuevos valores para esa sección.
+   */
   const handleSectionChange = (index, value) => {
     const updatedSections = [...equipmentSections];
     updatedSections[index] = value;
     setEquipmentSections(updatedSections);
   }; 
 
+  /**
+   * Lista de habilidades disponibles en D&D 5e con su atributo asociado.
+   * @type {Array<{index: string, name: string, stat: string, statNumber: number}>}
+   */
   const skills = [
     { index: "skill-acrobatics", name: "Acrobatics", stat: "dexterity", statNumber: 1 },
     { index: "skill-animal-handling", name: "Animal Handling", stat: "wisdom", statNumber: 4 },
@@ -711,12 +835,15 @@ useEffect(() => {
     { index: "skill-survival", name: "Survival", stat: "wisdom", statNumber: 4 }
   ];
   
-
+/**
+ * Diccionario auxiliar para identificar abreviaturas de estadísticas con su índice en el array de `stats`.
+ * @type {Array<{key: string, value: number}>}
+ */
   var statsDict = [{key:"FUE", value:0},{key:"DEX", value:0},{key:"CON", value:0},{key:"INT", value:0},{key:"WIS", value:0},{key:"CHA", value:0}];
 
   return (
     <>
-      <Header />
+      <Header />  
       <main className="mx-4 my-4">
         <button class="btn btn-primary w-auto" onClick={() => jsonPersonaje()}>Save Character</button>
 
@@ -766,6 +893,7 @@ useEffect(() => {
           );
         })}
 
+        {/* Botón para generar stats aleatorios */}
         <div className="col-12 mt-3">
           <div className="d-flex justify-content-center">
             <button className="btn btn-primary w-auto" onClick={handleRandomStats}>
@@ -775,11 +903,13 @@ useEffect(() => {
         </div>
       </div>
 
+      {/* HP (Puntos de vida) del personaje */}
       <div className="bg-light p-3 rounded my-4 shadow">
         <div id="hp" className="mb-3">
           <h3>Hit Points (HP): {hp !== null ? hp : "Cargando..."}</h3>
         </div>
 
+        {/* Botones de selección de clase, multiclase y raza */}
         <div className="d-flex flex-wrap gap-2 mb-3">
           <button className="btn btn-outline-primary" onClick={() => setShowModal(true)}>
             Select Class
@@ -878,103 +1008,103 @@ useEffect(() => {
           <h2>Proficiency Bonus: {pb}</h2>
         </div>
 
-
+        {/*Contenedor de selección de habilidades*/}
         <div className="card mb-4">
-      <div className="card-body text-start">
-    <h3 className="mb-4">Skill Selection</h3>
-
-    {skillsClassNumber > 0 && (
-      <>
-        <h5 className="mb-3">Choose {skillsClassNumber} Class Skills:</h5>
-        <div className="d-flex flex-wrap gap-2 mb-3">
-          {skillsClass.map((skill) => (
-            <div key={skill.index} className="border rounded p-2 px-3 bg-light">
-              <div className="form-check m-0">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id={`class-skill-${skill.index}`}
-                  checked={selectedClassSkills.includes(skill.index)}
-                  onChange={() => handleClassSkillToggle(skill.index, skillsClassNumber)}
-                  disabled={
-                    (!selectedClassSkills.includes(skill.index) &&
-                      selectedClassSkills.length >= skillsClassNumber) ||
-                    selectedMulticlassSkills.includes(skill.index)
-                  }
-                />
-                <label className="form-check-label ms-2" htmlFor={`class-skill-${skill.index}`}>
-                  {skill.name}
-                </label>
+          <div className="card-body text-start">
+            <h3 className="mb-4">Skill Selection</h3>
+            {/*Selección de habilidades de clase*/}
+            {skillsClassNumber > 0 && (
+              <>
+                <h5 className="mb-3">Choose {skillsClassNumber} Class Skills:</h5>
+                <div className="d-flex flex-wrap gap-2 mb-3">
+                  {skillsClass.map((skill) => (
+                    <div key={skill.index} className="border rounded p-2 px-3 bg-light">
+                      <div className="form-check m-0">
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id={`class-skill-${skill.index}`}
+                          checked={selectedClassSkills.includes(skill.index)}
+                          onChange={() => handleClassSkillToggle(skill.index, skillsClassNumber)}
+                          disabled={
+                            (!selectedClassSkills.includes(skill.index) &&
+                              selectedClassSkills.length >= skillsClassNumber) ||
+                            selectedMulticlassSkills.includes(skill.index)
+                          }
+                        />
+                        <label className="form-check-label ms-2" htmlFor={`class-skill-${skill.index}`}>
+                          {skill.name}
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <hr />
+              </>
+            )}
+          {/*Selección de habilidades de multiclase*/}
+          {skillsMulticlassNumber > 0 && (
+            <>
+              <h5 className="mb-3">Choose {skillsMulticlassNumber} Multiclass Skills:</h5>
+              <div className="d-flex flex-wrap gap-2 mb-3">
+                {skillsMulticlass.map((skill) => (
+                  <div key={skill.index} className="border rounded p-2 px-3 bg-light">
+                    <div className="form-check m-0">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id={`multiclass-skill-${skill.index}`}
+                        checked={selectedMulticlassSkills.includes(skill.index)}
+                        onChange={() => handleMulticlassSkillToggle(skill.index, skillsMulticlassNumber)}
+                        disabled={
+                          (!selectedMulticlassSkills.includes(skill.index) &&
+                            selectedMulticlassSkills.length >= skillsMulticlassNumber) ||
+                          selectedClassSkills.includes(skill.index)
+                        }
+                      />
+                      <label className="form-check-label ms-2" htmlFor={`multiclass-skill-${skill.index}`}>
+                        {skill.name}
+                      </label>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-          ))}
-        </div>
-        <hr />
-      </>
-    )}
-
-    {skillsMulticlassNumber > 0 && (
-      <>
-        <h5 className="mb-3">Choose {skillsMulticlassNumber} Multiclass Skills:</h5>
-        <div className="d-flex flex-wrap gap-2 mb-3">
-          {skillsMulticlass.map((skill) => (
-            <div key={skill.index} className="border rounded p-2 px-3 bg-light">
-              <div className="form-check m-0">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id={`multiclass-skill-${skill.index}`}
-                  checked={selectedMulticlassSkills.includes(skill.index)}
-                  onChange={() => handleMulticlassSkillToggle(skill.index, skillsMulticlassNumber)}
-                  disabled={
-                    (!selectedMulticlassSkills.includes(skill.index) &&
-                      selectedMulticlassSkills.length >= skillsMulticlassNumber) ||
-                    selectedClassSkills.includes(skill.index)
-                  }
-                />
-                <label className="form-check-label ms-2" htmlFor={`multiclass-skill-${skill.index}`}>
-                  {skill.name}
-                </label>
+              <hr />
+            </>
+          )}
+          {/*Selección de habilidades generales*/}
+          <h5 className="mb-3">Select your skills (at least 2):</h5>
+          <div className="d-flex flex-wrap gap-2 mb-2">
+            {allSkills.map((skill) => (
+              <div key={skill.index} className="border rounded p-2 px-3 bg-light">
+                <div className="form-check m-0">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id={`general-skill-${skill.index}`}
+                    checked={selectedSkills.includes(skill.index)}
+                    onChange={() => handleSkillSelect(skill.index)}
+                    disabled={
+                      selectedMulticlassSkills.includes(skill.index) || selectedClassSkills.includes(skill.index)
+                    }
+                  />
+                  <label className="form-check-label ms-2" htmlFor={`general-skill-${skill.index}`}>
+                    {skill.name}
+                  </label>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-        <hr />
-      </>
-    )}
-
-    <h5 className="mb-3">Select your skills (at least 2):</h5>
-    <div className="d-flex flex-wrap gap-2 mb-2">
-      {allSkills.map((skill) => (
-        <div key={skill.index} className="border rounded p-2 px-3 bg-light">
-          <div className="form-check m-0">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              id={`general-skill-${skill.index}`}
-              checked={selectedSkills.includes(skill.index)}
-              onChange={() => handleSkillSelect(skill.index)}
-              disabled={
-                selectedMulticlassSkills.includes(skill.index) || selectedClassSkills.includes(skill.index)
-              }
-            />
-            <label className="form-check-label ms-2" htmlFor={`general-skill-${skill.index}`}>
-              {skill.name}
-            </label>
+            ))}
           </div>
-        </div>
-      ))}
+          {/* Mensaje de advertencia si no se seleccionan al menos 2 habilidades generales */}
+          {selectedSkills.length < 2 && selectedSkills.length > 0 && (
+            <p className="text-danger mt-2">Please select at least 2 skills because of your background.</p>
+          )}
+      </div>
     </div>
 
-    {selectedSkills.length < 2 && selectedSkills.length > 0 && (
-      <p className="text-danger mt-2">Please select at least 2 skills because of your background.</p>
-    )}
-  </div>
-</div>
 
 
-
-    
+    {/* Bloque conjunto para habilidades con bonificaciones */}
     <div className="bg-white p-3 rounded shadow mb-4">
       <h3 className="mb-3">Skills with Bonuses</h3>
       <div className="d-flex flex-wrap gap-2">
@@ -1012,7 +1142,7 @@ useEffect(() => {
 
     {selectedMulticlass && (
       <>
-        {/* Proficiencies de subclase */}
+        {/* Proficiencies de multiclase */}
         <h3 className="mb-2">Competencias multiclase</h3>
         <ul className="list-group">
           {proficienciesMulticlass.length > 0 ? (
@@ -1030,7 +1160,7 @@ useEffect(() => {
   </div>
 
 
-
+      {/* Selector de hechizos */}
       <SpellSelector
         classList={[selectedClass, selectedMulticlass]}
         spellSlots={[
@@ -1187,7 +1317,7 @@ useEffect(() => {
       </main>
       <Footer />
 
-      {/* Modal clase */}
+      {/* Modal selección clase */}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
@@ -1233,7 +1363,7 @@ useEffect(() => {
         </div>
       )}
 
-      {/* Modal para la segunda clase */}
+      {/* Modal selección multiclase */}
       {showMulticlassModal && (
         <div className="modal-overlay" onClick={() => setShowMulticlassModal(false)}>
           <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
@@ -1292,7 +1422,7 @@ useEffect(() => {
       )}
 
 
-      {/* Modal raza */}
+      {/* Modal selección raza */}
       {showRaceModal && (
         <div className="modal-overlay" onClick={() => setShowRaceModal(false)}>
           <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
