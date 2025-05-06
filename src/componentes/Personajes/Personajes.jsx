@@ -15,19 +15,23 @@ import Header from "../Header";
 import "../../assets/css/App.css";
 
 export default function Personajes() {
-  const navigate = useNavigate();
-  const [personajes, setPersonajes] = useState([]);
-  const [selectedId, setSelectedId] = useState(null);
+  const navigate = useNavigate();   
+  const [personajes, setPersonajes] = useState([]);   // Estado para almacenar la lista de personajes del usuario
+  const [selectedId, setSelectedId] = useState(null); // Estado para manejar el personaje que tiene sus detalles desplegados
 
+  // Hook para obtener los personajes del usuario desde Firestore
   useEffect(() => {
     const auth = getAuth();
     const user = auth.currentUser;
-    if (!user) return;
+    if (!user) return;  // Si no hay usuario, salir
 
     const db = getFirestore();
     const personajesRef = collection(db, "Characters");
+
+    // Consulta que filtra personajes por el UID del creador
     const q = query(personajesRef, where("creator", "==", user.uid));
 
+    // Suscripción en tiempo real a los cambios en los datos del usuario
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const results = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -36,20 +40,38 @@ export default function Personajes() {
       setPersonajes(results);
     });
 
+    // Limpieza de la suscripción al desmontar el componente
     return () => unsubscribe();
   }, []);
 
+  /**
+   * Alterna la visualización de los detalles de un personaje.
+   * Si el ID recibido ya estaba seleccionado, lo deselecciona.
+   * 
+   * @param {*} id ID del personaje
+   */
   const toggleDetails = (id) => {
     setSelectedId((prev) => (prev === id ? null : id));
   };
 
+  /**
+   * Elimina un personaje de Firestore después de confirmación.
+   * 
+   * @param {*} id ID del personaje a eliminar
+   */
   const eliminarPersonaje = async (id) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este personaje?")) {
+    if (window.confirm("Are you sure that you want to delete this character?")) {
       const db = getFirestore();
       await deleteDoc(doc(db, "Characters", id));
     }
   };
 
+  /**
+   * Guarda el personaje seleccionado en localStorage para edición
+   * y redirige al formulario de nuevo personaje (/Personajes/new).
+   * 
+   * @param {*} personaje Objeto del personaje a editar
+   */
   const editarPersonaje = (personaje) => {
     localStorage.setItem("editCharacter", JSON.stringify(personaje));
     navigate("/Personajes/new");
@@ -59,6 +81,7 @@ export default function Personajes() {
     <>
       <Header />
       <main>
+        {/* Tarjeta de cabecera con botón para crear personaje */}
         <div className="container my-5">
           <div className="card shadow-sm">
             <div className="card-body text-center">
@@ -70,23 +93,27 @@ export default function Personajes() {
           </div>
         </div>
 
+        {/* Lista de personajes */}
         {personajes.length > 0 ? (
           <ul className="list-unstyled m-5 rounded bg-light shadow">
             {personajes.map((personaje) => (
               <li key={personaje.id} className=" border rounded p-3">
                 <div className="d-flex justify-content-between align-items-center gap-2">
+                  {/* Botón para mostrar detalles */}
                   <button
                     onClick={() => toggleDetails(personaje.id)}
                     className="btn btn-outline-primary flex-grow-1 text-start"
                   >
                     {personaje.name} – Level {personaje.level}
                   </button>
+                  {/* Botón para editar personaje */}
                   <button
                     onClick={() => editarPersonaje(personaje)}
                     className="btn btn-warning btn-sm"
                   >
                     Edit
                   </button>
+                  {/* Botón para eliminar personaje */}
                   <button
                     onClick={() => eliminarPersonaje(personaje.id)}
                     className="btn btn-danger btn-sm"
@@ -95,6 +122,7 @@ export default function Personajes() {
                   </button>
                 </div>
 
+                {/* Detalles del personaje si está seleccionado */}
                 {selectedId === personaje.id && (
                   <div className="border p-3 mt-2 bg-light rounded">
                     <p><strong>Iniciative:</strong> {personaje.initiative}</p>
@@ -132,10 +160,10 @@ export default function Personajes() {
 
                     <h5>Equipment</h5>
                     <ul>
-                      <li><strong>Weapons:</strong> {personaje.equipment?.weapons || "Ninguna"}</li>
-                      <li><strong>Armor:</strong> {personaje.equipment?.armor || "Ninguna"}</li>
-                      <li><strong>Tools:</strong> {personaje.equipment?.tools || "Ninguna"}</li>
-                      <li><strong>Other:</strong> {personaje.equipment?.other || "Ninguno"}</li>
+                      <li><strong>Weapons:</strong> {personaje.equipment?.weapons || "None"}</li>
+                      <li><strong>Armor:</strong> {personaje.equipment?.armor || "None"}</li>
+                      <li><strong>Tools:</strong> {personaje.equipment?.tools || "None"}</li>
+                      <li><strong>Other:</strong> {personaje.equipment?.other || "None"}</li>
                     </ul>
 
                     <h5>Proficiencies</h5>
@@ -160,6 +188,7 @@ export default function Personajes() {
             ))}
           </ul>
         ) : (
+          // Mensaje si no hay personajes creados
           <p className="text-center">You have not created any characters yet</p>
         )}
       </main>

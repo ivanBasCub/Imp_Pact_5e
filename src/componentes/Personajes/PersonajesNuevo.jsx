@@ -190,7 +190,6 @@ useEffect(() => {
       .then((response) => response.json())
       .then((data) => {
         const savingThrowIndexes = data.saving_throws.map((st) => st.index); // ["str", "con", ...]
-        //setSavingThrows(savingThrowIndexes);
 
         setHitDie(data.hit_die)
 
