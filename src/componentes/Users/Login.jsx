@@ -4,14 +4,29 @@ import { auth } from "../../firebase/config";
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 
+/**
+ * Componente que renderiza un formulario de inicio de sesión.
+ * Permite iniciar sesión con Firebase Authentication y valida la verificación del correo.
+ *
+ * @component
+ * @returns {JSX.Element} Formulario de login
+ */
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    // Creamos una evento para cuando inserte el email y la contraseña comprobamos si existe el usuario y si la contraseña es correcta
-    // Si existe el usuario y la contraseña es correcta, redirigimos a la pagina de inicio
+    /**
+     * Maneja el envío del formulario de inicio de sesión.
+     * Comprueba la existencia del usuario y la validez de las credenciales.
+     * Si el usuario ha verificado su email, lo redirige a la página de inicio.
+     * Si no, muestra un error y cierra sesión.
+     *
+     * @async
+     * @param {React.FormEvent} event - Evento del formulario.
+     * @returns {Promise<void>}
+     */
     const btnLogin = async (event) => {
         event.preventDefault();
         if (email && password) {

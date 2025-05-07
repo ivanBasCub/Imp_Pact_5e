@@ -1321,7 +1321,7 @@ useEffect(() => {
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
-            <h2 className="mb-3">Selecciona una clase</h2>
+            <h2 className="mb-3">Select class</h2>
             <ul className="list-group">
               {classes.map((clase) => (
                 <li
@@ -1349,14 +1349,14 @@ useEffect(() => {
                       window.open(`/SRD/class/${clase.index}`, "_blank");
                     }}
                   >
-                    Más información
+                    More info
                   </button>
                 </li>
               ))}
             </ul>
             <div className="text-end mt-3">
               <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
-                Cerrar
+                Close
               </button>
             </div>
           </div>
@@ -1367,7 +1367,7 @@ useEffect(() => {
       {showMulticlassModal && (
         <div className="modal-overlay" onClick={() => setShowMulticlassModal(false)}>
           <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
-            <h2 className="mb-3">Selecciona una segunda clase</h2>
+            <h2 className="mb-3">Select Multiclass</h2>
             <ul className="list-group">
               <li
                 className="list-group-item"
@@ -1379,7 +1379,7 @@ useEffect(() => {
                 }}
                 style={{ cursor: "pointer" }}
               >
-                Ninguna
+                None
               </li>
               {classes.map((clase) => (
                 <li
@@ -1407,7 +1407,7 @@ useEffect(() => {
                       window.open(`/SRD/class/${clase.index}`, "_blank");
                     }}
                   >
-                    Más información
+                    More info
                   </button>
                 </li>
               ))}
@@ -1426,7 +1426,7 @@ useEffect(() => {
       {showRaceModal && (
         <div className="modal-overlay" onClick={() => setShowRaceModal(false)}>
           <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Selecciona una raza</h2>
+            <h2>Select Race</h2>
             <ul className="list-group">
               {races.map((race) => (
                 <li
@@ -1443,12 +1443,12 @@ useEffect(() => {
                     onClick={() => window.open(`/SRD/race/${race.index}`, "_blank")}
                     className="btn btn-sm btn-outline-primary"
                   >
-                    Más información
+                    More info
                   </button>
                 </li>
               ))}
             </ul>
-            <button onClick={() => setShowRaceModal(false)} className="btn btn-secondary mt-2">Cerrar</button>
+            <button onClick={() => setShowRaceModal(false)} className="btn btn-secondary mt-2">Close</button>
           </div>
         </div>
       )}

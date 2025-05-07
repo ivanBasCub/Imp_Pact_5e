@@ -5,6 +5,14 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Link } from 'react-router-dom'
 
+/**
+ * Componente de Signup.
+ * Permite al usuario registrarse proporcionando un nombre de usuario, correo electrónico y contraseña.
+ * Después de registrarse, envía un correo de verificación y guarda la información en la base de datos.
+ * 
+ * @component
+ * @returns {JSX.Element} Formulario de registro con campos para el nombre de usuario, correo y contraseña.
+ */
 export default function Signup() {
     const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
@@ -12,12 +20,21 @@ export default function Signup() {
     const [error, setError] = useState(null)
     const navigate = useNavigate();
 
+    /**
+     * Maneja el evento de registro.
+     * Intenta crear una cuenta con el correo y la contraseña proporcionados, y luego guarda la información del usuario.
+     * Si ocurre un error, muestra el mensaje correspondiente.
+     *
+     * @async
+     * @param {React.FormEvent} event - Evento de clic en el botón de registro.
+     * @returns {Promise<void>}
+     */
     const btnSignup = async (event) => {
         event.preventDefault()
         if (username && email && password) {
             createUserWithEmailAndPassword(auth, email, password)
                 .then(async (userCredential) => {
-                    // Signed in 
+                    // Usuario registrado exitosamente
                     const user = userCredential.user
                     await sendEmailVerification(user);
                     alert("Email verification sent! Please check your inbox.")
