@@ -5,11 +5,19 @@ import MarkdownViewer from "../../Extras/MarkDownViewer";
 import Footer from "../../Footer";
 import Header from "../../Header";
 
-{/*
-    Constantes Generales del componente    
-*/}
+/**
+ * URL base para obtener los datos de la API de D&D 5e.
+ * @constant {string}
+ */ 
 const URL = "https://www.dnd5eapi.co";
 
+/**
+ * Componente que maneja la visualización de las reglas.
+ * Este componente obtiene las reglas desde la API de D&D y las almacena en Firebase, 
+ * luego muestra la información en la interfaz de usuario.
+ * 
+ * @return {JSX.Element} El componente renderizado con las reglas de D&D.
+ */
 export default function Rules() {
     const [ruleList, setRuleList] = useState([]);
 
@@ -17,6 +25,13 @@ export default function Rules() {
     useEffect(() => {
         const nameColeccion = "SRD_Rules";
 
+        /**
+         * Actualiza la base de datos con las reglas obtenidas de la API de D&D.
+         * Si una regla no existe en Firebase, obtiene sus subsecciones y las guarda.
+         * 
+         * @async
+         * @function
+         */
         async function updateDataBBDD() {
             const res = await fetch(`${URL}/api/2014/rules`);
             const data = await res.json();
@@ -47,6 +62,13 @@ export default function Rules() {
             });
         }
 
+        /**
+         * Verifica si el número de reglas en Firebase coincide con el número total de reglas en la API de D&D.
+         * Si el número de reglas en la base de datos es menor, actualiza los datos.
+         * 
+         * @async
+         * @function
+         */
         async function checkDataBBDD() {
             const res = await fetch(`${URL}/api/2014/rules`);
             const data = await res.json();
@@ -61,6 +83,12 @@ export default function Rules() {
             }
         }
 
+        /**
+         * Obtiene las reglas almacenadas en Firebase y actualiza el estado del componente.
+         * 
+         * @async
+         * @function
+         */
         async function fecthRules() {
             const rulesColection = collection(db, nameColeccion);
             const data = await getDocs(rulesColection);

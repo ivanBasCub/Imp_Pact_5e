@@ -6,17 +6,30 @@ import RaceTraits from "../Race_Traits/Race_Traits";
 import Header from "../../Header";
 import Footer from "../../Footer";
 
-{/*
-    Constantes Generales del componente    
-*/}
+/**
+ * URL base para obtener los datos de la API de D&D 5e.
+ * @constant {string}
+ */ 
 const URL = "https://www.dnd5eapi.co";
 
+/**
+ * Componente que muestra la lista de razas disponibles.
+ * Obtiene los datos de las razas desde la API de D&D y actualiza Firebase con los datos obtenidos.
+ * 
+ * @return {JSX.Element} Componente RaceList renderizado con la lista de razas.
+ */
 function RaceList() {
     const [listRaces, setListRaces] = useState([]);
 
     useEffect(() => {
         const nameCollection = "SRD_Races";
-        // Comprobamos si existen los datos en la BBDD de Firebase
+
+         /**
+         * Obtiene los datos de las razas desde la API de D&D y actualiza Firebase con los datos obtenidos.
+         * 
+         * @async
+         * @function
+         */
         async function updateDataBBDD() {
             const res = await fetch(`${URL}/api/2014/races`);
             const data = await res.json();
@@ -63,6 +76,13 @@ function RaceList() {
             });
         }
 
+        /**
+         * Verifica si el número de razas en Firebase coincide con el número total de razas en la API de D&D.
+         * Si el número de razas es menor, obtiene y actualiza los datos de las razas.
+         * 
+         * @async
+         * @function
+         */
         async function checkDataBBDD() {
             const res = await fetch(`${URL}/api/2014/races`);
             const data = await res.json();
@@ -77,6 +97,12 @@ function RaceList() {
             }
         }
 
+        /**
+         * Obtiene la lista de razas desde Firebase y actualiza el estado de `listRaces`.
+         * 
+         * @async
+         * @function
+         */
         async function fetchRaces() {
             const raceRef = collection(db, nameCollection);
             const quert = await getDocs(raceRef);
@@ -116,14 +142,29 @@ function RaceList() {
       
 }
 
+/**
+ * Componente que muestra los detalles de una raza específica.
+ * Obtiene los datos de la raza desde Firebase según el parámetro `id` de la URL,
+ * y obtiene los rasgos asociados a la raza y sus ancestros dracónicos.
+ * 
+ * @return {JSX.Element} Componente Race renderizado con los detalles de la raza.
+ */
 function Race() {
     const { id } = useParams();
     const [race, setRace] = useState({});
     const [raceTraits, setRaceTraits] = useState([]);
     const [ draconicAscentry, setDraconicAscentry ] = useState([])
 
+    
     useEffect(() => {
         const nameCollection = "SRD_Races";
+
+        /**
+        * Obtiene los datos de una raza específica desde Firebase basada en el `id` de la raza.
+        * 
+        * @async
+        * @function
+        */
         async function fetchRace() {
             const raceRef = doc(db, nameCollection, id);
             const raceDoc = await getDoc(raceRef);
@@ -133,6 +174,12 @@ function Race() {
     }, [id]);
 
     useEffect(() => {
+        /**
+        * Obtiene los datos de una raza específica desde Firebase basada en el `id` de la raza.
+        * 
+        * @async
+        * @function
+        */
         const fetchRaceTraits = async () => {
             if (race.race_traits) {
                 const data = await Promise.all(race.race_traits.map(async race_trait => {
@@ -148,6 +195,12 @@ function Race() {
     }, [race]);
 
     useEffect(() => {
+        /**
+         * Obtiene los rasgos de ancestro dracónico para la raza y los filtra mediante una expresión regular.
+         * 
+         * @async
+         * @function
+         */
         async function fetchDraconicAscentry() {
             const nameCollection = "SRD_RaceTraits";
             const regex = /^draconic-ancestry-.+/;

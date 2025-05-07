@@ -6,14 +6,21 @@ import MarkdownViewer from "../../Extras/MarkDownViewer";
 import Header from "../../Header";
 import Footer from "../../Footer";
 
-{/*
-    Constantes Generales del componente    
-*/}
+/**
+ * URL base para obtener los datos de la API de D&D 5e.
+ * @constant {string}
+ */ 
 const URL = "https://www.dnd5eapi.co";
 
-{/*
-  Este componente se encarga de mostrar la lista de hechizos especifico de una clase
-*/}
+/**
+ * Componente que muestra una lista de hechizos del SRD 5e, permitiendo filtrar
+ * por nombre, nivel, escuela y clase del hechizo.
+ * 
+ * Se conecta a la API pública y almacena los datos en Firebase si no existen aún.
+ * Utiliza filtros para mostrar resultados personalizados según la selección del usuario.
+ * 
+ * @return {JSX.Element} Componente con un formulario de filtrado y una tabla de resultados
+ */
 function SpellList() {
     // Constantes que van a ser necesarias para el filtrado de información que vamos a recoger de la API
     const fullCasters = ["bard", "cleric", "druid", "sorcerer", "warlock", "wizard"];
@@ -43,7 +50,10 @@ function SpellList() {
     useEffect(() => {
         const nanmeColeccion = "SRD_Spells";
 
-        // Funcion para actualizar la BBDD con la información de la API
+        /**
+         * Actualiza la base de datos local con hechizos del SRD desde la API.
+         * @return {Promise<void>}
+         */
         async function updateDataBBDD() {
             // Recogemos la información de la API
             const res = await fetch(`${URL}/api/2014/spells`);
@@ -84,7 +94,12 @@ function SpellList() {
                 }
             })
         }
-        // Funcion para comprobar si la información de la API y la BBDD coinciden
+
+        /**
+         * Verifica si ya están todos los hechizos del SRD en la base de datos local.
+         * Si no lo están, llama a `updateDataBBDD` para completar la colección.
+         * @return {Promise<void>}
+         */
         async function checkDataBBDD() {
             const res = await fetch(`${URL}/api/2014/spells`);
             const data = await res.json();
@@ -106,7 +121,11 @@ function SpellList() {
     // Actualizamos los datos recogidos por la API
     useEffect(() => {
         const nanmeColeccion = "SRD_Spells";
-        // Funcion para filtrar la información de la BBDD segun los parametros del formulario
+
+        /**
+        * Obtiene y filtra la lista de hechizos desde Firebase según nivel, escuela y clase.
+        * @return {Promise<void>}
+        */
         async function fetchList() {
             const collectionRef = collection(db, nanmeColeccion);
             const query = await getDocs(collectionRef);
@@ -132,7 +151,10 @@ function SpellList() {
             }
         }
         
-        // Funcion para filtrar por el nombre del hechizo
+        /**
+         * Filtra un hechizo específico por nombre si se proporciona.
+         * @return {Promise<void>}
+         */
         async function filterListName(){
             const spellName = infoForm.name.toLowerCase().split(" ").join("-");
 
@@ -143,8 +165,11 @@ function SpellList() {
                 setList([]);
             }
         }
-        // Funcion que se encarga de recoger la información de la BBDD y filtrar la información
-        function fetchSpell() {
+            /**
+             * Decide si filtrar por nombre o por criterios generales.
+             * @return {Promise<void>}
+             */
+            function fetchSpell() {
             if (infoForm.name === "") {
                 fetchList();
             } else {
@@ -160,6 +185,7 @@ function SpellList() {
         <>
             <Header></Header>
             <main className="flex-grow-1 flex-column container my-4">
+                {/* Formulario de filtrado */}
                 <div className="card p-4 mb-4 shadow-sm">
                     <h2 className="mb-3">Spell List</h2>
                     <form method="post">
@@ -252,7 +278,7 @@ function SpellList() {
                         </div>
                     </form>
                 </div>
-
+                {/* Tabla de resultados */}
                 <div className="card p-3 shadow-sm">
                     <div className="table-responsive">
                         <table className="table table-striped table-hover align-middle">
@@ -298,15 +324,27 @@ function SpellList() {
 
 }
 
-{/*
-  Este componente se encarga de mostrar la descripción de un hechizo que se haya seleccionado
-  */}
+/**
+ * Componente que muestra los detalles de un hechizo.
+ * 
+ * Extrae el ID del hechizo desde la URL, obtiene los datos correspondientes desde Firestore
+ * y los muestra formateados. Incluye detalles como nivel, escuela, tiempo de lanzamiento,
+ * componentes, descripciones y clases que pueden usar el hechizo.
+ * 
+ * @component
+ * @returns {JSX.Element}
+ */
 function Spell() {
     const { id } = useParams()
     const [spell, setSpell] = useState({})
 
+    // Efecto para obtener el hechizo desde Firestore al montar el componente
     useEffect(() => {
         const nanmeColeccion = "SRD_Spells";
+        /**
+         * Obtiene los detalles de un hechizo específico desde Firestore.
+         * @async
+         */
         async function fetchSpell() {
             const spellRef = doc(db, nanmeColeccion, id);
             const spellDoc = await getDoc(spellRef);
@@ -329,6 +367,8 @@ function Spell() {
             <main className="flex-grow-1 container my-4">
                 <div className="border rounded p-4 shadow-sm bg-light" key={id}>
                     <h2 className="mb-3">{spell.name}</h2>
+
+                    {/* Nivel del hechizo y si es ritual o cantrip */}
                     <p>
                         {spell.level === 0
                             ? `${spell.school} Cantrip`
@@ -336,21 +376,22 @@ function Spell() {
                                 ? `${spell.school} Level ${spell.level} (Ritual)`
                                 : `${spell.school} Level ${spell.level}`}
                     </p>
+                    {/* Atributos básicos del hechizo */}
                     <p><b>Casting Time:</b> {spell.casting_time}</p>
                     <p><b>Range:</b> {spell.range}</p>
                     <p><b>Duration:</b> {spell.concentration ? 'Concentration, ' : ''}{spell.duration}</p>
                     <p>
                         <b>Components:</b> {spell.components.join(', ')} {spell.material ? `(${spell.material})` : ''}
                     </p>
-
+                    {/* Descripción principal del hechizo (puede contener Markdown) */}
                     {spell.desc.map((desc, i) => (
                         <MarkdownViewer key={i} markdown={desc} />
                     ))}
-
+                    {/* Descripción para niveles superiores, si aplica */}
                     {spell.higher_level.map((pf, i) => (
                         pf ? <p key={i}><b>At Higher Levels.</b> {pf}</p> : null
                     ))}
-
+                    {/* Clases que pueden usar este hechizo */}
                     <p><b>Spell Lists:</b> {spell.classes.map((clase, i) => (
                         <span key={i}>
                             <Link to={`/SRD/spells/${clase}`}>{clase}</Link>{i < spell.classes.length - 1 && ', '}

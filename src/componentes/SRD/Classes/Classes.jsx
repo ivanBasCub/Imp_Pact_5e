@@ -5,11 +5,17 @@ import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import Header from "../../Header";
 import Footer from "../../Footer";
 
-{/*
-    Constantes Generales del componente    
-*/}
+/**
+ * URL base para obtener los datos de la API de D&D 5e.
+ * @constant {string}
+ */
 const URL = "https://www.dnd5eapi.co";
 
+/**
+ * Componente principal para mostrar listado de clases SRD desde Firestore.
+ * También inserta los datos si no existen en la base de datos.
+ * @component
+ */
 function ClassesList() {
     const nameCollection = "SRD_Classes";
     const [classesList, setClassesList] = useState([]);
@@ -199,7 +205,9 @@ function ClassesList() {
                 }
             })
         }
-        async function checkDataBBDD() {
+
+    /** Comprueba si los datos ya están en Firestore, y si no, los inserta */
+    async function checkDataBBDD() {
             const res = await fetch(`${URL}/api/2014/classes`);
             const data = await res.json();
             const total = data.count;
@@ -213,7 +221,7 @@ function ClassesList() {
         checkDataBBDD()
     }, [])
 
-    // Coger la lista con la información de las clases
+    // Coger la lista con la información de las clases de firestore
     useEffect(() => {
         async function fecthClasses() {
             const classesRef = collection(db, nameCollection);
@@ -254,6 +262,11 @@ function ClassesList() {
       
 }
 
+/**
+ * Componente que muestra la lista de clases SRD disponibles.
+ * @component
+ * @returns {JSX.Element} El componente de la lista de clases SRD.
+ */
 function Clase() {
     const id = useParams();
     const nameCollection = "SRD_Classes";
@@ -356,7 +369,12 @@ function Clase() {
     );
 }    
 
-// Ver la lista de habilidades de la clase con un filtro para que no se repitan
+/**
+ * Función que filtra y muestra las habilidades de la clase, eliminando las que se repiten.
+ * @component
+ * @param {Object} data Los datos de la clase, que incluyen niveles y características.
+ * @returns {JSX.Element} La lista de habilidades filtradas, mostradas como una serie de elementos `<div>`.
+ */
 function featureList(data) {
     var result = [];
 
@@ -392,8 +410,13 @@ function featureList(data) {
     )
 
 }
-// Tabla de los niveles de la clase con sus habilidades principales y hechizos en el caso de que sea un lanzador de hechizos
-// Se le pasa el index de la clase y los niveles de la misma
+/**
+ * Componente que muestra una tabla con los niveles de la clase SRD, sus habilidades y hechizos (si es un lanzador de hechizos).
+ * @component
+ * @param {string} clase El índice de la clase SRD.
+ * @param {Array} data Los datos de los niveles de la clase, incluyendo características y hechizos.
+ * @returns {JSX.Element} La tabla con los niveles, características y hechizos (si aplica) de la clase SRD.
+ */
 function table(clase, data) {
     const fullCasters = ["bard", "cleric", "druid", "sorcerer", "warlock", "wizard"];
     const subClassFeatureLevel = [2, 3, 6, 10, 14, 18]; 

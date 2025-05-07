@@ -5,17 +5,29 @@ import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import Header from "../../Header";
 import Footer from "../../Footer";
 
-{/*
-    Constantes Generales del componente    
-*/}
+/**
+ * URL base para obtener los datos de la API de D&D 5e.
+ * @constant {string}
+ */
 const URL = "https://www.dnd5eapi.co";
 
+/**
+ * Componente que muestra una lista de categorías de equipos y gestiona la actualización de datos en la base de datos.
+ * @component
+ * @returns {JSX.Element} Lista de equipos y sus categorías.
+ */
 function EquipmentList() {
     const nameCollection = "SRD_Equipments";
     const equiemntsTypes = ["weapon", "armor", "adventuring-gear", "mounts-and-vehicles", "tools"];
 
     useEffect(() => {
 
+        /**
+         * Actualiza la base de datos con los equipos obtenidos de la API de D&D.
+         * @async
+         * @function
+         * @returns {Promise<void>}
+         */
         async function updateDataBBDD() {
             const res = await fetch(`${URL}/api/2014/equipment`);
             const data = await res.json();
@@ -116,6 +128,12 @@ function EquipmentList() {
             })
         }
 
+        /**
+         * Verifica si los datos en la base de datos son suficientes, y si no, los actualiza.
+         * @async
+         * @function
+         * @returns {Promise<void>}
+         */
         async function checkDataBBDD() {
             const res = await fetch(`${URL}/api/2014/equipment`);
             const data = await res.json();
@@ -180,7 +198,11 @@ function EquipmentList() {
     
 
 }
-
+/**
+ * Componente que muestra una lista filtrada de equipos por categoría.
+ * @component
+ * @returns {JSX.Element} Lista de equipos filtrada por categoría.
+ */
 function Equipments() {
     const id = useParams();
     const [equipmentCategoryList, setEquipmentCategoryList] = useState([]);
@@ -188,6 +210,12 @@ function Equipments() {
 
     useEffect(() => {
 
+        /**
+         * Obtiene los equipos desde la base de datos y los filtra por categoría.
+         * @async
+         * @function
+         * @returns {Promise<void>}
+         */
         async function fetchEquipments() {
             const ref = collection(db, nameCollection);
             const documents = await getDocs(ref);

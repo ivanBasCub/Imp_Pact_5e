@@ -5,17 +5,28 @@ import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import Header from "../../Header";
 import Footer from "../../Footer";
 
-{/*
-    Constantes Generales del componente    
-*/}
+/**
+ * URL base para obtener los datos de la API de D&D 5e.
+ * @constant {string}
+ */
 const URL = "https://www.dnd5eapi.co";
 
+/**
+ * Componente que muestra una lista de dotes (feats) disponibles en la base de datos.
+ * Si los datos no están en la base de datos, los descarga de la API de D&D 5e y los almacena.
+ * 
+ * @component
+ */
 function FeatsList() {
     const [featsList, setfeatsLits] = useState([]);
 
     useEffect(() => {
         const nameCollection = "SRD_Feats";
 
+        /**
+         * Función que actualiza la base de datos con los logros (feats) de la API de D&D 5e.
+         * Descarga los datos de la API y los almacena en Firestore si no existen previamente.
+         */
         async function updateDataBBDD() {
             const res = await fetch(`${URL}/api/2014/feats`);
             const data = await res.json();
@@ -45,6 +56,10 @@ function FeatsList() {
             })
         }
 
+        /**
+         * Función que verifica si hay datos en la base de datos y los actualiza si es necesario.
+         * Compara el número de feats en la base de datos con el total disponible en la API.
+         */
         async function checkDataBBDD() {
             const res = await fetch(`${URL}/api/2014/feats`);
             const data = await res.json();
@@ -59,6 +74,10 @@ function FeatsList() {
             }
         }
 
+        /**
+         * Función que recupera la lista de feats desde la base de datos de Firestore.
+         * Actualiza el estado con los datos obtenidos.
+         */
         async function fetchFeats(){
             const featRef = collection(db, nameCollection);
             const query = await getDocs(featRef);
@@ -95,6 +114,12 @@ function FeatsList() {
 
 }
 
+/**
+ * Componente que muestra los detalles de un logro (feat) específico.
+ * 
+ * @component
+ * @returns {JSX.Element} Detalles del feat seleccionado.
+ */
 function Feat(){
     const { id } = useParams();
     const [ feat, setFeat ] = useState({});
@@ -102,6 +127,10 @@ function Feat(){
     useEffect(() => {
         const nameCollection = "SRD_Feats";
         
+         /**
+         * Función que recupera los detalles de un feat específico desde la base de datos.
+         * Actualiza el estado con los datos del feat si existe en Firestore.
+         */
         async function fetchFeat() {
             const ref = doc(db,nameCollection, id);
             const document = await getDoc(ref);

@@ -5,18 +5,31 @@ import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import Header from "../../Header";
 import Footer from "../../Footer";
 
-{/*
-    Constantes Generales del componente    
-*/}
+/**
+ * URL base para obtener los datos de la API de D&D 5e.
+ * @constant {string}
+ */ 
 const URL = "https://www.dnd5eapi.co";
 
+/**
+ * Componente que muestra los detalles de una subclase de D&D 5e.
+ * Si la subclase no está en la base de datos, se descarga y almacena automáticamente.
+ *
+ * @component
+ * @returns {JSX.Element}
+ */
 function SubClass() {
     const { id } = useParams()
     const [subClass, setSubClass] = useState({});
     const nameCollection = "SRD_SubClasses";
 
+    // Hook de efecto que gestiona la recuperación y almacenamiento de datos
     useEffect(() => {
 
+        /**
+         * Actualiza la base de datos si el documento de la subclase aún no existe.
+         * Recupera también hechizos y características por nivel.
+         */
         async function updateDataBBDD() {
             const res = await fetch(`${URL}/api/subclasses/${id}`);
             const data = await res.json();
@@ -65,7 +78,9 @@ function SubClass() {
 
             }
         }
-
+        /**
+         * Recupera los datos ya existentes de Firestore
+         */
         async function getDataBBDD() {
             const docRef = doc(db, nameCollection, id);
             const docSnap = await getDoc(docRef);
@@ -80,10 +95,12 @@ function SubClass() {
         getDataBBDD()
     }, [])
 
+    // Mientras los datos no estén cargados, mostramos mensaje de carga
     if (Object.keys(subClass).length === 0) {
         return <div>Loading...</div>
     }
 
+    // Obtener niveles únicos de hechizos
     var levels = subClass.spells.map(spell => spell.level)
     var filteredLevels = [...new Set(levels)]
 

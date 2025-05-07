@@ -3,6 +3,14 @@ import { useParams, Link } from "react-router-dom"
 import Footer from "../Footer"
 import Header from "../Header"
 
+/**
+ * Componente principal de navegación de la sección SRD.
+ * Renderiza una cuadrícula de tarjetas con enlaces a las diferentes secciones de referencia del SRD 5e.
+ * Cada tarjeta incluye una imagen representativa y un título.
+ * 
+ * @component
+ * @returns {JSX.Element} Interfaz de navegación SRD
+ */
 export default function App(){
     return (
         <>

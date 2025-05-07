@@ -1,15 +1,32 @@
 import { db } from "../../../firebase/config";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 
-{/*
-    Constantes Generales del componente    
-*/}
+/**
+ * URL base para obtener los datos de la API de D&D 5e.
+ * @constant {string}
+ */ 
 const URL = "https://www.dnd5eapi.co";
 
+/**
+ * Componente que se encarga de actualizar la base de datos con los rasgos de razas de la API de D&D 5e.
+ * La información se descarga y se guarda en la base de datos si no existe previamente.
+ * 
+ * @async
+ * @function
+ * @returns {JSX.Element} Un componente vacío ya que solo ejecuta la actualización de la base de datos.
+ */
 function RaceTraits() {
     // Constantes necesarias para el componente
     const nameCollection = "SRD_RaceTraits";
 
+    /**
+     * Función que actualiza la base de datos de Firestore con los rasgos de razas obtenidos desde la API de D&D 5e.
+     * 
+     * Obtiene los rasgos de razas de la API, los procesa y los guarda en Firestore si aún no existen en la base de datos.
+     * 
+     * @async
+     * @function
+     */
     async function updateDataBBDD() {
         const res = await fetch(`${URL}/api/2014/traits`);
         const data = await res.json();

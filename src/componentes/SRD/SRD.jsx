@@ -15,6 +15,14 @@ import SubRace from './SubRaces/SubRaces';
 import { Clase, ClassesList } from './Classes/Classes';
 import SubClass from './SubClasses/SubClasses';
 
+/**
+ * Componente principal de rutas para la sección SRD (System Reference Document).
+ * Define todas las rutas relacionadas con hechizos, objetos mágicos, monstruos,
+ * razas, subrazas, reglas, dotes (feats), equipamiento, backgrounds, clases y subclases.
+ *
+ * @component
+ * @returns {JSX.Element} - Conjunto de rutas definidas para navegar por los recursos del SRD.
+ */
 function SRD() {
   return (
     <Routes>

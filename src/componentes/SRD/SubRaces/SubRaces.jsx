@@ -6,11 +6,19 @@ import RaceTraits from '../Race_Traits/Race_Traits';
 import Header from "../../Header";
 import Footer from "../../Footer";
 
-{/*
-    Constantes Generales del componente    
-*/}
+/**
+ * URL base para obtener los datos de la API de D&D 5e.
+ * @constant {string}
+ */ 
 const URL = "https://www.dnd5eapi.co";
 
+/**
+ * Componente que representa los detalles de una subraza en D&D 5e.
+ * Obtiene la subraza desde Firebase o la API pública, y sus rasgos asociados.
+ * 
+ * @component
+ * @returns {JSX.Element} Vista con información de la subraza y sus rasgos.
+ */
 export default function SubRace(){
     const { id } = useParams();
     const [ subrace, setSubrace] = useState([]);
@@ -19,6 +27,13 @@ export default function SubRace(){
 
     useEffect(() => {
 
+        /**
+         * Obtiene los datos de una subraza desde Firebase.
+         * Si no existe, los descarga desde la API pública y los guarda en Firebase.
+         *
+         * @async
+         * @returns {Promise<void>}
+         */
         async function fectchSubrace() {
             const ref = doc(db, nameCollection, id);
             const document = await getDoc(ref);
@@ -62,6 +77,12 @@ export default function SubRace(){
     },[])
 
     useEffect(() => {
+        /**
+         * Obtiene los rasgos raciales desde Firebase basados en la subraza cargada.
+         *
+         * @async
+         * @returns {Promise<void>}
+         */
         const fetchRaceTraits = async () => {
             if (subrace.racial_traits) {
                 const data = await Promise.all(subrace.racial_traits.map(async race_trait => {
@@ -76,7 +97,7 @@ export default function SubRace(){
         fetchRaceTraits();
     }, [subrace]);
 
-    // Comprobamos que se haya recogido la información del Spell antes de mostrar nada
+    // Comprobamos que se haya recogido la información de subraza antes de mostrar nada
     if (Object.keys(subrace).length === 0) {
         return <div>Loading...</div>
     }
@@ -85,7 +106,6 @@ export default function SubRace(){
         <>
             <Header />
             <div className="d-flex flex-column min-vh-100">
-                {/* Contenedor principal que ocupa todo el alto disponible */}
                 <main className="flex-grow-1 container my-4">
                     <div className="border rounded p-4 bg-light mb-4">
                         <h1 className="h3 mb-3">{subrace.name}</h1>

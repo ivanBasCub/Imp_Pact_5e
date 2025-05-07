@@ -5,16 +5,24 @@ import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import Header from "../../Header";
 import Footer from "../../Footer";
 
-{/*
-    Constantes Generales del componente    
-*/}
+
+/**
+ * URL base para obtener los datos de la API de D&D 5e.
+ * @constant {string}
+ */ 
 const URL = "https://www.dnd5eapi.co";
 
+/**
+ * Componente que muestra la lista de trasfondos de la SRD disponibles.
+ * @component
+ * @returns {JSX.Element} La lista de trasfondos con enlace a más detalles.
+ */
 function BackgroundList() {
     const nameCollection = "SRD_Backgrounds";
     const [backgroundList, setBackgroundList] = useState([]);
 
     useEffect(() => {
+        // Actualiza los datos de la base de datos si no están presentes
         async function updateDataBBDD() {
             const res = await fetch(`${URL}/api/2014/backgrounds`);
             const data = await res.json();
@@ -31,6 +39,7 @@ function BackgroundList() {
                 }
             })
         }
+        // Verifica si es necesario actualizar los datos en la base de datos
         async function checkDataBBDD() {
             const res = await fetch(`${URL}/api/2014/backgrounds`);
             const data = await res.json();
@@ -45,6 +54,7 @@ function BackgroundList() {
             }
         }
 
+        // Obtiene los trasfondos de la base de datos
         async function fetchBackgrounds() {
             const backgroundRef = collection(db, nameCollection);
             const query = await getDocs(backgroundRef)
@@ -83,12 +93,18 @@ function BackgroundList() {
     
 }
 
+/**
+ * Componente que muestra los detalles de un trasfondo específico.
+ * @component
+ * @returns {JSX.Element} Detalles del trasfondo seleccionado.
+ */
 function Background() {
     const nameCollection = "SRD_Backgrounds";
     const id = useParams();
     const [background, setBackground] = useState([]);
 
     useEffect(() => {
+      // Obtiene los detalles del fondo seleccionado desde la base de datos
         async function fetchBackground() {
             const ref = doc(db, nameCollection, id.id);
             const query = await getDoc(ref);
@@ -171,7 +187,11 @@ function Background() {
       
 }
 
-
+/**
+ * Función que genera una tabla con los rasgos del trasfondo.
+ * @param {Object} data Los datos de rasgos a mostrar en la tabla.
+ * @returns {JSX.Element} La tabla con los rasgos del trasfondo.
+ */
 function table(data) {
     return (
         <div className="table-responsive">

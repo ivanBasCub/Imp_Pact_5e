@@ -5,12 +5,18 @@ import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import Header from "../../Header";
 import Footer from "../../Footer";
 
-{/*
-    Constantes Generales del componente    
-*/}
+/**
+ * URL base para obtener los datos de la API de D&D 5e.
+ * @constant {string}
+ */ 
 const URL = "https://www.dnd5eapi.co";
 
-// Componente que recoge la información de todos los objetos mágicos
+/**
+ * Componente que muestra una lista de objetos mágicos filtrados por nombre, tipo y rareza.
+ * Utiliza la API de D&D 5e y la base de datos de Firebase para mostrar los objetos.
+ * 
+ * @returns {JSX.Element} Componente con la lista de objetos mágicos filtrados.
+ */
 function MagicItemList(){
     const [magicItems, setMagicItems] = useState([]);
     const [infoForm, setInfoForm] = useState({
@@ -58,6 +64,10 @@ function MagicItemList(){
             });
         }
 
+        /**
+         * Efecto que comprueba si la base de datos de Firebase está actualizada con todos los objetos mágicos de la API.
+         * Si no es así, se actualiza.
+         */
         async function checkDataBBDD(){
             const res = await fetch(`${URL}/api/magic-items`);
             const data = await res.json();
@@ -73,9 +83,14 @@ function MagicItemList(){
         checkDataBBDD();
     },[]);
 
-    // Efecto para filtrar los objetos mágicos
+    /**
+     * Efecto que filtra los objetos mágicos según el nombre, tipo y rareza.
+     */
     useEffect(()=>{
         const nameCollection = "SRD_Magic_Items";
+        /**
+         * Función que filtra los objetos mágicos según el tipo y rareza.
+         */
         async function getMagicItems(){
             const itemsRef = collection(db, nameCollection);
             const itemsSnap = await getDocs(itemsRef);
@@ -89,6 +104,9 @@ function MagicItemList(){
             setMagicItems(items);
         }
 
+        /**
+         * Función que busca un objeto mágico por nombre.
+         */
         async function getMagicItem(){
             const regex = /[ +]/;
             const item = infoForm.name.toLowerCase().replace(" ","");
@@ -100,6 +118,9 @@ function MagicItemList(){
             }
         }
 
+        /**
+         * Función que filtra los objetos mágicos según el nombre, tipo y rareza, y actualiza la lista.
+         */
         function filterItems(){
             if (infoForm.name !== ""){
                 getMagicItem();
@@ -192,12 +213,19 @@ function MagicItemList(){
     
 }
 
-// Componente que recoge la información de un objeto mágico en concreto
+/**
+ * Componente que muestra la información detallada de un objeto mágico específico.
+ * Utiliza la base de datos de Firebase para obtener los detalles del objeto.
+ * 
+ * @returns {JSX.Element} Componente con la información detallada del objeto mágico.
+ */
 function MagicItem(){
     const { id } = useParams();
     const [magicItem, setMagicItem] = useState({});
 
-    // Efecto para recoger la información de un objeto mágico en concreto
+    /**
+     * Efecto que recoge la información de un objeto mágico específico desde la base de datos de Firebase.
+     */
     useEffect(()=>{
         const nameCollection = "SRD_Magic_Items";
         async function getMagicItem(){
