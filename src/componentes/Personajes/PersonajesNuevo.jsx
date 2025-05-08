@@ -1127,7 +1127,7 @@ useEffect(() => {
   {/* Bloque conjunto para proficiencies */}
   <div className="bg-white p-3 rounded shadow mb-4">
     {/* Proficiencies de clase */}
-    <h3 className="mb-2">Competencias varias</h3>
+    <h3 className="mb-2">Proficiencies class</h3>
     <ul className="list-group mb-3">
       {proficiencies.length > 0 ? (
         proficiencies.map((prof, index) => (
@@ -1136,14 +1136,14 @@ useEffect(() => {
           </li>
         ))
       ) : (
-        <li className="list-group-item text-muted">No hay proficiencias disponibles</li>
+        <li className="list-group-item text-muted">None</li>
       )}
     </ul>
 
     {selectedMulticlass && (
       <>
         {/* Proficiencies de multiclase */}
-        <h3 className="mb-2">Competencias multiclase</h3>
+        <h3 className="mb-2">Proficiencies multiclass</h3>
         <ul className="list-group">
           {proficienciesMulticlass.length > 0 ? (
             proficienciesMulticlass.map((prof, index) => (
@@ -1152,7 +1152,7 @@ useEffect(() => {
               </li>
             ))
           ) : (
-            <li className="list-group-item text-muted">No hay proficiencias disponibles</li>
+            <li className="list-group-item text-muted">None</li>
           )}
         </ul>
       </>
