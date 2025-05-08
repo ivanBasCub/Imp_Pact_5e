@@ -1,16 +1,25 @@
 // Footer.jsx
 import React from 'react';
 
+/**
+ * Componente Footer que representa el pie de página de la aplicación.
+ * Incluye los autores del proyecto y enlaces a recursos externos usados.
+ *
+ * @component
+ * @returns {JSX.Element} Elemento JSX que representa el pie de página.
+ */
 const Footer = () => {
   return (
     <div className="containerFooter">
       <footer className="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top ms-3 me-3">
+        {/* Autores del proyecto */}
         <p className="col-md-4 mb-0 text-body-secondary">  Created by Iván Bascones Cubillo y Pablo Pollos Iglesias</p>
 
         <a href="/" className="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
           <svg className="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
         </a>
 
+        {/* Enlaces de referencia a tecnologías utilizadas */}
         <ul className="nav col-md-4 justify-content-end ">
           <li className="nav-item"><p className="nav-link px-2 text-body-secondary">References:</p></li>
           <li className="nav-item"><a href="https://5e-bits.github.io/docs/" className="nav-link px-2">D&D 5e API</a></li>
